@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C02 Claude基礎 claude.ai完全ガイド - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+pre.code{background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;color:var(--text-muted);line-height:1.65;overflow-x:auto;}
+pre.code .kw{color:var(--asagi);}
+pre.code .str{color:#e6a828;}
+pre.code .cmt{color:var(--text-dim);}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 Claudeとは</a><a href="#s2">02 基本操作</a><a href="#s3">03 Projects</a><a href="#rA">Review A</a><a href="#s4">04 Artifacts</a><a href="#s5">05 長文処理</a><a href="#rB">Review B</a><a href="#s6">06 API入門</a><a href="#s7">07 セキュリティ</a><a href="#s8">08 トレンド</a><a href="#s9">09 総合</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 02 / Layer 1 -- ツール別深掘り</div>
+  <h1><span>Claude基礎</span> claude.ai完全ガイド</h1>
+  <p class="lead">Anthropicが開発したClaude。安全性への哲学、200Kトークンの長文処理、Projects、Artifactsを使いこなし、API経由の自動化まで到達するコースです。claude.aiを日常の相棒にするための全技法を凝縮しました。</p>
+  <div class="meta"><span class="tag">初級 - 中級</span><span class="tag">約8時間(480分)</span><span class="tag">9 Sections + 2 Review</span><span class="tag">ハンズオン比率 57%</span><span class="tag">理解度クイズ付き</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">Claudeとは -- Anthropicの思想と他LLMとの違い <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s2">claude.ai基本操作マスター <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s3">Claude Projects -- プロジェクト型ナレッジ活用 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li class="review-item"><a href="#rA">復習ハンズオン A -- FAQ対応Project構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s4">Claude Artifacts -- インタラクティブ成果物 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s5">長文処理と分析 -- 200Kトークンの真価 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li class="review-item"><a href="#rB">復習ハンズオン B -- 長文分析を可視化 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s6">Claude API入門 -- SDKで自動化への第一歩 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s7">セキュリティとデータの扱い <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">40min</span></a></li>
+  <li><a href="#s8">トレンドとモデル使い分け <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">20min</span></a></li>
+  <li><a href="#s9">総合ハンズオン: 業務特化Claude環境を構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: Claudeとは (45min: 講義30 + ハンズオン15) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 45min(講義30 + ハンズオン15)</div><h2>Claudeとは -- Anthropicの思想と他LLMとの違い</h2>
+<img src="assets/claude-concept.png" alt="Claudeのコンセプト" class="sec-hero-img">
+
+<h3>Anthropicの設立背景</h3>
+<p>Anthropicは2021年、OpenAIの元VP Dario AmodeiとDaniela Amodeiが共同創業した会社です。「AIの安全性を最優先にしながら最先端モデルを開発する」という理念を掲げて設立されました。OpenAI時代にGPT-3の開発に携わった経験から、強力なAIには堅牢な安全設計が不可欠だと確信し、独立に至った経緯があります。</p>
+<p>Google、Salesforce、Amazonなどから累計数十億ドルの資金調達を実施。2026年現在、Claude Opus 4.6 / Sonnet 4.6 / Haiku 4.5 の3モデル体制で、特に長文処理・コード生成・安全性の分野でトップクラスの評価を受けています。</p>
+
+<h3>Constitutional AI -- Claudeの安全設計</h3>
+<p>Claudeが他のLLMと決定的に異なる点は、Constitutional AI(CAI)という独自の安全性手法を採用していることです。従来のRLHF(人間のフィードバックによる強化学習)に加え、AIが自身の出力を「憲法(Constitution)」と照合して自己修正するプロセスを組み込んでいます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TD
+  A["事前学習済みモデル"] --> B["RLHF<br/>人間のフィードバック"]
+  B --> C["Constitutionの作成<br/>倫理原則を明文化"]
+  C --> D["AI Feedback<br/>AIが自身の出力を<br/>Constitutionで評価"]
+  D --> E["自己修正<br/>有害な出力を検出し<br/>安全な応答に書き換え"]
+  E --> F["RLAIF<br/>AIフィードバックで<br/>強化学習"]
+  F --> G["Claudeモデル<br/>安全性と有用性を両立"]
+</pre><div class="caption">Constitutional AIの仕組み。人間のフィードバックとAI自身の自己修正を組み合わせる</div></div>
+
+<p>この仕組みにより、人間のレビュアーだけでは見落としがちなエッジケースをAI自身がカバーします。Constitutionには「有害な指示には従わない」「差別的表現を避ける」「不確かな情報は不確かだと伝える」といった原則が含まれています。</p>
+
+<details><summary>Constitutional AIの具体例</summary><div class="inner">
+<p>例えば「爆弾の作り方を教えて」という入力があった場合、通常のRLHFモデルは人間のフィードバックデータに「この種の質問には答えない」という事例が十分含まれている必要があります。一方、Constitutional AIでは「危険な行為を助長する回答は行わない」という原則がConstitutionに明記されており、AIが自身の生成した回答をこの原則と照合し、問題があれば自動的に書き換えます。</p>
+<p>これにより、学習データでカバーされていない新しい種類の有害リクエストにも対応できる点がCAIの強みです。</p>
+</div></details>
+
+<h3>Claude vs ChatGPT vs Gemini</h3>
+<table class="ct"><thead><tr><th>比較項目</th><th>Claude</th><th>ChatGPT</th><th>Gemini</th></tr></thead><tbody>
+<tr><td>提供元</td><td>Anthropic</td><td>OpenAI</td><td>Google</td></tr>
+<tr><td>コンテキスト長</td><td>200Kトークン</td><td>128Kトークン</td><td>1Mトークン</td></tr>
+<tr><td>安全性設計</td><td>Constitutional AI</td><td>RLHF + ルールベース</td><td>RLHF + Safety filters</td></tr>
+<tr><td>コード生成</td><td>高精度。長いコードも安定</td><td>高精度。GPTs連携が強い</td><td>中〜高。Colab統合あり</td></tr>
+<tr><td>画像生成</td><td>不可(テキスト/コードのみ)</td><td>DALL-E 3統合</td><td>Imagen統合</td></tr>
+<tr><td>Web検索</td><td>なし(外部ツール必要)</td><td>Built-in Browsing</td><td>Google検索統合</td></tr>
+<tr><td>独自機能</td><td>Projects, Artifacts</td><td>GPTs, Canvas, DALL-E</td><td>Workspace統合, NotebookLM</td></tr>
+<tr><td>料金(Pro)</td><td>$20/月</td><td>$20/月</td><td>$20/月</td></tr>
+</tbody></table>
+
+<h3>Claude モデルファミリー詳細比較</h3>
+<p>Claudeは3つのモデルを提供しており、タスクの複雑さとコスト要件に応じて使い分けます。</p>
+<table class="ct"><thead><tr><th>モデル</th><th>位置づけ</th><th>コンテキスト長</th><th>入力コスト (1Mトークン)</th><th>出力コスト (1Mトークン)</th><th>得意なタスク</th></tr></thead><tbody>
+<tr><td>Opus 4.6</td><td>最高性能</td><td>200Kトークン</td><td>$15</td><td>$75</td><td>複雑な推論、数学的証明、高度なコード生成、学術論文の分析</td></tr>
+<tr><td>Sonnet 4.6</td><td>バランス型</td><td>200Kトークン</td><td>$3</td><td>$15</td><td>日常業務全般、文書作成、コードレビュー、データ分析</td></tr>
+<tr><td>Haiku 4.5</td><td>高速軽量</td><td>200Kトークン</td><td>$0.25</td><td>$1.25</td><td>分類、要約、チャットボット、大量バッチ処理</td></tr>
+</tbody></table>
+<p>Opusの出力コストはHaikuの60倍。単純な分類タスクにOpusを使うのはコストの無駄遣いで、逆に複雑な法律文書の解析をHaikuに任せると精度が足りません。タスクの性質に合ったモデル選択がAPI活用の基本になります。</p>
+
+<h3>Extended Thinking(拡張思考)</h3>
+<p>Extended Thinkingは、Claudeが回答の前に「思考過程」を段階的に展開する機能です。OpenAIのo1やo3が採用しているReasoningモデルと同じ発想で、複雑な問題に対して推論の連鎖を内部で組み立ててから最終回答を生成します。</p>
+<p>数学の証明、多段階の論理推論、コードのアルゴリズム設計など、一発で答えを出すより「考える時間」を確保したほうが精度が上がるタスクで威力を発揮します。claude.aiではチャット時にモデル選択の横にある思考トグルをONにすると利用可能です。APIでは<code>thinking</code>パラメータを設定して明示的に有効化します。</p>
+<p>ただし思考トークン分だけ応答時間とコストが増加するため、単純な質問には不要です。「この問題は段階的に考える必要がありそうだ」と判断したときだけ使うのが賢い運用方法と言えます。</p>
+
+<h3>Claudeの強みと弱み</h3>
+<div class="cols">
+<div class="col-card"><h4>強み</h4>
+<ul>
+<li>200Kトークン(新書約3冊分)を一度に処理できる</li>
+<li>コード生成の精度が高く、長大なコードでも崩れにくい</li>
+<li>Constitutional AIによる安全性。有害出力を自己検知する</li>
+<li>Artifactsで会話の横にインタラクティブな成果物を表示</li>
+<li>Projectsで永続的なコンテキスト空間を構築可能</li>
+</ul>
+</div>
+<div class="col-card"><h4>弱み</h4>
+<ul>
+<li>画像生成機能がない。テキストとコードのみ</li>
+<li>Web検索機能が未統合。最新情報の取得に外部ツールが必要</li>
+<li>GPTsのようなストア型エコシステムがない</li>
+<li>日本語の固有名詞(人名、地名)で時折誤りが出る</li>
+<li>無料プランの利用制限がやや厳しい</li>
+</ul>
+</div>
+</div>
+
+<div class="box tip"><div class="bt">Tips: Claudeが特に得意なタスク</div>
+<ul>
+<li>長い契約書やレポートPDFの丸ごと分析と要約</li>
+<li>既存コードのリファクタリングやバグ修正</li>
+<li>Artifactsを使ったインタラクティブなダッシュボード生成</li>
+<li>構造化された文書テンプレートの作成</li>
+</ul>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. Constitutional AIがRLHF単体と比べて優れている点は?</p>
+<label><input type="radio" name="q1" value="a">学習速度が速い</label>
+<label><input type="radio" name="q1" value="b">AIが自身の出力を原則と照合し、学習データにない有害パターンにも対応できる</label>
+<label><input type="radio" name="q1" value="c">GPUメモリの使用量が少ない</label>
+<label><input type="radio" name="q1" value="d">画像生成が可能になる</label>
+<div class="ans" id="a1">正解: B。Constitution(原則集)との照合により、人間のフィードバックデータで網羅できていないケースにもAI自身が対応できます。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. Claudeが現時点で対応していない機能はどれですか?</p>
+<label><input type="radio" name="q2" value="a">PDF分析</label>
+<label><input type="radio" name="q2" value="b">コード生成</label>
+<label><input type="radio" name="q2" value="c">画像生成</label>
+<label><input type="radio" name="q2" value="d">Artifacts表示</label>
+<div class="ans" id="a2">正解: C。ClaudeはDALL-EやImagenのような画像生成機能を持ちません。テキスト・コード・分析に特化しています。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 01 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Claudeにアカウント作成して初会話 <span class="hs-time">15min</span></div>
+<div class="hs-goal">目標: claude.aiでアカウントを作成し、最初の会話でClaudeの回答特性を観察する</div>
+
+<img src="assets/claude-login.png" alt="claude.ai ログイン画面" class="sec-hero-img" style="max-width:640px;">
+<p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:8px;">claude.ai -- ログイン画面。Googleアカウントまたはメールで登録</p>
+
+<h4>パート1: アカウント作成(5min)</h4>
+<ol>
+<li><a href="https://claude.ai/" target="_blank" rel="noopener">claude.ai</a> にアクセスしてください</li>
+<li>Googleアカウントまたはメールアドレスで無料アカウントを作成してください</li>
+<li>チャット画面が表示されたら準備完了です</li>
+</ol>
+
+<h4>パート2: 初めての会話(10min)</h4>
+<ol>
+<li>以下のプロンプトを送信してください</li>
+</ol>
+<div class="prompt" id="p_s1h1">あなた自身について教えてください。
+
+1. あなたの名前とバージョン
+2. あなたを作った会社の名前と理念
+3. あなたが得意なこと(上位3つ)
+4. あなたが苦手なこと、できないこと(上位3つ)
+5. あなたと他のAI(ChatGPT、Gemini)の違いを1つだけ
+
+各項目は2行以内で簡潔に回答してください。<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+
+<ol start="2">
+<li>Claudeの回答を読み、以下を確認してください
+  <ul>
+  <li>「できないこと」を率直に認めているか</li>
+  <li>他のAIについて公平に言及しているか</li>
+  <li>回答のトーンは丁寧だが過度にへりくだっていないか</li>
+  </ul>
+</li>
+<li>次に、ChatGPTかGeminiにも同じプロンプトを送信し、回答の「自己認識」の違いを比較してください</li>
+</ol>
+
+<details><summary>期待される結果の例</summary><div class="inner">
+<p>Claudeは「画像生成ができない」「Web検索ができない」と率直に弱みを認める傾向があります。ChatGPTは自社の機能を積極的にアピールする傾向、Geminiは Google検索との統合を強調する傾向が見られます。Constitutional AIの影響で、Claudeは「不確かなことは不確かだと言う」姿勢が他モデルより顕著です。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://www.anthropic.com/" target="_blank" rel="noopener">Anthropic公式サイト</a></li>
+<li><a href="https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback" target="_blank" rel="noopener">Constitutional AI 論文</a></li>
+<li><a href="https://claude.ai/" target="_blank" rel="noopener">claude.ai</a> -- Claude公式チャットUI</li>
+<li><a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" rel="noopener">Claude Models</a> -- モデル一覧と仕様</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: claude.ai基本操作マスター (50min: 講義25 + ハンズオン25) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 50min(講義25 + ハンズオン25)</div><h2>claude.ai基本操作マスター</h2>
+<p>claude.aiの画面構成と基本操作を把握します。テキスト会話だけでなく、ファイル添付、画像認識、PDF分析まで一通り体験することがこのセクションのゴールです。</p>
+
+<h3>テキスト会話の基本</h3>
+<p>claude.aiのチャット画面は左サイドバーに会話履歴、中央に現在の会話、右側にArtifactsが表示される3ペイン構成です。基本操作を押さえておくと日常利用が格段にスムーズになります。</p>
+<ul>
+<li><strong>新しい会話</strong> -- 左上の「New chat」をクリック。テーマが変わったら新しい会話を始めるのが原則</li>
+<li><strong>やり直し</strong> -- 回答の下にある再生成ボタンで別の回答を生成。同じ入力でも毎回異なる回答が返る</li>
+<li><strong>会話の分岐</strong> -- 途中のメッセージを編集すると、そこから新しい分岐が生まれる</li>
+<li><strong>会話の検索</strong> -- 左サイドバー上部の検索バーで過去の会話をキーワード検索</li>
+<li><strong>スター</strong> -- 重要な会話にスターをつけて後から素早くアクセス</li>
+</ul>
+
+<h3>ファイル添付</h3>
+<p>claude.aiはチャット入力欄のクリップアイコンからファイルを添付できます。対応形式は多岐にわたります。</p>
+<table class="ct"><thead><tr><th>ファイル種別</th><th>対応形式</th><th>活用例</th></tr></thead><tbody>
+<tr><td>ドキュメント</td><td>PDF, DOCX, TXT, MD, RTF</td><td>契約書レビュー、レポート要約</td></tr>
+<tr><td>表計算</td><td>CSV, XLSX, TSV</td><td>データ分析、集計、トレンド抽出</td></tr>
+<tr><td>画像</td><td>PNG, JPG, GIF, WebP, SVG</td><td>スクリーンショット解析、手書き文字認識、UI分析</td></tr>
+<tr><td>コード</td><td>PY, JS, TS, HTML, CSS, JSON, YAML, SQL, etc.</td><td>コードレビュー、バグ修正、リファクタリング</td></tr>
+</tbody></table>
+
+<h3>画像認識</h3>
+<p>Claudeは画像の内容を高い精度で認識し、説明やデータ抽出を行います。写真、スクリーンショット、手書きメモ、グラフなどを解析できます。フォーマット変換(手書き → テキスト化)や、UIスクリーンショットからのコード生成にも対応しています。</p>
+
+<details><summary>画像で何ができるか?</summary><div class="inner">
+<ul>
+<li>写真の説明 -- 風景、人物、物体を認識し、何が写っているかを自然言語で説明する</li>
+<li>グラフ/チャートの分析 -- 棒グラフ、折れ線グラフ、円グラフから数値を読み取り、傾向を解釈する</li>
+<li>手書きメモの文字起こし -- ホワイトボードの写真やノートの手書き文字をテキストに変換する</li>
+<li>UIのデザインレビュー -- スクリーンショットからレイアウト、色使い、ユーザビリティの改善点を指摘する</li>
+<li>エラー画面の解析 -- エラーメッセージやスタックトレースのスクリーンショットから原因を特定し、解決策を提案する</li>
+</ul>
+<p>画像認識はテキストと組み合わせると威力が増します。「このグラフの2024年Q3の数値を読み取って、前年同期と比較して」のように、具体的な指示と画像をセットで渡すのがコツです。</p>
+</div></details>
+
+<h3>PDF分析</h3>
+<p>200Kトークンの長文処理能力がここで活きます。数十ページの報告書でも丸ごと添付して分析可能。「3ページ目の表を抽出して」「結論部分と序論の整合性を確認して」といった指示が有効です。</p>
+<div class="box note"><div class="bt">PDF分析の実践例</div>100ページの年次報告書を丸ごと添付して「第3章の主張を要約して、根拠が弱い箇所を指摘して」と指示する。Claudeは章構造を認識し、主張と引用データの対応関係を検証した上で、根拠が曖昧な箇所を具体的に引用つきで報告してくれます。人間が同じ作業をすれば数時間かかるところを、数十秒で初稿が得られます。</div>
+
+<div class="box warn"><div class="bt">注意: ファイルの取り扱い</div>業務データをアップロードする際は、データポリシーを確認してください。無料プランでは入力がモデル改善に使われる可能性があります(Section 07で詳しく扱います)。練習では公開情報やダミーデータを推奨します。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 02</h4>
+<div class="q"><p>Q3. claude.aiでファイル添付を行う際の注意点として正しいものは?</p>
+<label><input type="radio" name="q3" value="a">PDFは10ページまでしか読み込めない</label>
+<label><input type="radio" name="q3" value="b">無料プランでは入力がモデル改善に使われる可能性があるため、機密データは避ける</label>
+<label><input type="radio" name="q3" value="c">画像は白黒しか認識できない</label>
+<label><input type="radio" name="q3" value="d">CSVファイルは添付できない</label>
+<div class="ans" id="a3">正解: B。無料プランのデータポリシーを理解した上でファイルを選択することが重要です。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 02 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 5つの基本操作を実践する <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: テキスト会話、画像認識、PDF分析、CSV分析、コードレビューの5操作をひと通り体験する</div>
+
+<h4>演習1: テキスト会話でプロンプト3型を試す(5min)</h4>
+<div class="prompt" id="p_s2h1">あなたはベテランの人事担当者です。
+
+以下の求人票の改善案を作成してください。
+
+【求人票(現状)】
+職種: エンジニア
+仕事内容: システムの開発
+必要なスキル: プログラミング
+給与: 応相談
+
+【制約】
+- 具体性を高める(技術スタック、プロジェクト規模を追記)
+- 応募者が魅力を感じる表現にする
+- 300文字程度<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>演習2: 画像を添付して内容を説明させる(5min)</h4>
+<p>自分のスマートフォンやPCのスクリーンショットをキャプチャし、Claudeに添付してください。</p>
+<div class="prompt" id="p_s2h2">添付した画像の内容を分析してください。
+
+1. 何が写っていますか?(概要を2行で)
+2. 画面内のテキストを全て抽出してください
+3. UIの改善点があれば1つ提案してください<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+
+<h4>演習3: PDFを添付して要約+質疑(5min)</h4>
+<p>手持ちのPDF(社内資料のダミー、公開レポートなど)を添付してください。手持ちがなければ下記サンプルをダウンロードして使ってください。</p>
+<a href="#" class="dl" onclick="downloadSampleReport();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプル長文レポート(.txt)</a>
+<div class="prompt" id="p_s2h3">添付したドキュメントについて以下を実行してください。
+
+1. 全体を3行で要約
+2. 主要な数値データを表形式で抽出
+3. このドキュメントの読者が最も知りたいであろう質問を3つ挙げ、それぞれに回答してください<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<h4>演習4: CSVを添付してデータ分析(5min)</h4>
+<a href="#" class="dl" onclick="downloadSampleCSV();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプル売上データ(.csv)</a>
+<div class="prompt" id="p_s2h4">添付したCSVデータを分析してください。
+
+1. 月別の売上合計をまとめてください
+2. 最も成長率が高い製品カテゴリはどれですか?
+3. 気になるトレンドや異常値があれば指摘してください
+4. 来月の売上予測を根拠とともに示してください<button class="cb" onclick="copyP('p_s2h4')">コピー</button></div>
+
+<h4>演習5: コードを貼り付けてレビュー依頼(5min)</h4>
+<div class="prompt" id="p_s2h5">以下のPythonコードをレビューしてください。
+
+```python
+def get_user_data(user_id):
+    import requests
+    response = requests.get(f"https://api.example.com/users/{user_id}")
+    data = response.json()
+    return data
+
+def process_users():
+    users = []
+    for i in range(1, 100):
+        user = get_user_data(i)
+        if user['status'] == 'active':
+            users.append(user)
+    return users
+```
+
+以下の観点でレビューしてください:
+1. エラーハンドリングの問題点
+2. パフォーマンスの改善点
+3. セキュリティ上の懸念
+4. 改善版コードの提示<button class="cb" onclick="copyP('p_s2h5')">コピー</button></div>
+
+<details><summary>演習5の期待される指摘事項</summary><div class="inner">
+<p>主要な指摘ポイントは3つ。(1) requests.getにtry/exceptがなく、ネットワークエラーで即座にクラッシュする。(2) 100回のAPIコールを直列で実行しており、asyncioやバッチ取得で大幅に改善できる。(3) user_idをURLに直接埋め込んでおり、インジェクション対策がない。Claudeはこれらを具体的なコード例つきで指摘するはずです。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://claude.ai/" target="_blank" rel="noopener">claude.ai</a></li>
+<li><a href="https://support.anthropic.com/" target="_blank" rel="noopener">Anthropic サポート</a> -- UI操作のFAQ</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: Claude Projects (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 55min(講義25 + ハンズオン30)</div><h2>Claude Projects -- プロジェクト型ナレッジ活用</h2>
+<p>通常のチャットは会話が終われば文脈がリセットされます。Projects機能は、永続的なコンテキスト空間を作り、カスタム指示書とナレッジファイルを常に参照できる状態にします。「毎回同じ前提を説明し直す手間」から解放される機能です。</p>
+
+<h3>Projectsとは</h3>
+<p>Projects はClaude Pro以上で利用可能な機能です。通常の会話との違いを整理します。</p>
+<table class="ct"><thead><tr><th>項目</th><th>通常の会話</th><th>Projects</th></tr></thead><tbody>
+<tr><td>コンテキスト</td><td>その会話内でのみ有効</td><td>プロジェクト内の全会話で永続</td></tr>
+<tr><td>カスタム指示書</td><td>毎回プロンプトに含める必要あり</td><td>プロジェクト設定で一度書けば常時適用</td></tr>
+<tr><td>ナレッジファイル</td><td>毎回添付が必要</td><td>プロジェクトに追加すれば常時参照</td></tr>
+<tr><td>適した用途</td><td>一回きりの質問、気軽な相談</td><td>継続的な業務、FAQ対応、文書作成</td></tr>
+</tbody></table>
+
+<details><summary>Claude Projectsの作成手順(ステップバイステップ)</summary><div class="inner">
+<ol>
+<li>claude.aiの左サイドバーにある「Projects」をクリックする</li>
+<li>画面上部の「Create Project」ボタンをクリックする</li>
+<li>プロジェクト名(例: 営業FAQ対応、契約書レビュー)と説明文を入力する</li>
+<li>「Custom Instructions」欄にカスタム指示書を入力する。ここに書いた内容が、このプロジェクト内の全会話で常に適用される</li>
+<li>「Knowledge」セクションでファイルをアップロードする。社内マニュアル、FAQリスト、過去の対応記録など、Claudeに参照させたい資料を追加</li>
+<li>プロジェクト内で「New chat」を開始する。カスタム指示書とナレッジが自動的に反映された状態で会話が始まる</li>
+</ol>
+<p>作成後もカスタム指示書やナレッジはいつでも編集・追加が可能です。使いながら調整していくのが現実的な運用方法です。</p>
+</div></details>
+
+<h3>カスタム指示書の設計方法</h3>
+<p>カスタム指示書はProjectsの核です。ChatGPTの「Custom Instructions」に相当しますが、プロジェクト単位で設定できる点が異なります。</p>
+
+<h4>カスタム指示書に含めるべき5要素</h4>
+<ol>
+<li><strong>役割定義</strong> -- 「あなたは社内ヘルプデスクの担当者です」のように、Claudeの振る舞いを定める</li>
+<li><strong>トーン指定</strong> -- 「丁寧語を使い、専門用語は平易に言い換えてください」</li>
+<li><strong>出力形式</strong> -- 「回答は200文字以内の箇条書きで」「JSONで出力」</li>
+<li><strong>参照ルール</strong> -- 「ナレッジファイルの内容のみを根拠にし、推測で答えないでください」</li>
+<li><strong>禁止事項</strong> -- 「個人情報に関する質問には回答しないこと」「法的助言を行わないこと」</li>
+</ol>
+
+<div class="box tip"><div class="bt">Tips: カスタム指示書のベストプラクティス</div>
+<ul>
+<li>指示書は500〜800文字がスイートスポット。短すぎると曖昧になり、長すぎると無視される部分が出る</li>
+<li>「する/しない」を明確に。曖昧な表現(「適宜判断して」)は避ける</li>
+<li>まず雛形を生成させ、それを自分で修正するアプローチが効率的</li>
+</ul>
+</div>
+
+<details><summary>カスタム指示書の記述例: カスタマーサポート用</summary><div class="inner">
+<div class="prompt" style="font-size:13px;">あなたはカスタマーサポートの一次対応担当です。
+
+【役割】
+お客様からの問い合わせに対し、ナレッジベースの情報をもとに回答します。
+お客様の感情に配慮し、共感を示してから回答に入ってください。
+
+【回答ルール】
+- 敬語を使い、丁寧だが親しみのある口調で回答する
+- 回答は150文字以内で要点を先に伝える
+- 手順がある場合は番号付きリストで示す
+- 回答の最後に「他にご不明点はございますか?」を付ける
+
+【禁止事項】
+- ナレッジに記載のない技術的質問に推測で回答しない
+- 料金の値引き交渉には応じない(「担当部署にお繋ぎします」と案内)
+- 個人情報の確認をチャット上で行わない
+- 他社製品との比較を行わない
+
+【エスカレーション基準】
+以下の場合は「担当者にお繋ぎいたします」と回答する:
+- 返金・契約変更に関する要望
+- セキュリティインシデントの報告
+- 2回以上同じ質問をされた場合(解決に至っていない)</div>
+</div></details>
+
+<h3>ナレッジファイルの追加</h3>
+<p>プロジェクトにアップロードしたファイルは、そのプロジェクト内の全会話でClaudeが常に参照します。社内マニュアルPDF、FAQリスト、過去の対応記録、コードベースなどが典型的な活用対象です。</p>
+<ul>
+<li>ファイルサイズ上限: 1ファイルあたり約30MB</li>
+<li>複数ファイルの追加が可能。関連する資料をまとめて入れておく</li>
+<li>テキスト系ファイル(PDF, TXT, MD, CSV)が最も効果的に活用される</li>
+</ul>
+
+<h3>有効な活用パターン</h3>
+<div class="cols">
+<div class="col-card"><h4>社内FAQ Bot</h4><p>FAQデータをナレッジに登録し、指示書で「ナレッジ内の情報のみ回答」と制約。新入社員の問い合わせ対応を半自動化。</p></div>
+<div class="col-card"><h4>プロジェクト管理</h4><p>プロジェクト計画書、議事録、要件定義書を登録。「前回の決定事項は?」と聞けば即座に回答。</p></div>
+<div class="col-card"><h4>文書テンプレート</h4><p>過去の提案書や報告書をナレッジに登録。「同じ形式で新しいテーマの報告書を」と指示するだけ。</p></div>
+<div class="col-card"><h4>コードベース理解</h4><p>リポジトリのコードをまとめて登録。アーキテクチャの質問や新機能の実装相談に活用。</p></div>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 03</h4>
+<div class="q"><p>Q4. Claude Projectsのカスタム指示書に「禁止事項」を含める主な理由は?</p>
+<label><input type="radio" name="q4" value="a">Claudeの回答速度を上げるため</label>
+<label><input type="radio" name="q4" value="b">トークン数を節約するため</label>
+<label><input type="radio" name="q4" value="c">AIが扱うべきでない領域を明示し、誤回答や情報漏えいを防ぐため</label>
+<label><input type="radio" name="q4" value="d">カスタム指示書の文字数を増やすため</label>
+<div class="ans" id="a4">正解: C。禁止事項を明示することで、AIが踏み込むべきでない領域(人事情報、法的判断、機密データ)を明確にし、リスクを低減します。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 03 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 業務特化Projectを1つ構築する <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: カスタム指示書の設計からナレッジ追加、テスト質問までをひと通り完了する</div>
+
+<h4>ステップ1: Projectの作成(5min)</h4>
+<ol>
+<li>claude.aiの左サイドバーから「Projects」を選択してください</li>
+<li>「Create project」をクリックし、プロジェクト名を入力してください(例: 「営業FAQ」「社内マニュアル」)</li>
+<li>プロジェクトの説明欄に、以下のカスタム指示書テンプレートを貼り付けてカスタマイズしてください</li>
+</ol>
+<div class="prompt" id="p_s3h1">あなたは[部署名]の[役割]です。
+
+【役割】
+[具体的な役割の説明]
+
+【回答ルール】
+- 丁寧語で回答すること
+- 回答は200文字以内で簡潔に
+- 手順がある場合は番号付きリストで示す
+- 回答の最後に「参照元: [ファイル名/該当箇所]」を付ける
+
+【禁止事項】
+- ナレッジファイルに記載のない内容について推測で回答しない
+- [業務固有の禁止事項]
+- 法的判断を伴う質問には回答しない
+
+【エスカレーション】
+回答できない質問を受けた場合:
+「この質問については[担当者/担当部署]にお問い合わせください。」と回答する。<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+<a href="#" class="dl" onclick="downloadCustomInstructionTemplate();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>カスタム指示書テンプレート(.md)</a>
+
+<h4>ステップ2: ナレッジファイルの追加(10min)</h4>
+<ol>
+<li>プロジェクト設定画面の「Knowledge」セクションからファイルを追加してください</li>
+<li>手持ちの業務資料(公開情報やダミーデータ推奨)を1〜3ファイルアップロードしてください</li>
+<li>手持ちがなければ、下記のサンプルFAQデータをダウンロードして使ってください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadSampleFAQ();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルFAQデータ(.txt)</a>
+
+<h4>ステップ3: テスト質問(10min)</h4>
+<ol>
+<li>プロジェクト内で新しい会話を開始してください</li>
+<li>想定される質問を5つ投げてください。以下は例です:
+  <ul>
+  <li>ナレッジ内に答えがある質問(正しく回答できるか)</li>
+  <li>ナレッジ内に答えがない質問(「わからない」と言えるか)</li>
+  <li>禁止事項に触れる質問(エスカレーションするか)</li>
+  </ul>
+</li>
+<li>各回答の品質を5段階で評価してください</li>
+</ol>
+
+<h4>ステップ4: 指示書の改善(5min)</h4>
+<ol>
+<li>テスト結果を踏まえ、カスタム指示書を修正してください</li>
+<li>修正後に再度テスト質問を送信し、改善を確認してください</li>
+</ol>
+
+<details><summary>よくある改善パターン</summary><div class="inner">
+<p>「ナレッジにない質問に推測で答えてしまう」場合 → 指示書に「ナレッジファイルに記載がない場合は『この情報は登録されていません』と明示的に回答してください」を追加。「回答が長すぎる」場合 → 文字数制限を「200文字以内」から「3行以内」のようにより具体的に変更。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://support.anthropic.com/" target="_blank" rel="noopener">Anthropic サポート</a> -- Projects機能のFAQ</li>
+<li><a href="https://docs.anthropic.com/en/docs/build-with-claude/projects" target="_blank" rel="noopener">Projects Documentation</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン A (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review Hands-on A -- 25min</div><h2>復習ハンズオン A: FAQ対応Projectの完成</h2>
+<p>Section 01-03の知識を組み合わせて、「自部門のFAQ対応Project」を一連の流れで完成させます。</p>
+
+<div class="handson">
+<div class="hs-title">課題: FAQ対応Projectを構築しテストする <span class="hs-time">25min</span></div>
+<div class="hs-goal">成果物: 動作テスト済みのFAQ対応Project(カスタム指示書 + ナレッジ + テスト結果5件)</div>
+
+<h4>手順</h4>
+<ol>
+<li>Projectを新規作成(まだの場合)(3min)</li>
+<li>カスタム指示書を設定 -- Section 03のテンプレートを元に、自分の業務に合わせて修正(5min)</li>
+<li>FAQデータをナレッジに追加(手持ちがなければサンプルを使用)(3min)</li>
+<li>テスト質問を5個送信し、結果を記録(10min)
+  <ul>
+  <li>Q1: ナレッジ内に答えがある基本質問</li>
+  <li>Q2: ナレッジ内の別の項目に関する質問</li>
+  <li>Q3: ナレッジに書かれていない質問</li>
+  <li>Q4: 禁止事項に触れる質問</li>
+  <li>Q5: 曖昧な質問(意図が読みにくいもの)</li>
+  </ul>
+</li>
+<li>テスト結果を踏まえてカスタム指示書を1箇所以上改善(4min)</li>
+</ol>
+
+<a href="#" class="dl" onclick="downloadSampleFAQ();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルFAQデータ(.txt)</a>
+
+<ul class="checklist">
+<li>Projectを作成した</li>
+<li>カスタム指示書を設定した(役割、トーン、禁止事項を含む)</li>
+<li>ナレッジファイルを1つ以上追加した</li>
+<li>テスト質問を5つ送信した</li>
+<li>指示書を少なくとも1回改善した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: Artifacts (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 50min(講義20 + ハンズオン30)</div><h2>Claude Artifacts -- インタラクティブ成果物</h2>
+<p>Artifactsは、会話の横にリアルタイムで成果物を表示するClaude独自の機能です。HTMLページ、Reactコンポーネント、SVG画像、Mermaid図、Markdownドキュメントなど、「見せるもの」を生成する場面で真価を発揮します。</p>
+
+<h3>Artifactsとは</h3>
+<p>通常のチャットでは、コードやHTMLを生成しても「テキストの塊」として表示されるだけです。Artifactsでは、生成されたコードが即座にレンダリングされ、プレビューとして右ペインに表示されます。HTMLを書かせればブラウザで見たときの姿がその場で確認でき、Mermaidを書かせればフローチャートがそのまま描画されます。</p>
+
+<h3>対応する成果物の種類</h3>
+<table class="ct"><thead><tr><th>種類</th><th>説明</th><th>活用場面</th></tr></thead><tbody>
+<tr><td>HTML/CSS/JS</td><td>完全なWebページをプレビュー表示</td><td>プロトタイプ、ダッシュボード</td></tr>
+<tr><td>Reactコンポーネント</td><td>インタラクティブなUIをその場で動作</td><td>計算ツール、データ入力フォーム</td></tr>
+<tr><td>SVG画像</td><td>ベクター画像を直接レンダリング</td><td>図解、アイコン、インフォグラフィック</td></tr>
+<tr><td>Mermaid図</td><td>フローチャート、シーケンス図、ガントチャート</td><td>業務フロー、システム構成図</td></tr>
+<tr><td>Markdownドキュメント</td><td>構造化されたテキスト文書</td><td>報告書、議事録、仕様書</td></tr>
+</tbody></table>
+
+<h3>Artifactsで生成できる成果物</h3>
+<p>Artifactsが対応する成果物の種類を整理します。出力形式を明示的に指定することで、意図した形式のArtifactが生成されやすくなります。</p>
+<ul>
+<li>React コンポーネント -- インタラクティブなUI部品。計算ツール、フォーム、データ入力画面など、ボタンやスライダーが動作する</li>
+<li>HTML/CSS -- 静的なWebページ。ランディングページ、ポートフォリオ、社内ツールのプロトタイプに向く</li>
+<li>SVG画像 -- ベクター形式の図表やチャート。インフォグラフィック、アイコン、組織図などをプレビュー表示</li>
+<li>Mermaid図 -- フローチャート、シーケンス図、ガントチャート、ER図。テキストで記述し、即座に図として描画される</li>
+<li>Markdown -- 構造化されたドキュメント。報告書、仕様書、議事録のテンプレートに最適</li>
+<li>コード(Python, JavaScript等) -- 実行可能なコードブロック。アルゴリズムの動作確認やデータ処理スクリプトの生成</li>
+</ul>
+
+<div class="box tip"><div class="bt">Artifactsが特に有効な場面</div>
+<ul>
+<li>プレゼン資料の素案をHTMLで即座に形にしたいとき</li>
+<li>社内ツールのUIプロトタイプを5分で作り、関係者に見せたいとき</li>
+<li>売上データや分析結果をダッシュボードで可視化したいとき</li>
+<li>業務フローをMermaid図で描き、認識のすり合わせに使いたいとき</li>
+<li>「80%の出来をすぐに見せて、残り20%を対話で詰める」ワークフローを回したいとき</li>
+</ul>
+</div>
+
+<h3>編集と反復</h3>
+<p>Artifactsの力は「反復の速さ」にあります。生成されたダッシュボードに対して「色を青系に変えて」「グラフを追加して」と指示するだけで、即座にプレビューが更新されます。コードを自分で書き換える必要はありません。</p>
+
+<div class="box tip"><div class="bt">Tips: Artifactsを引き出すコツ</div>
+<ul>
+<li>「HTMLで」「Reactで」「Mermaidで」と出力形式を明示する</li>
+<li>「プレビューできるように」と指示するとArtifactsモードになりやすい</li>
+<li>「ここを変えて」と部分修正を依頼すると差分だけ更新される</li>
+</ul>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 04</h4>
+<div class="q"><p>Q5. Artifactsが最も効果を発揮する場面はどれですか?</p>
+<label><input type="radio" name="q5" value="a">テキストのみの要約を求める場面</label>
+<label><input type="radio" name="q5" value="b">生成した成果物のプレビューを見ながら反復的に改善したい場面</label>
+<label><input type="radio" name="q5" value="c">大量のファイルを一括処理する場面</label>
+<label><input type="radio" name="q5" value="d">APIを呼び出す場面</label>
+<div class="ans" id="a5">正解: B。Artifactsの真価は、生成結果を即座にプレビューし、「ここを変えて」の繰り返しで素早く完成度を上げられる点にあります。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 04 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Artifactsで4種類の成果物を生成する <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: Webページ、Mermaid図、ダッシュボード、報告書テンプレートを生成し、Artifactsの反復編集を体験する</div>
+
+<h4>演習1: 簡単なWebページを生成(5min)</h4>
+<div class="prompt" id="p_s4h1">HTMLで自己紹介ページを作成してください。
+
+内容:
+- 名前(ダミーで構いません)
+- 職業
+- 趣味3つ
+- 好きな言葉
+
+デザイン:
+- ダークテーマ(背景#1a1a1a)
+- アクセントカラー#00A5BF
+- カード型レイアウト
+- レスポンシブ対応<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+<p>生成後、「趣味の部分にアイコンを追加して」と修正指示を出してみてください。</p>
+
+<h4>演習2: Mermaid図でフローチャートを作成(5min)</h4>
+<div class="prompt" id="p_s4h2">Mermaidで以下の業務フローを図にしてください。
+
+業務: 経費精算の承認フロー
+1. 社員が経費精算書を提出
+2. 直属の上司が確認(5万円以下なら承認、5万円超なら部長承認へ)
+3. 部長が確認(10万円以下なら承認、10万円超なら経理部長承認へ)
+4. 経理部長が最終承認
+5. 経理部が振込処理
+6. 社員に振込完了通知
+
+分岐条件を明確にしたフローチャートにしてください。<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<h4>演習3: データ可視化ダッシュボードを生成(10min)</h4>
+<div class="prompt" id="p_s4h3">以下の売上データをもとに、HTMLとJavaScriptでダッシュボードを作成してください。
+
+データ:
+- 1月: SaaS 520万, コンサル 300万
+- 2月: SaaS 490万, コンサル 280万
+- 3月: SaaS 610万, コンサル 350万
+- 4月: SaaS 580万, コンサル 320万
+
+要件:
+- 月別棒グラフ(Canvas APIまたはSVG)
+- 合計売上のKPIカード(前月比の増減も表示)
+- カテゴリ別の構成比を円グラフまたはドーナツチャートで
+- ダークテーマ(背景#0a0a0a、テキスト#e8e8e8)
+- 外部ライブラリは使わずvanilla JS/CSSのみ<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+<p>生成後、「グラフにホバー時のツールチップを追加して」と改善指示を出してみてください。</p>
+
+<h4>演習4: マークダウン報告書テンプレートを生成(10min)</h4>
+<div class="prompt" id="p_s4h4">月次業務報告書のMarkdownテンプレートを作成してください。
+
+含める項目:
+- 報告者情報(氏名、部署、報告月)
+- 今月の目標と達成状況(テーブル形式)
+- 主要な成果(3〜5件、各1〜2行)
+- 課題と対策(テーブル形式: 課題/影響度/対策/期限)
+- 来月の計画
+- リソース要求(人員、予算、ツール)
+
+テンプレート内の記入箇所は [ここに記入] のプレースホルダーにしてください。<button class="cb" onclick="copyP('p_s4h4')">コピー</button></div>
+
+<details><summary>Artifactsの活用で特に効果が高い場面</summary><div class="inner">
+<p>プレゼン資料の「素案」作成、社内ツールのプロトタイプ、データの可視化が三大活用領域です。完成品を作るというよりも、「80%の出来をすぐに見せて、残り20%を対話で詰める」というワークフローに最適化された機能だと捉えてください。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://support.anthropic.com/" target="_blank" rel="noopener">Anthropic サポート</a> -- Artifacts機能の詳細</li>
+<li><a href="https://mermaid.js.org/" target="_blank" rel="noopener">Mermaid公式ドキュメント</a> -- 図の文法リファレンス</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: 長文処理と分析 (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 50min(講義20 + ハンズオン30)</div><h2>長文処理と分析 -- 200Kトークンの真価</h2>
+<p>Claudeの最大の武器の一つが200Kトークンのコンテキストウィンドウです。日本語で約15万字、新書にして約3冊分。契約書、研究論文、コードベースを丸ごと渡して分析できるのはClaudeならではの強みです。</p>
+
+<h3>200Kトークンの意味</h3>
+<table class="ct"><thead><tr><th>分量の目安</th><th>トークン数</th><th>備考</th></tr></thead><tbody>
+<tr><td>新書1冊(約5万字)</td><td>約65Kトークン</td><td>3冊まで一度に入る計算</td></tr>
+<tr><td>A4報告書50ページ</td><td>約40Kトークン</td><td>余裕を持って処理可能</td></tr>
+<tr><td>Pythonコード5,000行</td><td>約30Kトークン</td><td>中規模プロジェクト全体</td></tr>
+<tr><td>会議の書き起こし3時間分</td><td>約50Kトークン</td><td>全文を一度に分析</td></tr>
+</tbody></table>
+
+<h3>長文処理が有効な場面</h3>
+<div class="cols">
+<div class="col-card"><h4>契約書レビュー</h4><p>数十ページの契約書を丸ごと渡して「不利な条項を列挙して」「一般的な契約との差分を指摘して」と依頼。分割する手間が不要。</p></div>
+<div class="col-card"><h4>研究論文の比較</h4><p>複数の論文を同時に渡し、「結論の違いを比較して」「研究手法の差を整理して」と分析。横断的な理解が格段に速くなる。</p></div>
+<div class="col-card"><h4>コードベース分析</h4><p>リポジトリの主要ファイルをまとめて渡し、「アーキテクチャを説明して」「この関数の呼び出し元を全て列挙して」と質問。</p></div>
+<div class="col-card"><h4>議事録の構造化</h4><p>長時間の会議書き起こしから「決定事項」「未決事項」「各メンバーのアクション」を自動抽出。</p></div>
+</div>
+
+<h3>長文分析のコツ</h3>
+<ol>
+<li><strong>質問は具体的に</strong> -- 「内容を教えて」ではなく「第3章の結論と第5章の結論の矛盾点を指摘して」</li>
+<li><strong>段階的に深掘り</strong> -- まず全体の構造を把握させてから、個別の箇所を掘り下げる</li>
+<li><strong>出力形式を指定</strong> -- 「表形式で」「JSON形式で」と指定すると整理された結果が得られる</li>
+<li><strong>参照元を求める</strong> -- 「該当箇所のページ番号や段落を引用してください」と付ける</li>
+</ol>
+
+<div class="box tip"><div class="bt">Tips: 「このテキストの中から矛盾を見つけて」が強い</div>長文の中から論理的な矛盾や数値の不整合を見つけるタスクは、人間よりもClaudeのほうが網羅的に検出できます。契約書のレビューや研究論文の査読で特に効果を発揮します。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 05</h4>
+<div class="q"><p>Q6. 200Kトークンのコンテキストを最大限に活かすための質問方法として最も適切なのは?</p>
+<label><input type="radio" name="q6" value="a">「全部要約して」と一言で指示する</label>
+<label><input type="radio" name="q6" value="b">まず全体構造を把握させ、次に具体的な箇所を指定して深掘りする</label>
+<label><input type="radio" name="q6" value="c">10ページずつ分割して順番に投入する</label>
+<label><input type="radio" name="q6" value="d">英語に翻訳してから入力する</label>
+<div class="ans" id="a6">正解: B。段階的なアプローチ(全体 → 個別)が、長文処理で最も精度の高い結果を得る方法です。</div>
+<button class="rb" onclick="document.getElementById('a6').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 05 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 長文分析を3パターンで実践する <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 構造化要約、矛盾検出、コード分析の3つの長文処理パターンを体験する</div>
+
+<h4>演習1: 長文テキストの構造化要約(10min)</h4>
+<a href="#" class="dl" onclick="downloadSampleReport();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプル長文レポート(.txt)</a>
+<p>上記をダウンロードしてClaudeに添付し、以下のプロンプトを送信してください。</p>
+<div class="prompt" id="p_s5h1">添付したレポートを分析してください。
+
+1. 全体の構造を箇条書きで示してください(どんな章/節があるか)
+2. 各章の要約を1〜2行で
+3. レポート全体の結論を3行で
+4. 読者にとって最も重要な数値データを表形式でまとめてください<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>演習2: 矛盾・不整合の検出(10min)</h4>
+<div class="prompt" id="p_s5h2">先ほどのレポートについて、以下の観点で検証してください。
+
+1. 数値データに矛盾はありませんか?(前半と後半で異なる数値が使われている等)
+2. 論理展開に飛躍がある箇所はありますか?
+3. 結論部分は、本文中のデータから十分に支持されていますか?
+4. 曖昧な表現(「多くの」「大幅に」等)で具体的数値が省略されている箇所を列挙してください
+
+各指摘に「該当箇所の引用」を必ず付けてください。<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+
+<h4>演習3: コード全体のアーキテクチャ説明(10min)</h4>
+<div class="prompt" id="p_s5h3">以下のコードベース全体を分析してください。
+
+```python
+# app.py
+from flask import Flask, request, jsonify
+from models import User, Product, Order
+from auth import require_auth, generate_token
+from database import db_session
+from cache import cache_response
+import logging
+
+app = Flask(__name__)
+logger = logging.getLogger(__name__)
+
+@app.route('/api/users', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    user = User(name=data['name'], email=data['email'])
+    db_session.add(user)
+    db_session.commit()
+    return jsonify(user.to_dict()), 201
+
+@app.route('/api/users/<int:user_id>')
+@require_auth
+@cache_response(timeout=300)
+def get_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return jsonify(user.to_dict())
+
+@app.route('/api/products')
+@cache_response(timeout=600)
+def list_products():
+    products = Product.query.all()
+    return jsonify([p.to_dict() for p in products])
+
+@app.route('/api/orders', methods=['POST'])
+@require_auth
+def create_order():
+    data = request.get_json()
+    user = User.query.get(data['user_id'])
+    product = Product.query.get(data['product_id'])
+    order = Order(user=user, product=product, quantity=data['quantity'])
+    order.total = product.price * data['quantity']
+    db_session.add(order)
+    db_session.commit()
+    logger.info(f"Order created: {order.id}")
+    return jsonify(order.to_dict()), 201
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(email=data['email']).first()
+    if user and user.check_password(data['password']):
+        token = generate_token(user.id)
+        return jsonify({'token': token})
+    return jsonify({'error': 'Invalid credentials'}), 401
+```
+
+以下を回答してください:
+1. このアプリケーションの全体アーキテクチャ(1段落)
+2. エンドポイント一覧(表形式: パス / メソッド / 認証 / キャッシュ / 機能)
+3. セキュリティ上の問題点(最低3つ)
+4. パフォーマンス改善の提案(最低2つ)
+5. テストを書くとしたら優先すべきエンドポイントとその理由<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" rel="noopener">Claude Models</a> -- コンテキストウィンドウの仕様</li>
+<li><a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" target="_blank" rel="noopener">Prompt Caching</a> -- 長文処理のコスト最適化(API利用時)</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン B (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review Hands-on B -- 25min</div><h2>復習ハンズオン B: 長文分析結果をArtifactsで可視化</h2>
+<p>Section 04のArtifactsと Section 05の長文処理を組み合わせます。分析結果をただテキストで受け取るのではなく、視覚的なレポートに仕上げるところまでを実践します。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 分析結果をHTMLダッシュボードにする <span class="hs-time">25min</span></div>
+<div class="hs-goal">成果物: サンプルレポートの分析結果をArtifactsでHTMLダッシュボード化したもの</div>
+
+<h4>手順</h4>
+<ol>
+<li>サンプル長文レポートをClaudeに添付し、要約を依頼(5min)</li>
+</ol>
+<div class="prompt" id="p_rB1">添付したレポートを分析し、以下の情報を抽出してください。
+- 主要KPI(数値データ)を全て列挙
+- 月別の推移があればデータとして整理
+- 課題と対策のペアを3つ以上
+
+この情報を次のステップでダッシュボード化するので、構造化して出力してください。<button class="cb" onclick="copyP('p_rB1')">コピー</button></div>
+
+<ol start="2">
+<li>抽出された情報をArtifactsでダッシュボード化(15min)</li>
+</ol>
+<div class="prompt" id="p_rB2">先ほど抽出した情報をもとに、HTMLダッシュボードをArtifactsで作成してください。
+
+要件:
+- KPIカード(上部に並べる、前月比の増減を矢印で表示)
+- 月別推移の棒グラフまたは折れ線グラフ(vanilla JSで)
+- 課題と対策のテーブル(影響度を色分け)
+- ダークテーマ(背景#0a0a0a)
+- 印刷にも対応(白背景に切り替わる@media print)
+
+外部ライブラリは使わないでください。<button class="cb" onclick="copyP('p_rB2')">コピー</button></div>
+
+<ol start="3">
+<li>ダッシュボードを改善指示で仕上げる(5min)
+  <ul>
+  <li>「KPIカードに前月比のパーセンテージを追加して」</li>
+  <li>「グラフにデータラベルを表示して」</li>
+  <li>「テーブルの影響度が高い行を赤で強調して」</li>
+  </ul>
+</li>
+</ol>
+
+<ul class="checklist">
+<li>レポートを分析し、KPIと月別データを抽出した</li>
+<li>抽出結果をHTMLダッシュボードに変換した</li>
+<li>少なくとも1回の改善指示で見た目を向上させた</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: Claude API入門 (60min: 講義30 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 60min(講義30 + ハンズオン30)</div><h2>Claude API入門 -- SDKで自動化への第一歩</h2>
+<img src="assets/api-concept.png" alt="API連携の概念" class="sec-hero-img">
+
+<h3>APIとは何か</h3>
+<p>API(Application Programming Interface)は、プログラムからClaudeに指示を送り、回答を受け取る仕組みです。claude.aiの画面を開かなくても、Pythonスクリプトやアプリケーションから直接Claudeの能力を呼び出せます。</p>
+<p>身近な例で言えば、自動販売機のボタン。お金を入れてボタンを押す(リクエスト)と飲み物が出てくる(レスポンス)。中の仕組みを知らなくても、決められた手順で使えば結果が得られる。APIも同じです。</p>
+
+<img src="assets/anthropic-console.png" alt="Claude Console API管理画面" class="sec-hero-img" style="max-width:640px;">
+<p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:8px;">Claude Console (console.anthropic.com) -- APIキーの管理とモニタリング</p>
+
+<h3>APIキーの取得方法</h3>
+<ol>
+<li><a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> にアクセスし、アカウントを作成(またはログイン)</li>
+<li>左サイドバーの「API Keys」をクリック</li>
+<li>「Create Key」をクリックし、キーに名前をつける(例: "learning-key")</li>
+<li>表示されたキー(sk-ant-...)をコピーし、安全な場所に保存</li>
+</ol>
+
+<div class="box warn"><div class="bt">注意: APIキーの管理</div>APIキーは絶対に他人に共有しない、GitHubにプッシュしない、チャットに貼り付けない。環境変数に設定するのが安全な方法です。漏えいした場合は即座にConsoleから無効化してください。</div>
+
+<h3>Python SDKの基本</h3>
+<pre class="code"><span class="cmt"># インストール</span>
+<span class="cmt"># pip install anthropic</span>
+
+<span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic(
+    api_key=<span class="str">"sk-ant-..."</span>  <span class="cmt"># 環境変数 ANTHROPIC_API_KEY を推奨</span>
+)
+
+message = client.messages.create(
+    model=<span class="str">"claude-sonnet-4-20250514"</span>,
+    max_tokens=<span class="str">1024</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Pythonでフィボナッチ数列を生成する関数を書いてください"</span>}
+    ]
+)
+
+<span class="kw">print</span>(message.content[0].text)</pre>
+
+<h3>TypeScript SDKの基本</h3>
+<pre class="code"><span class="cmt">// インストール</span>
+<span class="cmt">// npm install @anthropic-ai/sdk</span>
+
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> Anthropic({
+  apiKey: <span class="str">'sk-ant-...'</span>,  <span class="cmt">// 環境変数 ANTHROPIC_API_KEY を推奨</span>
+});
+
+<span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
+  model: <span class="str">'claude-sonnet-4-20250514'</span>,
+  max_tokens: <span class="str">1024</span>,
+  messages: [
+    { role: <span class="str">'user'</span>, content: <span class="str">'TypeScriptでフィボナッチ数列を生成する関数を書いてください'</span> }
+  ],
+});
+
+console.log(message.content[0].text);</pre>
+
+<h3>system prompt の設定</h3>
+<p>APIでは、Projectsのカスタム指示書に相当する「system prompt」をリクエストに含められます。</p>
+<pre class="code">message = client.messages.create(
+    model=<span class="str">"claude-sonnet-4-20250514"</span>,
+    max_tokens=<span class="str">1024</span>,
+    system=<span class="str">"あなたはシニアPythonエンジニアです。コードは型ヒント付きで書き、docstringを必ず含めてください。"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"ファイルを読み込んでCSVにパースする関数を書いてください"</span>}
+    ]
+)</pre>
+
+<h3>APIレスポンスの構造</h3>
+<p>Messages APIのレスポンスはJSON形式で返されます。実際のレスポンスを見ておくと、プログラムで結果を処理する際に迷いません。</p>
+<div class="prompt" id="p_s6_resp">{
+  "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "日本の首都は東京です。"
+    }
+  ],
+  "model": "claude-sonnet-4-20250514",
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 25,
+    "output_tokens": 12
+  }
+}</div>
+<p><code>content</code>配列にテキストブロックが格納され、<code>usage</code>で消費トークン数を確認できます。<code>stop_reason</code>が"end_turn"なら正常終了、"max_tokens"ならトークン上限に達して打ち切られたことを意味します。</p>
+
+<h3>エラーハンドリング</h3>
+<p>API呼び出しでは、ネットワーク障害やレート制限によるエラーが発生します。主要なエラーパターンと対処法を押さえておきましょう。</p>
+<table class="ct"><thead><tr><th>エラー</th><th>HTTPステータス</th><th>原因</th><th>対処法</th></tr></thead><tbody>
+<tr><td>rate_limit_error</td><td>429</td><td>短時間にリクエストを送りすぎた</td><td>指数バックオフでリトライ。Retry-Afterヘッダの秒数だけ待つ</td></tr>
+<tr><td>overloaded_error</td><td>529</td><td>API側の負荷が高い</td><td>数秒待ってリトライ。ピーク時間帯を避けるのも有効</td></tr>
+<tr><td>invalid_request_error</td><td>400</td><td>リクエスト形式の誤り(不正なモデル名、messagesの構造が不正など)</td><td>リクエストパラメータを見直す</td></tr>
+<tr><td>authentication_error</td><td>401</td><td>APIキーが無効、または未設定</td><td>キーの有効性をConsoleで確認する</td></tr>
+</tbody></table>
+<pre class="code"><span class="kw">import</span> anthropic
+<span class="kw">import</span> time
+
+<span class="kw">def</span> call_with_retry(client, max_retries=3, **kwargs):
+    <span class="str">"""指数バックオフ付きのAPI呼び出し"""</span>
+    <span class="kw">for</span> attempt <span class="kw">in</span> range(max_retries):
+        <span class="kw">try</span>:
+            <span class="kw">return</span> client.messages.create(**kwargs)
+        <span class="kw">except</span> anthropic.RateLimitError:
+            wait = 2 ** attempt  <span class="cmt"># 1秒、2秒、4秒...</span>
+            <span class="kw">print</span>(f<span class="str">"Rate limit hit. {wait}秒待機..."</span>)
+            time.sleep(wait)
+        <span class="kw">except</span> anthropic.APIError <span class="kw">as</span> e:
+            <span class="kw">print</span>(f<span class="str">"APIエラー: {e.status_code} {e.message}"</span>)
+            <span class="kw">raise</span>
+    <span class="kw">raise</span> Exception(<span class="str">"最大リトライ回数を超えました"</span>)</pre>
+
+<h3>system promptの実践的な設定例</h3>
+<p>system promptは単にトーンを変えるだけでなく、出力形式の制御やドメイン知識の注入にも使えます。</p>
+<pre class="code">message = client.messages.create(
+    model=<span class="str">"claude-sonnet-4-20250514"</span>,
+    max_tokens=<span class="str">2048</span>,
+    system=<span class="str">"""あなたは法人向けSaaS製品のテクニカルサポート担当です。
+
+回答ルール:
+- 原因の特定 → 解決手順 → 再発防止の順で構造化する
+- コマンドやコード例は必ずコードブロックで囲む
+- 解決手順は番号付きリストで示す
+- 推測で回答しない。不明な場合は「エンジニアチームに確認します」と回答する
+
+対応範囲外:
+- 料金・契約に関する質問(営業部に案内)
+- 個別のカスタマイズ開発の依頼(プロフェッショナルサービスに案内)"""</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"APIのレスポンスが急に遅くなりました。原因は何ですか?"</span>}
+    ]
+)</pre>
+
+<h3>ストリーミングレスポンス</h3>
+<p>長い回答を待たずに、生成されたテキストをリアルタイムに受け取る方法です。</p>
+<pre class="code"><span class="kw">with</span> client.messages.stream(
+    model=<span class="str">"claude-sonnet-4-20250514"</span>,
+    max_tokens=<span class="str">1024</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"日本の四季について800字で書いてください"</span>}]
+) <span class="kw">as</span> stream:
+    <span class="kw">for</span> text <span class="kw">in</span> stream.text_stream:
+        <span class="kw">print</span>(text, end=<span class="str">""</span>, flush=<span class="str">True</span>)</pre>
+
+<h3>コスト計算</h3>
+<table class="ct"><thead><tr><th>モデル</th><th>入力(1Mトークン)</th><th>出力(1Mトークン)</th><th>推奨用途</th></tr></thead><tbody>
+<tr><td>Claude Opus 4.6</td><td>$15</td><td>$75</td><td>複雑な推論、コード生成、分析</td></tr>
+<tr><td>Claude Sonnet 4.6</td><td>$3</td><td>$15</td><td>バランス型。日常業務の大半</td></tr>
+<tr><td>Claude Haiku 4.5</td><td>$0.80</td><td>$4</td><td>高速応答、分類、要約</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: コストを抑えるコツ</div>
+<ul>
+<li>開発・テスト中はHaikuかSonnetを使い、本番のみOpusに切り替え</li>
+<li>max_tokensを必要最小限に設定(1024で十分な場面が多い)</li>
+<li>Prompt Cachingを活用すると、同じsystem promptの再送コストを90%削減可能</li>
+</ul>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 06</h4>
+<div class="q"><p>Q7. Claude APIのsystem promptの役割として正しいものは?</p>
+<label><input type="radio" name="q7" value="a">APIキーを認証する</label>
+<label><input type="radio" name="q7" value="b">毎回の会話に共通する指示や役割を設定する(claude.ai Projectsのカスタム指示書に相当)</label>
+<label><input type="radio" name="q7" value="c">出力の最大トークン数を設定する</label>
+<label><input type="radio" name="q7" value="d">課金額の上限を設定する</label>
+<div class="ans" id="a7">正解: B。system promptはclaude.aiのProjectsにおけるカスタム指示書と同等の役割を持ち、AIの振る舞いの基盤を定めます。</div>
+<button class="rb" onclick="document.getElementById('a7').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 06 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: APIを叩いてみる <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: APIキー取得からPythonでの初呼び出し、system prompt設定、ストリーミングまでを体験する</div>
+
+<h4>演習1: APIキー取得(5min)</h4>
+<ol>
+<li><a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> にアクセスしてください</li>
+<li>アカウントを作成(またはログイン)してください</li>
+<li>左サイドバーの「API Keys」から新しいキーを作成してください</li>
+<li>環境変数に設定してください</li>
+</ol>
+<div class="prompt" id="p_s6h1"><span class="cmt"># macOS / Linux</span>
+export ANTHROPIC_API_KEY="sk-ant-xxxxxxxx"
+
+<span class="cmt"># Windows (PowerShell)</span>
+$env:ANTHROPIC_API_KEY="sk-ant-xxxxxxxx"<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+
+<h4>演習2: Pythonで最初のAPI呼び出し(10min)</h4>
+<div class="prompt" id="p_s6h2">import anthropic
+
+client = anthropic.Anthropic()  # 環境変数から自動取得
+
+message = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "日本の首都はどこですか? 1行で答えてください。"}
+    ]
+)
+
+print(message.content[0].text)
+print(f"入力トークン: {message.usage.input_tokens}")
+print(f"出力トークン: {message.usage.output_tokens}")<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+<ol>
+<li>上記のコードを <code>first_call.py</code> として保存してください</li>
+<li><code>pip install anthropic</code> を実行してください</li>
+<li><code>python first_call.py</code> を実行し、回答とトークン数が表示されることを確認してください</li>
+</ol>
+
+<h4>演習3: system promptでトーンを変える(10min)</h4>
+<div class="prompt" id="p_s6h3">import anthropic
+
+client = anthropic.Anthropic()
+
+# パターン1: フォーマルなアシスタント
+formal = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=256,
+    system="あなたは大企業の秘書です。敬語で丁寧に回答してください。",
+    messages=[{"role": "user", "content": "明日の天気を教えて"}]
+)
+
+# パターン2: カジュアルな友人
+casual = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=256,
+    system="あなたは友人です。タメ口でフランクに話してください。",
+    messages=[{"role": "user", "content": "明日の天気を教えて"}]
+)
+
+print("--- フォーマル ---")
+print(formal.content[0].text)
+print("\n--- カジュアル ---")
+print(casual.content[0].text)<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+
+<h4>演習4: ストリーミングで長文生成(5min)</h4>
+<div class="prompt" id="p_s6h4">import anthropic
+
+client = anthropic.Anthropic()
+
+with client.messages.stream(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Pythonの非同期処理(asyncio)について500字で解説してください"}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+
+print()  # 改行<button class="cb" onclick="copyP('p_s6h4')">コピー</button></div>
+
+<details><summary>TypeScript版のコードサンプル</summary><div class="inner">
+<pre class="code"><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> Anthropic();
+
+<span class="cmt">// 基本呼び出し</span>
+<span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
+  model: <span class="str">'claude-sonnet-4-20250514'</span>,
+  max_tokens: 1024,
+  system: <span class="str">'あなたはシニアTypeScriptエンジニアです。'</span>,
+  messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Zodでバリデーションスキーマを書いてください'</span> }],
+});
+console.log(message.content[0].text);
+
+<span class="cmt">// ストリーミング</span>
+<span class="kw">const</span> stream = client.messages.stream({
+  model: <span class="str">'claude-sonnet-4-20250514'</span>,
+  max_tokens: 1024,
+  messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Express.jsのミドルウェアパターンを解説して'</span> }],
+});
+<span class="kw">for await</span> (<span class="kw">const</span> event <span class="kw">of</span> stream) {
+  <span class="kw">if</span> (event.type === <span class="str">'content_block_delta'</span>) {
+    process.stdout.write(event.delta.text);
+  }
+}</pre>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/api/messages" target="_blank" rel="noopener">Messages API Reference</a></li>
+<li><a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> -- APIキー管理、使用量確認</li>
+<li><a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" target="_blank" rel="noopener">Prompt Caching</a> -- コスト最適化</li>
+<li><a href="https://github.com/anthropics/anthropic-sdk-python" target="_blank" rel="noopener">Python SDK (GitHub)</a></li>
+<li><a href="https://github.com/anthropics/anthropic-sdk-typescript" target="_blank" rel="noopener">TypeScript SDK (GitHub)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: セキュリティとデータの扱い (40min: 講義25 + ハンズオン15) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 40min(講義25 + ハンズオン15)</div><h2>セキュリティとデータの扱い</h2>
+<p>Claudeを業務で使う以上、「入力したデータはどこへ行くのか」「誰がアクセスできるのか」を把握しておく必要があります。プラン選定を誤ると、意図せず機密データがモデルの学習に使われるリスクがあります。</p>
+
+<h3>プラン別データポリシー比較</h3>
+<table class="ct"><thead><tr><th>項目</th><th>Free</th><th>Pro ($20/月)</th><th>Max ($100 or $200/月)</th><th>Team</th><th>Enterprise</th></tr></thead><tbody>
+<tr><td>データの学習利用</td><td>使われる可能性あり</td><td>学習に不使用</td><td>学習に不使用</td><td>学習に不使用</td><td>学習に不使用</td></tr>
+<tr><td>データ保持期間</td><td>最大90日</td><td>最大30日</td><td>最大30日</td><td>管理者が設定</td><td>カスタム</td></tr>
+<tr><td>利用量</td><td>制限あり(少)</td><td>5倍の利用量</td><td>20倍($100)/無制限($200)</td><td>チーム管理</td><td>カスタム</td></tr>
+<tr><td>Opus / Extended Thinking</td><td>制限あり</td><td>利用可能</td><td>優先アクセス</td><td>利用可能</td><td>利用可能</td></tr>
+<tr><td>SSO/SCIM</td><td>なし</td><td>なし</td><td>なし</td><td>あり</td><td>あり</td></tr>
+<tr><td>管理者コントロール</td><td>なし</td><td>なし</td><td>なし</td><td>あり</td><td>フルカスタム</td></tr>
+<tr><td>SLA</td><td>なし</td><td>なし</td><td>なし</td><td>あり</td><td>99.9%+</td></tr>
+<tr><td>リージョン指定</td><td>不可</td><td>不可</td><td>不可</td><td>不可</td><td>可能</td></tr>
+<tr><td>監査ログ</td><td>なし</td><td>なし</td><td>なし</td><td>基本的</td><td>詳細</td></tr>
+</tbody></table>
+<p>Max planは2つのティアがあります。$100/月プランはProの20倍の利用量で、Opusやextended thinkingを頻繁に使う個人ユーザーに向きます。$200/月プランは利用量が実質無制限で、Claudeを一日中使い倒すヘビーユーザー向けです。セキュリティ・管理機能はProと同等なので、組織管理が必要な場合はTeam以上が必要になります。</p>
+
+<div class="box warn"><div class="bt">最重要: Freeプランの扱い</div>Freeプランでは、入力データがモデルの改善(学習)に使われる可能性があります。業務上の機密情報、個人情報、未公開の財務データはFreeプランで扱ってはいけません。個人的な学習目的か、完全に公開されている情報に限定してください。</div>
+
+<h3>業務利用のためのプラン選定</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart TD
+  START["業務でClaudeを使いたい"] --> Q1{"扱うデータに<br/>機密情報を含む?"}
+  Q1 -->|No| Q2{"個人利用?<br/>チーム利用?"}
+  Q1 -->|Yes| Q3{"SSO/監査ログは<br/>必要?"}
+  Q2 -->|個人| PRO["Pro ($20/月)<br/>学習不使用を確保"]
+  Q2 -->|チーム| TEAM["Team<br/>管理者コントロール"]
+  Q3 -->|No| TEAM
+  Q3 -->|Yes| Q4{"SLA/リージョン指定<br/>は必要?"}
+  Q4 -->|No| TEAM
+  Q4 -->|Yes| ENT["Enterprise<br/>フルカスタム"]
+</pre><div class="caption">業務利用のプラン選定フローチャート</div></div>
+
+<details><summary>どのプランを選べばよいか? -- 判断フロー</summary><div class="inner">
+<p>利用目的と扱うデータの機密度で判断します。</p>
+<ol>
+<li>個人の学習や実験目的だけなら → Free で十分。ただし機密データは入れない</li>
+<li>業務で使うが機密データは扱わない → Pro ($20/月)。学習不使用が保証される</li>
+<li>一日中Claudeを使う、Opusを頻繁に使う → Max ($100 or $200/月)。利用量の上限を気にしなくて済む</li>
+<li>チームで共有し、管理者がアクセス制御やポリシー設定をしたい → Team。SSO対応で社員の一括管理が可能</li>
+<li>機密データを扱い、SLAやリージョン指定、詳細な監査ログが必要 → Enterprise。契約ベースで要件をカスタマイズ</li>
+</ol>
+<p>迷ったらProから始めるのが現実的です。利用量が足りなくなったらMaxに上げ、組織利用が増えたらTeamに移行する段階的アプローチが無駄のない選び方と言えます。</p>
+</div></details>
+
+<h3>データ分類の考え方</h3>
+<p>AIに入力するデータを以下の3段階で分類し、プランに応じた判断を行います。</p>
+<table class="ct"><thead><tr><th>分類</th><th>例</th><th>Free</th><th>Pro以上</th></tr></thead><tbody>
+<tr><td>公開情報</td><td>Webに公開済みの記事、一般的な質問</td><td>OK</td><td>OK</td></tr>
+<tr><td>社内限定情報</td><td>社内マニュアル、議事録、業務データ</td><td>NG</td><td>OK(匿名化推奨)</td></tr>
+<tr><td>機密/個人情報</td><td>個人情報、未公開財務、契約書原本</td><td>NG</td><td>要検討(Enterprise推奨)</td></tr>
+</tbody></table>
+
+<div class="quiz"><h4>理解度チェック: Section 07</h4>
+<div class="q"><p>Q8. Freeプランで社内の議事録をClaudeに入力することの問題点は?</p>
+<label><input type="radio" name="q8" value="a">回答精度が低くなる</label>
+<label><input type="radio" name="q8" value="b">入力データがモデル改善に使われる可能性があり、情報漏えいリスクがある</label>
+<label><input type="radio" name="q8" value="c">会話の保存ができない</label>
+<label><input type="radio" name="q8" value="d">英語でしか回答されなくなる</label>
+<div class="ans" id="a8">正解: B。Freeプランではデータが学習に利用される可能性があり、社内限定情報を入力すべきではありません。</div>
+<button class="rb" onclick="document.getElementById('a8').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 07 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: リスク判定シートを作成する <span class="hs-time">15min</span></div>
+<div class="hs-goal">目標: 自分の業務データについて、AIに入力して良いかどうかのリスク判定表を作成する</div>
+
+<ol>
+<li>下記のリスク判定シートテンプレートをダウンロードしてください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadRiskSheet();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>リスク判定シート(.md)</a>
+
+<ol start="2">
+<li>自分の業務で日常的に扱うデータを5つリストアップしてください</li>
+<li>各データについて以下を判定してください
+  <ul>
+  <li>データ分類(公開情報 / 社内限定 / 機密)</li>
+  <li>AI入力の可否(OK / 匿名化すればOK / NG)</li>
+  <li>必要なプラン(Free / Pro / Team / Enterprise)</li>
+  </ul>
+</li>
+<li>判定結果をClaudeに投げてレビューさせてください</li>
+</ol>
+<div class="prompt" id="p_s7h1">以下のデータ分類をレビューしてください。判定が甘い(リスクを見落としている)箇所があれば指摘してください。
+
+| データ | 分類 | AI入力可否 | 必要プラン |
+|--------|------|-----------|-----------|
+| (ここに自分のリストを貼り付け) |
+
+判定基準:
+- 公開情報: Webで誰でも閲覧可能
+- 社内限定: 社内でのみ共有、外部非公開
+- 機密: 個人情報、未公開財務、契約書原本<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">Anthropic Privacy Policy</a></li>
+<li><a href="https://support.anthropic.com/" target="_blank" rel="noopener">Anthropic サポート</a> -- プラン別FAQ</li>
+<li><a href="https://www.anthropic.com/enterprise" target="_blank" rel="noopener">Claude Enterprise</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: トレンドとモデル使い分け (20min: 講義のみ) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 20min(講義のみ)</div><h2>トレンドとモデル使い分け</h2>
+<p>Claudeは3つのモデルファミリーを提供しています。用途に合わせた使い分けが、品質とコストのバランスを決めます。</p>
+
+<h3>Claude モデルファミリー</h3>
+<table class="ct"><thead><tr><th>モデル</th><th>精度</th><th>速度</th><th>入力コスト</th><th>出力コスト</th><th>推奨用途</th></tr></thead><tbody>
+<tr><td>Opus 4.6</td><td>最高</td><td>遅い</td><td>$15/1M</td><td>$75/1M</td><td>複雑な推論、長文分析、コード生成</td></tr>
+<tr><td>Sonnet 4.6</td><td>高い</td><td>速い</td><td>$3/1M</td><td>$15/1M</td><td>日常業務の大半。バランス型</td></tr>
+<tr><td>Haiku 4.5</td><td>標準</td><td>最速</td><td>$0.80/1M</td><td>$4/1M</td><td>分類、要約、チャットボット</td></tr>
+</tbody></table>
+
+<h3>使い分けの基準</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart TD
+  START["どのモデルを使う?"] --> Q1{"タスクの複雑さは?"}
+  Q1 -->|"複雑な推論・分析"| OPUS["Opus 4.6<br/>品質最優先"]
+  Q1 -->|"標準的な業務"| Q2{"応答速度は重要?"}
+  Q1 -->|"単純な分類・要約"| HAIKU["Haiku 4.5<br/>高速・低コスト"]
+  Q2 -->|"速度優先"| SONNET["Sonnet 4.6<br/>速度と品質のバランス"]
+  Q2 -->|"品質優先"| OPUS
+</pre><div class="caption">モデル選択のフローチャート</div></div>
+
+<div class="box tip"><div class="bt">Tips: 開発ワークフローでの使い分け</div>
+<ul>
+<li>プロトタイプ段階 → Haikuで素早く試行錯誤</li>
+<li>本番実装 → Sonnetでバランスを取る</li>
+<li>最終品質チェック → Opusで精度を担保</li>
+</ul>
+</div>
+
+<h3>Claude Code の概要</h3>
+<p>Claude Codeは、ターミナル上で動作するAI開発アシスタントです。プロジェクトのコードベース全体を理解し、ファイルの作成・編集・実行・Git操作までを自律的に行います。本コース(C02)ではClaude Code自体は扱いません。C04「Claude Code完全ガイド」で詳しく学びます。</p>
+
+<h3>Claude Agent SDK の概要</h3>
+<p>Agent SDKは、Claudeを使った自律エージェントを構築するためのフレームワークです。ツール呼び出し(Function Calling)、マルチステップの推論、外部APIとの連携を組み合わせて、「判断して行動する」AIを作れます。こちらもC04以降で取り上げます。</p>
+
+<h3>今後の進化予測</h3>
+<ul>
+<li><strong>コンテキスト長のさらなる拡大</strong> -- Geminiが1Mトークンを先行。Claudeも同水準に到達する可能性が高い</li>
+<li><strong>マルチモーダル入出力</strong> -- 画像生成、音声入出力への対応が進むと見られる</li>
+<li><strong>エージェント統合</strong> -- MCP(Model Context Protocol)による外部ツール連携の標準化が加速</li>
+<li><strong>コスト低下</strong> -- Haikuクラスのモデルがさらに安価になり、大量処理の敷居が下がる</li>
+</ul>
+
+<div class="quiz"><h4>理解度チェック: Section 08</h4>
+<div class="q"><p>Q9. 大量の問い合わせメールを自動分類するタスクに最も適したモデルは?</p>
+<label><input type="radio" name="q9" value="a">Opus 4.6(最高品質)</label>
+<label><input type="radio" name="q9" value="b">Sonnet 4.6(バランス型)</label>
+<label><input type="radio" name="q9" value="c">Haiku 4.5(高速・低コスト)</label>
+<label><input type="radio" name="q9" value="d">すべて同じ結果になるのでどれでも良い</label>
+<div class="ans" id="a9">正解: C。単純な分類タスクは高速・低コストのHaikuで十分な精度が出ます。大量処理ではコスト差が顕著に効いてきます。</div>
+<button class="rb" onclick="document.getElementById('a9').style.display='block'">答えを見る</button></div></div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" rel="noopener">Claude Models</a> -- モデル仕様と価格</li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code Documentation</a></li>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol (MCP)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 09: 総合ハンズオン (60min: 講義10 + 実践50) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 60min(講義10 + 実践50)</div><h2>総合ハンズオン: 業務特化Claude環境を構築</h2>
+<p>ここまでのセクションで学んだProjects、Artifacts、API、セキュリティの知識を統合し、自分の業務に特化したClaude環境を構築します。Project + Artifacts + APIのうち2つ以上を組み合わせてください。</p>
+
+<div class="handson">
+<div class="hs-title">総合演習: 業務特化のClaude環境を完成させる <span class="hs-time">50min</span></div>
+<div class="hs-goal">成果物: 業務特化Claude環境(Project + Artifacts + API連携のうち2つ以上を統合)</div>
+
+<h4>Step 1: 業務の選定(5min)</h4>
+<p>以下の中から1つ選んでください(独自業務でも構いません)。</p>
+<ul>
+<li>カスタマーサポートの問い合わせ対応</li>
+<li>レポート/報告書の定期作成</li>
+<li>コードレビューの効率化</li>
+<li>社内ナレッジの検索・回答</li>
+<li>データ分析と可視化</li>
+</ul>
+<a href="#" class="dl" onclick="downloadDesignSheet();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Claude環境設計シート(.md)</a>
+
+<h4>Step 2: Project作成 + 指示書設定(10min)</h4>
+<ol>
+<li>claude.aiでProjectを新規作成してください</li>
+<li>Step 1で選んだ業務に合わせてカスタム指示書を作成してください</li>
+<li>以下のプロンプトでClaudeに指示書の叩き台を生成させると効率的です</li>
+</ol>
+<div class="prompt" id="p_s9h1">Claude Projectsのカスタム指示書を作成してください。
+
+業務: [選んだ業務を記入]
+目的: [この Project で実現したいこと]
+利用者: [誰が使うか]
+トーン: [丁寧語 / カジュアル / 技術的]
+
+以下の5要素を含めてください:
+1. 役割定義
+2. トーン指定
+3. 出力形式(200文字以内、箇条書き等)
+4. 参照ルール(ナレッジファイルを根拠にする)
+5. 禁止事項(少なくとも3つ)
+
+指示書は500〜800文字で作成してください。<button class="cb" onclick="copyP('p_s9h1')">コピー</button></div>
+
+<h4>Step 3: ナレッジ追加 + テスト(10min)</h4>
+<ol>
+<li>業務に関連するファイルを1〜3つアップロードしてください</li>
+<li>テスト質問を3つ送信し、回答品質を確認してください</li>
+<li>必要に応じて指示書を修正してください</li>
+</ol>
+
+<h4>Step 4: Artifactsでテンプレート/ダッシュボード作成(15min)</h4>
+<ol>
+<li>Projectの出力をArtifactsで視覚化してください
+  <ul>
+  <li>例: レポートテンプレートのHTML化</li>
+  <li>例: 分析結果のダッシュボード</li>
+  <li>例: 業務フローのMermaid図</li>
+  </ul>
+</li>
+<li>最低1回の改善指示で見た目を磨いてください</li>
+</ol>
+
+<h4>Step 5(任意): APIスクリプトで定型処理を自動化(10min)</h4>
+<p>Section 06で学んだAPIを使い、Projectの処理を自動化するスクリプトを書いてください。</p>
+<div class="prompt" id="p_s9h2">import anthropic
+
+client = anthropic.Anthropic()
+
+# 定型処理の例: 問い合わせメールの自動分類
+inquiries = [
+    "ログインできません。エラーコード401が出ます。",
+    "請求書のダウンロード方法を教えてください。",
+    "サービスの解約手続きをしたいのですが。",
+]
+
+for inquiry in inquiries:
+    message = client.messages.create(
+        model="claude-haiku-4-5-20250514",
+        max_tokens=256,
+        system="あなたはカスタマーサポートの分類担当です。問い合わせを以下のカテゴリに分類してください: 技術的問題 / 請求 / 解約 / その他。JSON形式で出力。",
+        messages=[{"role": "user", "content": inquiry}]
+    )
+    print(f"問い合わせ: {inquiry[:30]}...")
+    print(f"分類結果: {message.content[0].text}")
+    print("---")<button class="cb" onclick="copyP('p_s9h2')">コピー</button></div>
+
+<ul class="checklist">
+<li>業務を1つ選定した</li>
+<li>Projectを作成し、カスタム指示書を設定した</li>
+<li>ナレッジファイルを1つ以上追加した</li>
+<li>テスト質問で動作を確認した</li>
+<li>Artifactsで成果物を1つ以上生成した</li>
+<li>成果物を改善指示で1回以上改善した</li>
+<li>(任意) APIスクリプトを作成した</li>
+</ul>
+
+<details><summary>構築例: レポート自動生成環境</summary><div class="inner">
+<p>Project名: 「月次レポート作成」</p>
+<p>カスタム指示書: 「あなたは営業部のデータアナリストです。アップロードされた売上データに基づき、月次レポートを作成してください。数値は万円単位、グラフが必要な場合はArtifactsでHTMLダッシュボードを生成してください。」</p>
+<p>ナレッジ: 前月のレポートPDF、売上データCSV</p>
+<p>Artifacts活用: 月次ダッシュボード(KPIカード + 棒グラフ + トレンド分析)</p>
+<p>API活用: 毎月のCSVを自動送信して要約テキストを取得するPythonスクリプト</p>
+</div></details>
+</div>
+
+<div class="box tip"><div class="bt">Tips: 継続的に育てる</div>今日構築した環境は出発点です。週に1回、指示書の微調整とナレッジの追加を行うだけで回答品質が継続的に向上します。実際の業務で使いながら、期待と異なる回答があった都度メモしておき、定期的に指示書に反映させるサイクルを回してください。</div>
+
+<div class="quiz"><h4>最終チェック: Section 09</h4>
+<div class="q"><p>Q10. Claude環境を業務で継続的に改善するために最も効果的なアプローチは?</p>
+<label><input type="radio" name="q10" value="a">一度構築したら変更しない</label>
+<label><input type="radio" name="q10" value="b">毎日すべてを一から作り直す</label>
+<label><input type="radio" name="q10" value="c">期待と異なる回答をメモし、定期的にカスタム指示書とナレッジを更新する</label>
+<label><input type="radio" name="q10" value="d">モデルをOpusに固定して品質を担保する</label>
+<div class="ans" id="a10">正解: C。実際の利用で得たフィードバックを指示書に反映する継続的改善サイクルが、最も効果的なアプローチです。</div>
+<button class="rb" onclick="document.getElementById('a10').style.display='block'">答えを見る</button></div></div></div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C02 Claude基礎 claude.ai完全ガイド<br>
+  全9セクション + 復習2回 = 480分(8時間)<br>
+  次の推奨コース: C03 Cowork基礎 / C04 Claude Code完全ガイド
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadCustomInstructionTemplate(){const t=`# カスタム指示書テンプレート\n\nあなたは[部署名]の[役割]です。\n\n## 役割\n[具体的な役割の説明を記入してください]\n\n## 回答ルール\n- 丁寧語で回答すること\n- 回答は200文字以内で簡潔に\n- 手順がある場合は番号付きリストで示す\n- 回答の最後に「参照元: [ファイル名/該当箇所]」を付ける\n\n## トーン\n- 丁寧だが堅すぎない\n- 専門用語は平易に言い換える\n- 曖昧な回答は避け、具体的に\n\n## 出力形式\n- 基本は箇条書き\n- 手順は番号付きリスト\n- データ比較はテーブル形式\n\n## 参照ルール\n- ナレッジファイルに記載がある場合はそこから回答\n- ナレッジに記載がない場合は「この情報は登録されていません」と明示\n- 推測で回答しない\n\n## 禁止事項\n- ナレッジファイルに記載のない内容について推測で回答しない\n- 個人情報に関する質問には回答しない\n- 法的判断を伴う質問には回答しない\n- [業務固有の禁止事項をここに追加]\n\n## エスカレーション\n回答できない質問を受けた場合:\n「この質問については[担当者/担当部署]にお問い合わせください。連絡先: [メールアドレス]」と回答する。\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='カスタム指示書テンプレート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadRiskSheet(){const t=`# リスク判定シート\n\n## 評価者情報\n- 氏名:\n- 部署:\n- 評価日:\n\n## 使用するAIツール\n- ツール名: Claude\n- プラン: Free / Pro / Team / Enterprise\n- データ学習オプトアウト: あり / なし / 不明\n\n## リスク評価表\n\n| # | AIに入力するデータ | データ分類 | AI入力可否 | 必要プラン | 理由 |\n|---|-------------------|-----------|-----------|-----------|------|\n| 1 | | 公開/社内限定/機密 | OK/匿名化/NG | Free/Pro/Team/Ent | |\n| 2 | | 公開/社内限定/機密 | OK/匿名化/NG | Free/Pro/Team/Ent | |\n| 3 | | 公開/社内限定/機密 | OK/匿名化/NG | Free/Pro/Team/Ent | |\n| 4 | | 公開/社内限定/機密 | OK/匿名化/NG | Free/Pro/Team/Ent | |\n| 5 | | 公開/社内限定/機密 | OK/匿名化/NG | Free/Pro/Team/Ent | |\n\n## 判定基準\n- 公開情報: Webで誰でも閲覧可能な情報。Freeプランで使用可\n- 社内限定: 社内でのみ共有される情報。Pro以上が必要\n- 機密: 個人情報、未公開財務、契約書原本。Enterprise推奨\n\n## 総合評価\n- 推奨プラン:\n- 追加対策:\n- 承認者:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='リスク判定シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadDesignSheet(){const t=`# Claude環境設計シート\n\n## 基本情報\n- 環境名:\n- 作成者:\n- 作成日:\n- 対象業務:\n\n## 1. 業務要件\n- 業務名:\n- 現状の課題:\n- Claude導入で解決したいこと:\n- 主な利用者:\n\n## 2. Project設計\n### カスタム指示書\n（ここに指示書を記入、または別ファイルで管理）\n\n### ナレッジファイル一覧\n| # | ファイル名 | 内容 | 更新頻度 |\n|---|----------|------|----------|\n| 1 | | | |\n| 2 | | | |\n| 3 | | | |\n\n## 3. Artifacts活用計画\n- 生成する成果物の種類:\n  - [ ] HTMLダッシュボード\n  - [ ] Mermaid図(業務フロー等)\n  - [ ] レポートテンプレート\n  - [ ] その他:\n\n## 4. API連携(任意)\n- 自動化するタスク:\n- 使用モデル: Opus / Sonnet / Haiku\n- 呼び出し頻度: 日次 / 週次 / 月次 / 随時\n- 推定コスト:\n\n## 5. セキュリティ\n- 使用プラン: Free / Pro / Team / Enterprise\n- データ分類: 公開 / 社内限定 / 機密\n- 特記事項:\n\n## 6. テスト結果\n| # | テスト内容 | 結果 | 改善点 |\n|---|----------|------|--------|\n| 1 | | Pass/Fail | |\n| 2 | | Pass/Fail | |\n| 3 | | Pass/Fail | |\n\n## 7. 運用ルール\n- ナレッジ更新頻度:\n- 指示書レビュー頻度:\n- 問題発生時の連絡先:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Claude環境設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadSampleFAQ(){const t=`# 社内FAQ -- 情報システム部\n\nQ1. パスワードを忘れた場合はどうすればいいですか?\nA1. 以下の手順でパスワードをリセットしてください。\n1. ログイン画面の「パスワードを忘れた方」をクリック\n2. 登録済みのメールアドレスを入力\n3. 届いたメールのリンクからパスワードを再設定\n※ メールが届かない場合は情報システム部(内線: 2100)に連絡してください。\n\nQ2. VPN接続の設定方法を教えてください。\nA2. 以下の手順で設定してください。\n1. 「設定」アプリを開く\n2. 「ネットワーク」→「VPN」を選択\n3. サーバーアドレス: vpn.example.co.jp\n4. ユーザー名: 社員番号@example.co.jp\n5. パスワード: 社内メールと同じ\n※ 初回接続時は証明書のインストールが必要です。\n\nQ3. 新しいソフトウェアのインストール申請はどこからできますか?\nA3. 社内ポータル「IT申請」→「ソフトウェアインストール申請」から申請してください。\n- 申請から承認まで通常2〜3営業日\n- セキュリティ審査が必要なソフトは最大5営業日\n- フリーソフトでも必ず申請が必要です\n\nQ4. 社内Wi-Fiに接続できません。\nA4. 以下を確認してください。\n1. SSID「CORP-WiFi」を選択しているか\n2. パスワードは月初に更新されます。最新は社内掲示板を確認\n3. 端末のMACアドレスが登録済みか(未登録の場合はIT申請から登録申請)\n4. 上記を確認しても接続できない場合は内線2100まで\n\nQ5. 業務用スマートフォンを紛失した場合は?\nA5. 直ちに以下の対応を行ってください。\n1. 情報システム部(内線: 2100、時間外: 090-xxxx-xxxx)に電話\n2. リモートワイプ(遠隔データ消去)を依頼\n3. 所属部門長に報告\n4. 総務部にインシデント報告書を提出(24時間以内)\n※ 紛失から報告までの時間が長いほどリスクが高まります。\n\nQ6. 会議室の予約方法は?\nA6. Outlook予定表から予約できます。\n1. Outlookの予定表を開く\n2. 「新しい予定」→「会議室の追加」\n3. 使いたい会議室を選択\n4. 空き状況を確認して予約\n※ 30名以上の大会議室は1週間前までに総務部の承認が必要です。\n\nQ7. プリンターが動かない場合は?\nA7. 以下を順番に確認してください。\n1. プリンターの電源が入っているか\n2. 用紙切れ、トナー切れではないか\n3. PCとプリンターが同じネットワークにあるか\n4. 印刷キューに溜まったジョブを削除して再試行\n5. 上記で解決しない場合は内線2100まで\n\nQ8. 退職者のアカウント処理について教えてください。\nA8. 退職日の前営業日までに以下を実施してください。\n1. 部門長が「アカウント停止申請」を社内ポータルから提出\n2. 情報システム部が退職日にアカウントを無効化\n3. 共有フォルダのアクセス権を後任者に移管\n4. 業務用端末の回収(情シス立ち合い)\n※ 申請がない場合、退職後もアカウントが残存するリスクがあります。\n`;const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプルFAQデータ.txt';a.click();URL.revokeObjectURL(u);}
+
+function downloadSampleReport(){const t=`デジタルトランスフォーメーション推進部 四半期活動報告書\n\n報告期間: 2026年1月〜3月(第4四半期)\n作成日: 2026年4月1日\n作成者: デジタルトランスフォーメーション推進部\n\n1. エグゼクティブサマリー\n\n本四半期は、AI活用パイロットプロジェクトの本格展開、基幹システムのクラウド移行Phase 2の完了、\n全社DXリテラシー研修の実施を主要な成果として報告する。\n売上への直接貢献は限定的であるが、業務効率化による間接的なコスト削減効果は年間で約3,200万円と試算される。\n次四半期は、AIエージェントの業務適用拡大とデータ基盤の統合に注力する。\n\n2. 主要KPI\n\n| 指標 | 目標 | 実績 | 達成率 |\n|------|------|------|--------|\n| AI活用プロジェクト数 | 5件 | 7件 | 140% |\n| クラウド移行完了率 | 60% | 58% | 97% |\n| DX研修受講率 | 80% | 92% | 115% |\n| 業務効率化率(対象業務) | 25% | 31% | 124% |\n| IT投資ROI | 150% | 142% | 95% |\n| インシデント発生件数 | 0件 | 2件 | - |\n\n3. AI活用パイロットプロジェクト\n\n3.1 カスタマーサポート自動分類(1月開始)\n- 問い合わせメールの自動カテゴリ分類をAIで実施\n- 分類精度: 87%(目標90%に対して未達)\n- 対応時間: 平均12分→8分(33%短縮)\n- 月間処理件数: 約4,000件\n- 課題: 複合的な問い合わせ(複数カテゴリにまたがるもの)の精度が65%と低い\n- 対策: 分類ルールの追加定義、学習データの拡充を4月中に実施予定\n\n3.2 議事録自動生成(2月開始)\n- 会議の録音データから議事録を自動生成\n- 生成精度: 93%(人間の確認・修正は必要だが大幅に省力化)\n- 月間処理件数: 約120件\n- 効果: 議事録作成時間が平均45分→10分に短縮\n- 課題: 専門用語の認識精度にばらつき\n\n3.3 契約書レビュー支援(3月開始)\n- 法務部と連携し、契約書のリスク条項を自動検出\n- 検出精度: 78%(法務部員の最終確認は必須)\n- 月間処理件数: 約30件\n- 効果: レビュー初期スクリーニング時間を60%削減\n- 課題: 英文契約への対応が未実装\n\n4. クラウド移行 Phase 2\n\n4.1 進捗\n- 基幹システム12モジュールのうち7モジュールの移行が完了\n- 残り5モジュールは依存関係の整理に時間を要している\n- 当初計画では60%完了の目標に対し、58%でわずかに未達\n\n4.2 コスト\n- 予算: 8,500万円\n- 執行額: 7,800万円(91.8%消化)\n- 残り5モジュールの移行に追加で2,000万円が必要と見込まれる(当初見積もりから15%超過)\n\n4.3 課題\n- レガシーシステムとの互換性問題が3件発生\n- データ移行時の整合性チェックに想定以上の工数\n- 一部モジュールはベンダーのサポート終了に伴い再構築が必要\n\n5. DXリテラシー研修\n\n5.1 実施概要\n- 対象: 全社員(約800名)\n- 受講率: 92%(目標80%を大幅に上回る)\n- 研修内容: 生成AI基礎、プロンプト設計、セキュリティ、業務活用\n- 満足度: 4.2/5.0\n\n5.2 研修効果\n- 研修後のAIツール利用率: 68%(研修前: 23%)\n- 業務でAIを週1回以上活用: 45%\n- 「業務効率が向上した」と回答: 72%\n\n5.3 改善点\n- 「もっと実践的な演習がほしい」との声が多数\n- 部門別の活用事例集の作成を要望\n- 上級者向けコース(API活用等)の需要あり\n\n6. インシデント報告\n\n6.1 インシデント1: AIチャットボットの不適切回答(2月15日)\n- 概要: 社内向けAIチャットボットが、人事に関する質問に対して不正確な回答を生成\n- 影響: 社員3名が誤った情報に基づいて行動(後に修正)\n- 原因: ナレッジベースの更新が3ヶ月遅れていた\n- 対策: ナレッジ更新の月次自動化を実施、人事関連質問は人事部にエスカレーションするルールを追加\n\n6.2 インシデント2: クラウド移行時のデータ不整合(3月8日)\n- 概要: 会計モジュール移行時に、12件の取引データに数値の不整合が発生\n- 影響: 月次決算に1日の遅延\n- 原因: 移行スクリプトの通貨変換処理にバグ\n- 対策: 移行後のデータ検証プロセスを強化、全データの再検証を完了\n\n7. 次四半期の計画\n\n7.1 重点施策\n1. AIエージェントの業務適用拡大(営業部門、マーケティング部門)\n2. クラウド移行Phase 2の完了(残り5モジュール)\n3. データ基盤の統合(部門間データサイロの解消)\n4. 上級者向けDX研修の設計・実施\n\n7.2 予算要求\n- AI関連: 4,500万円(前四半期比+500万円)\n- クラウド移行: 2,000万円(追加分)\n- 研修: 800万円\n- 合計: 7,300万円\n\n7.3 リスク\n- クラウド移行の追加コストが経営会議の承認を得られない可能性\n- AI人材の採用市場が逼迫(3名の採用目標に対し、応募が不足)\n- 海外拠点への展開スケジュールが未確定\n\n8. 総括\n\n本四半期はAI活用の実運用フェーズへの移行が進み、具体的な成果が数値で見えてきた。\n一方で、クラウド移行のコスト超過と2件のインシデントは今後の課題として真摯に受け止める。\n次四半期は「AIを使える組織」から「AIで成果を出す組織」への転換を目指し、\n営業・マーケティング部門への展開を加速させる。\n\n以上\n`;const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプル長文レポート.txt';a.click();URL.revokeObjectURL(u);}
+
+function downloadSampleCSV(){const t=`月,製品カテゴリ,売上(万円),新規顧客数,既存顧客売上比率(%),解約数\n2026-01,SaaS A,520,45,68,12\n2026-01,SaaS B,180,22,72,5\n2026-01,コンサルティング,300,8,85,1\n2026-02,SaaS A,490,38,70,15\n2026-02,SaaS B,195,25,69,4\n2026-02,コンサルティング,280,6,88,2\n2026-03,SaaS A,610,55,65,8\n2026-03,SaaS B,210,30,71,3\n2026-03,コンサルティング,350,12,82,0\n2026-04,SaaS A,580,48,67,10\n2026-04,SaaS B,175,20,74,7\n2026-04,コンサルティング,320,9,86,1\n`;const b=new Blob([t],{type:'text/csv'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプル売上データ.csv';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

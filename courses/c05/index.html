@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C05 GitHub Copilot基礎 - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 Copilotとは</a><a href="#s2">02 補完</a><a href="#s3">03 Chat</a><a href="#rA">Review A</a><a href="#s4">04 Inline</a><a href="#s5">05 Comment</a><a href="#rB">Review B</a><a href="#s6">06 Test</a><a href="#s7">07 Security</a><a href="#s8">08 Trend</a><a href="#s9">09 Final</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 05 / Layer 1 -- ツール基礎</div>
+  <h1><span>GitHub Copilot基礎</span></h1>
+  <p class="lead">GitHub CopilotはIDE上でAIがコードを提案する最もポピュラーなAI開発ツールです。心理的ハードルの低い入口から始めて、コメントドリブン開発、テスト自動生成まで。「こうやると、こう返ってくる」を体で覚える因果関係体験型のコースです。</p>
+  <div class="meta"><span class="tag">初級-中級</span><span class="tag">約8時間(480分)</span><span class="tag">9 Sections + 2 Review</span><span class="tag">ハンズオン比率 61%</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">GitHub Copilotとは <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s2">コード補完 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s3">Copilot Chat <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li class="review-item"><a href="#rA">復習A -- 補完+Chatで小機能実装 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s4">インラインチャット <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s5">コメントドリブン開発 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li class="review-item"><a href="#rB">復習B -- コメント設計から実装まで <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s6">テスト生成とリファクタリング <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s7">セキュリティとガバナンス <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">40min</span></a></li>
+  <li><a href="#s8">トレンド <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">20min</span></a></li>
+  <li><a href="#s9">総合ハンズオン: CLIツール完成 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">75min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: GitHub Copilotとは (45min: 講義30 + ハンズオン15) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 45min(講義30 + ハンズオン15)</div><h2>GitHub Copilotとは</h2>
+
+<img src="assets/copilot-page.png" alt="GitHub Copilot公式ページ" class="sec-hero-img" style="max-width:640px;">
+<p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:8px;">GitHub Copilot公式ページ。個人開発者からEnterprise向けまで幅広いプランを提供している</p>
+
+<h3>概要</h3>
+<p>GitHub CopilotはGitHubとMicrosoftが提供するAIコード補完ツールです。エディタ上で書いているコードの文脈を読み取り、次に書くべきコードをリアルタイムに提案してくれます。2021年のテクニカルプレビューから始まり、現在はプロの開発者にとって日常ツールの地位を確立しました。</p>
+
+<h3>仕組み</h3>
+<p>Copilotはコードの文脈を集めてLLMに送り、次に来るコードを予測します。文脈として使われるのは、現在開いているファイルのカーソル周辺コード、エディタで開いている他のタブ、隣接するファイル、そしてコメントです。これらの情報を組み合わせて、可能な限り意図に沿ったコードを生成しようとします。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["現在のファイル<br/>(カーソル位置)"] --> D["Copilot LLM"]
+  B["開いているタブ<br/>(隣接ファイル)"] --> D
+  C["コメント<br/>(自然言語の意図)"] --> D
+  D --> E["コード提案<br/>(ゴーストテキスト)"]
+  E --> F["Tab: 受入れ"]
+  E --> G["Esc: 拒否"]
+</pre><div class="caption">Copilotの基本動作フロー。複数のコンテキストからコード提案を生成する</div></div>
+
+<h3>プラン比較</h3>
+<table class="ct"><thead><tr><th>プラン</th><th>価格</th><th>補完</th><th>Chat</th><th>特徴</th></tr></thead><tbody>
+<tr><td>Free</td><td>$0</td><td>月2,000回</td><td>月50回</td><td>個人利用の入口。GitHubアカウントがあればすぐ使える</td></tr>
+<tr><td>Pro</td><td>$10/月</td><td>無制限</td><td>無制限</td><td>個人開発者の標準。Agent Mode対応</td></tr>
+<tr><td>Business</td><td>$19/月</td><td>無制限</td><td>無制限</td><td>組織管理、ポリシー設定、IP補償</td></tr>
+<tr><td>Enterprise</td><td>$39/月</td><td>無制限</td><td>無制限</td><td>全機能。カスタムモデル、Bing検索統合</td></tr>
+</tbody></table>
+
+<h3>対応IDE</h3>
+<p>Copilotが使えるIDEは幅広く揃っています。</p>
+<ul>
+  <li><strong>VS Code</strong> -- 最も機能が充実。Chat、Inline Chat、Editsすべて対応</li>
+  <li><strong>JetBrains IDE</strong> -- IntelliJ、PyCharm、WebStorm等。Chat対応済み</li>
+  <li><strong>Neovim</strong> -- インラインサジェスト対応</li>
+  <li><strong>Visual Studio</strong> -- .NET開発者向け</li>
+  <li><strong>Xcode</strong> -- Swift/Objective-C開発向け</li>
+</ul>
+
+<h3>インストールと認証</h3>
+<p>VS Codeでの導入は2ステップで完了します。拡張機能マーケットプレイスで「GitHub Copilot」を検索してインストールし、GitHubアカウントで認証するだけです。認証が完了するとステータスバーにCopilotのアイコンが表示され、コード補完が動き始めます。</p>
+
+<h3>Freeプランの制限事項(詳細)</h3>
+<table class="ct"><thead><tr><th>機能</th><th>Freeプランの制限</th><th>Pro以上</th></tr></thead><tbody>
+<tr><td>コード補完</td><td>月2,000回まで(超過後は翌月までリセット待ち)</td><td>無制限</td></tr>
+<tr><td>Copilot Chat</td><td>月50メッセージまで</td><td>無制限</td></tr>
+<tr><td>Copilot Edits</td><td>利用不可</td><td>利用可</td></tr>
+<tr><td>Agent Mode</td><td>利用不可</td><td>Pro以上で利用可</td></tr>
+<tr><td>モデル選択</td><td>デフォルトモデルのみ</td><td>GPT-4o、Claude Sonnet等を選択可</td></tr>
+<tr><td>パブリックコードフィルター</td><td>有効(変更不可)</td><td>管理者が設定可</td></tr>
+</tbody></table>
+<p>1日あたりに換算すると約66回の補完と1.6回のChat。「触ってみる」には十分ですが、終日コーディングする使い方だと半日持ちません。業務利用を検討するなら、Free期間で機能を確認してからProに移行する流れが合理的です。</p>
+
+<div class="box tip"><div class="bt">Tips: GitHub Education</div>学生はGitHub Education経由で無料でPro相当の機能を使えます。教育機関のメールアドレスがあれば申請可能です。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. Copilotがコード提案の精度を高めるために参照するコンテキストとして正しくないものはどれですか?</p>
+<label><input type="radio" name="q1" value="a">現在開いているファイルのカーソル周辺コード</label>
+<label><input type="radio" name="q1" value="b">エディタで開いている他のタブのコード</label>
+<label><input type="radio" name="q1" value="c">GitHubリポジトリの全コミット履歴</label>
+<label><input type="radio" name="q1" value="d">ファイル内のコメント</label>
+<div class="ans" id="a1">正解: C。Copilotはエディタで開いているファイルとコメントをコンテキストとして使いますが、Gitの全履歴を走査するわけではありません。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 01 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: セットアップと初めてのサジェスト <span class="hs-time">15min</span></div>
+<div class="hs-goal">目標: Copilot拡張をインストールし、最初のコード提案を体験する</div>
+
+<h4>Step 1: VS Code拡張のインストール(3min)</h4>
+<ol>
+<li>VS Codeの拡張機能パネルを開きます(Ctrl+Shift+X / Cmd+Shift+X)</li>
+<li>検索欄に「GitHub Copilot」と入力してください</li>
+<li>「GitHub Copilot」と「GitHub Copilot Chat」の2つをインストールします</li>
+</ol>
+
+<h4>Step 2: GitHubアカウント認証(3min)</h4>
+<ol>
+<li>インストール後、右下に認証を求める通知が表示されます</li>
+<li>「Sign in to GitHub」をクリックし、ブラウザで認証を完了してください</li>
+<li>ステータスバーにCopilotアイコンが表示されれば成功です</li>
+</ol>
+
+<h4>Step 3: 初めてのサジェスト(4min)</h4>
+<ol>
+<li>新規ファイルを作成し、言語モードを「JavaScript」に設定してください</li>
+<li>以下のコードを入力します</li>
+</ol>
+<div class="prompt" id="p_s1h1">function add(a, b) {<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+<p>灰色のゴーストテキストが表示されたら、それがCopilotの提案です。Tabキーで受け入れてください。</p>
+
+<h4>Step 4: 受入れと拒否の練習(5min)</h4>
+<ol>
+<li>以下の関数名を1つずつ入力し、サジェストを確認してください</li>
+</ol>
+<div class="prompt" id="p_s1h2">function subtract(a, b) {
+function multiply(a, b) {
+function divide(a, b) {
+function isEven(n) {
+function reverseString(str) {<button class="cb" onclick="copyP('p_s1h2')">コピー</button></div>
+<ul>
+<li>Tabで受け入れ、Escで拒否を繰り返し、操作の感覚をつかんでください</li>
+<li>5回以上の受入れ/拒否を体験することが目標です</li>
+</ul>
+
+<details><summary>サジェストが表示されない場合</summary><div class="inner">
+<p>ステータスバーのCopilotアイコンを確認してください。スラッシュの入ったアイコンは無効状態です。アイコンをクリックして「Enable Globally」を選択します。それでも表示されない場合はVS Codeを再起動してみてください。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot公式ページ</a></li>
+<li><a href="https://docs.github.com/en/copilot" target="_blank" rel="noopener">GitHub Copilot Documentation</a></li>
+<li><a href="https://docs.github.com/en/copilot/managing-copilot/configure-personal-settings/installing-the-github-copilot-extension-in-your-environment" target="_blank" rel="noopener">VS Code拡張インストールガイド</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: コード補完 (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 50min(講義20 + ハンズオン30)</div><h2>コード補完</h2>
+<img src="assets/copilot-suggest.png" alt="Copilotのインラインサジェスト" class="sec-hero-img">
+
+<h3>インラインサジェストの仕組み</h3>
+<p>コードを入力すると、Copilotが灰色のゴーストテキストとして次のコードを提案します。これがインラインサジェストです。提案はリアルタイムで変化し、入力内容に応じて候補が更新されます。</p>
+
+<h3>キー操作</h3>
+<table class="ct"><thead><tr><th>操作</th><th>Windows / Linux</th><th>macOS</th><th>説明</th></tr></thead><tbody>
+<tr><td>受入れ</td><td>Tab</td><td>Tab</td><td>提案全体を受け入れる</td></tr>
+<tr><td>拒否</td><td>Esc</td><td>Esc</td><td>提案を破棄する</td></tr>
+<tr><td>次の候補</td><td>Alt + ]</td><td>Option + ]</td><td>別の提案候補に切り替え</td></tr>
+<tr><td>前の候補</td><td>Alt + [</td><td>Option + [</td><td>1つ前の候補に戻る</td></tr>
+<tr><td>単語単位受入れ</td><td>Ctrl + →</td><td>Cmd + →</td><td>提案を1単語ずつ受け入れる</td></tr>
+</tbody></table>
+
+<h3>サジェスト品質を上げるコツ</h3>
+<ul>
+<li><strong>関連ファイルを開いておく</strong> -- Copilotは開いているタブを文脈として使います。型定義ファイルやユーティリティファイルを開いておくだけで精度が上がります</li>
+<li><strong>変数名・関数名を説明的にする</strong> -- <code>data</code>より<code>userProfiles</code>、<code>fn</code>より<code>calculateTotalPrice</code>のように命名すると、Copilotが意図を正確に拾えます</li>
+<li><strong>コメントを先に書く</strong> -- 日本語でも英語でも構いません。次のセクションで詳しく扱います</li>
+<li><strong>型定義を書く</strong> -- TypeScriptの型情報は最も強力な文脈になります。interfaceやtype aliasを先に定義しておくと、実装の補完精度が格段に上がります</li>
+</ul>
+
+<h3>受入れ/拒否の判断基準</h3>
+<p>Copilotの提案を無条件に受け入れるのは危険です。以下の3点を毎回確認する習慣をつけてください。</p>
+<ol>
+<li><strong>ロジックは正しいか</strong> -- 提案されたアルゴリズムが意図した動作をするか</li>
+<li><strong>セキュリティリスクはないか</strong> -- ハードコードされたシークレット、SQLインジェクション、XSSの可能性</li>
+<li><strong>コーディング規約に合っているか</strong> -- チームのルールに反していないか</li>
+</ol>
+
+<h3>補完が効きやすいパターンと効きにくいパターン</h3>
+<div class="cols">
+<div class="col-card"><h4>効きやすい(高精度)</h4>
+<ul>
+<li>定型的なCRUD操作</li>
+<li>標準的なアルゴリズム(ソート、検索、変換)</li>
+<li>ライブラリのよくある使い方(Express、React等)</li>
+<li>テストコード(関数名とimportから推測しやすい)</li>
+<li>TypeScriptで型定義がある場合</li>
+<li>コメントで意図を明示した直後のコード</li>
+</ul>
+</div>
+<div class="col-card"><h4>効きにくい(低精度)</h4>
+<ul>
+<li>社内独自のビジネスロジック</li>
+<li>外部APIの固有パラメータ(ドキュメント未公開の場合)</li>
+<li>複雑な状態管理(条件が5つ以上絡む分岐)</li>
+<li>データベースのスキーマ固有のクエリ</li>
+<li>型のないJavaScriptで曖昧な変数名のコード</li>
+<li>プロジェクト固有の規約(社内命名規則など)</li>
+</ul>
+</div>
+</div>
+
+<h3>型情報が補完精度に与える影響</h3>
+<p>TypeScriptの型定義はCopilotにとって最も確実な文脈情報です。同じ機能でも、型の有無で提案の精度が変わります。</p>
+<div class="cols">
+<div class="col-card"><h4>JavaScript(型なし)</h4>
+<div class="prompt" id="p_s2_js">// 何が返るか曖昧。Copilotも推測に頼る
+function getUser(id) {<button class="cb" onclick="copyP('p_s2_js')">コピー</button></div>
+<p style="font-size:13px;color:var(--text-muted);">引数の型も戻り値の型もわからないため、Copilotは一般的なfetchパターンを提案しがち。実際のデータ構造と合わない場合が多い。</p>
+</div>
+<div class="col-card"><h4>TypeScript(型あり)</h4>
+<div class="prompt" id="p_s2_ts">interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+}
+
+async function getUser(id: number): Promise&lt;User&gt; {<button class="cb" onclick="copyP('p_s2_ts')">コピー</button></div>
+<p style="font-size:13px;color:var(--text-muted);">引数と戻り値の型が明確なため、Copilotはfetch後のレスポンスの型変換やエラーハンドリングまで正確に提案できる。</p>
+</div>
+</div>
+
+<div class="box warn"><div class="bt">注意: Copilotは「それっぽいコード」を生成する</div>LLMの特性上、文法的に正しいが論理的に間違っているコードを提案することがあります。特にエッジケースの処理や、ビジネスロジック固有の条件分岐で間違いが起きやすいため、受け入れた後のレビューは必須です。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 02</h4>
+<div class="q"><p>Q2. Copilotのサジェスト品質を上げる方法として最も効果的なのはどれですか?</p>
+<label><input type="radio" name="q2" value="a">コードをできるだけ短く書く</label>
+<label><input type="radio" name="q2" value="b">関連ファイルを閉じて現在のファイルだけに集中させる</label>
+<label><input type="radio" name="q2" value="c">説明的な変数名を使い、型定義や関連ファイルを開いておく</label>
+<label><input type="radio" name="q2" value="d">サジェストを常にすべて受け入れる</label>
+<div class="ans" id="a2">正解: C。Copilotは開いているファイルの文脈や型情報を使って提案の精度を上げます。説明的な命名と型定義が最も効果的です。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 02 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: コード補完を使いこなす <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: Tab受入れ、候補切替、単語単位受入れなど、補完の操作パターンを体で覚える</div>
+
+<h4>演習1: 関数名だけ書いて本体を補完させる(5min)</h4>
+<p>新規JavaScriptファイルを作成し、以下の関数シグネチャだけ入力してください。中身をCopilotに任せます。</p>
+<div class="prompt" id="p_s2h1">function isPalindrome(str) {
+
+function fibonacci(n) {
+
+function flatten(arr) {<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>演習2: TypeScript型定義から実装を補完(5min)</h4>
+<div class="prompt" id="p_s2h2">interface User {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  isActive: boolean;
+}
+
+// この下に関数を書き始めると、型に基づいた補完が得られます
+function filterActiveUsers(users: User[]): User[] {<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+
+<h4>演習3: 配列操作の補完(5min)</h4>
+<div class="prompt" id="p_s2h3">const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// 偶数だけ抽出
+const evens = numbers.filter(
+
+// 各要素を2倍にする
+const doubled = numbers.map(
+
+// 合計を求める
+const sum = numbers.reduce(<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<h4>演習4: API呼び出しコードの補完(5min)</h4>
+<div class="prompt" id="p_s2h4">// JSONPlaceholderからユーザーリストを取得する
+async function fetchUsers() {<button class="cb" onclick="copyP('p_s2h4')">コピー</button></div>
+<p>fetch、try-catch、レスポンスの型変換まで一気に補完されることを確認してください。</p>
+
+<h4>演習5: 候補の切り替え(5min)</h4>
+<ol>
+<li>以下のコードを入力してサジェストを表示させます</li>
+<li>Alt+] (Option+]) で別の候補に切り替えてください</li>
+<li>3つ以上の候補を確認し、最も適切なものをTabで受け入れます</li>
+</ol>
+<div class="prompt" id="p_s2h5">function sortByKey(arr, key) {<button class="cb" onclick="copyP('p_s2h5')">コピー</button></div>
+
+<h4>演習6: 単語単位受入れ(5min)</h4>
+<ol>
+<li>以下を入力してサジェストを表示させます</li>
+<li>Tab全体受入れではなく、Ctrl+→ (Cmd+→)で1単語ずつ受け入れてください</li>
+<li>途中で不要な部分をスキップし、次の行の補完に切り替えます</li>
+</ol>
+<div class="prompt" id="p_s2h6">// メールアドレスの形式を検証する関数
+function validateEmail(email) {<button class="cb" onclick="copyP('p_s2h6')">コピー</button></div>
+
+<details><summary>各演習のポイント</summary><div class="inner">
+<p>演習1では、関数名が説明的であるほどCopilotの提案精度が上がることを実感できるはずです。演習2のTypeScript型定義は、Copilotに最も影響を与えるコンテキストです。演習5の候補切替は、1つ目の提案が最善とは限らないことを体験する演習になっています。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.github.com/en/copilot/using-github-copilot/getting-code-suggestions-in-your-ide-with-github-copilot" target="_blank" rel="noopener">Getting code suggestions in your IDE (GitHub Docs)</a></li>
+<li><a href="https://github.blog/developer-skills/github/how-to-use-github-copilot-in-your-ide-tips-tricks-and-best-practices/" target="_blank" rel="noopener">How to use Copilot: Tips, tricks, and best practices (GitHub Blog)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: Copilot Chat (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 50min(講義20 + ハンズオン30)</div><h2>Copilot Chat</h2>
+
+<h3>Copilot Chatとは</h3>
+<p>Copilot Chatは、VS Codeのサイドパネルで対話形式のコード支援を受けられる機能です。インラインサジェストが「次の1行」の予測なら、Chatは「まとまった質問への回答」を担当します。コードの説明、リファクタリング提案、エラー解析、テスト生成など、開発の様々な場面で活躍します。</p>
+
+<h3>スラッシュコマンド</h3>
+<table class="ct"><thead><tr><th>コマンド</th><th>機能</th><th>使いどころ</th></tr></thead><tbody>
+<tr><td>/explain</td><td>コードの説明</td><td>読み解けないコードに遭遇したとき</td></tr>
+<tr><td>/fix</td><td>バグ修正</td><td>エラーの原因がわからないとき</td></tr>
+<tr><td>/tests</td><td>テスト生成</td><td>既存コードにテストを追加したいとき</td></tr>
+<tr><td>/doc</td><td>ドキュメント生成</td><td>JSDoc、docstringを自動生成</td></tr>
+<tr><td>/new</td><td>新規コード生成</td><td>スキャフォールディング</td></tr>
+</tbody></table>
+
+<h3>@参照</h3>
+<table class="ct"><thead><tr><th>参照</th><th>対象</th><th>用途</th></tr></thead><tbody>
+<tr><td>@workspace</td><td>プロジェクト全体</td><td>「このプロジェクトの構造を教えて」「エントリポイントは?」</td></tr>
+<tr><td>@terminal</td><td>ターミナル出力</td><td>「直前のエラーを解説して」</td></tr>
+<tr><td>@vscode</td><td>VS Code設定</td><td>「この設定の意味は?」「拡張機能のおすすめは?」</td></tr>
+</tbody></table>
+
+<h3>ChatとInline Chatの使い分け</h3>
+<table class="ct"><thead><tr><th>観点</th><th>Copilot Chat(サイドパネル)</th><th>Inline Chat(Ctrl+I)</th></tr></thead><tbody>
+<tr><td>起動方法</td><td>サイドバーのChatアイコン</td><td>コード上でCtrl+I</td></tr>
+<tr><td>対話の長さ</td><td>複数ターンの対話向き</td><td>1回の指示で完結</td></tr>
+<tr><td>コード変更</td><td>回答をコピーして手動適用</td><td>差分プレビューで直接適用</td></tr>
+<tr><td>適した場面</td><td>調査、学習、設計相談</td><td>部分修正、変換、コメント追加</td></tr>
+</tbody></table>
+
+<h3>@workspaceとコード選択の違い</h3>
+<p>Copilot Chatに質問する方法は大きく2つあります。使い分けを誤ると、欲しい回答が得られません。</p>
+<table class="ct"><thead><tr><th>方法</th><th>参照範囲</th><th>向いている質問</th><th>注意点</th></tr></thead><tbody>
+<tr><td>@workspace で質問</td><td>プロジェクト全体のファイル構造・主要コード</td><td>「エントリポイントはどこ?」「このプロジェクトの依存関係を教えて」</td><td>全ファイルを読むわけではない。インデックス化された情報に基づく</td></tr>
+<tr><td>コードを選択して質問</td><td>選択した範囲 + 同ファイルの文脈</td><td>「この関数のバグを見つけて」「このロジックを説明して」</td><td>選択範囲外の依存関係は考慮されにくい</td></tr>
+</tbody></table>
+<p>プロジェクト全体に関わる質問なら@workspace。特定コードに関する質問ならコード選択。混ぜて使うことも可能で、「@workspace この関数はどこから呼ばれていますか?」のように@workspaceとコード参照を組み合わせる方法が最も精度が高くなります。</p>
+
+<h3>Copilot ChatのModel選択</h3>
+<p>Proプラン以上では、Chatで使用するAIモデルを切り替えられます。Chatウィンドウ下部のモデル名をクリックすると選択肢が表示されます。</p>
+<table class="ct"><thead><tr><th>モデル</th><th>特徴</th><th>向いている場面</th></tr></thead><tbody>
+<tr><td>GPT-4o</td><td>高速、バランスが良い</td><td>日常のコード質問、リファクタリング提案</td></tr>
+<tr><td>Claude Sonnet 4</td><td>長文脈に強い、コード理解が深い</td><td>大きなコードベースの分析、複雑なロジックの説明</td></tr>
+<tr><td>Gemini 2.5 Pro</td><td>マルチモーダル対応</td><td>画像を含む質問、長いドキュメントの分析</td></tr>
+<tr><td>o4-mini</td><td>推論特化(思考プロセスを可視化)</td><td>アルゴリズム設計、数学的な問題</td></tr>
+</tbody></table>
+<p>モデルごとに得意分野が異なるため、タスクに応じて使い分けるのが理想です。ただし、大半の開発タスクはGPT-4oで十分対応できるので、まずはデフォルトで使い、不満を感じた場面で切り替えを試す程度の運用で問題ありません。</p>
+
+<div class="box tip"><div class="bt">Tips: Chat履歴の活用</div>Copilot Chatの会話はセッション内で文脈が保持されます。「先ほどの関数を」という指示が通るので、段階的にコードを洗練させるワークフローに向いています。新しいトピックに移るときは「+」で新しいスレッドを開始してください。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 03</h4>
+<div class="q"><p>Q3. @workspaceを使った質問の特徴として正しいのはどれですか?</p>
+<label><input type="radio" name="q3" value="a">現在開いているファイルだけを参照する</label>
+<label><input type="radio" name="q3" value="b">プロジェクト全体のファイル構造やコードを参照して回答する</label>
+<label><input type="radio" name="q3" value="c">GitHubのリモートリポジトリにアクセスする</label>
+<label><input type="radio" name="q3" value="d">Web検索結果を返す</label>
+<div class="ans" id="a3">正解: B。@workspaceはプロジェクト全体のファイル構造とコードを参照して回答を生成します。プロジェクトの全体像を把握する質問に適しています。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 03 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Copilot Chatを使いこなす <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: Chat機能で質問、説明、リファクタリング、エラー解析、テスト生成、ドキュメント生成を体験する</div>
+
+<h4>演習1: コードの説明を聞く(5min)</h4>
+<ol>
+<li>以下のコードをファイルに貼り付けてください</li>
+<li>コード全体を選択し、Copilot Chatで「このコードを説明してください」と質問します</li>
+</ol>
+<div class="prompt" id="p_s3h1">function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+
+<h4>演習2: リファクタリング提案(5min)</h4>
+<ol>
+<li>以下のコードを選択し、Chatで「この関数をリファクタリングしてください」と依頼します</li>
+<li>提案されたコードと元のコードを比較してください</li>
+</ol>
+<div class="prompt" id="p_s3h2">function processData(data) {
+  let result = [];
+  for (let i = 0; i &lt; data.length; i++) {
+    if (data[i].status === 'active') {
+      if (data[i].age >= 18) {
+        if (data[i].email) {
+          result.push({
+            name: data[i].name,
+            email: data[i].email,
+            age: data[i].age
+          });
+        }
+      }
+    }
+  }
+  return result;
+}<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+
+<h4>演習3: エラー解析(5min)</h4>
+<ol>
+<li>以下のエラーメッセージをChatに貼り付けてください</li>
+<li>「このエラーの原因と解決策を教えてください」と質問します</li>
+</ol>
+<div class="prompt" id="p_s3h3">TypeError: Cannot read properties of undefined (reading 'map')
+    at UserList (/src/components/UserList.tsx:12:18)
+    at renderWithHooks (react-dom.development.js:14985:18)<button class="cb" onclick="copyP('p_s3h3')">コピー</button></div>
+
+<h4>演習4: /testsでテスト生成(5min)</h4>
+<ol>
+<li>演習1のdebounce関数を選択した状態で、Chatに <code>/tests</code> と入力してください</li>
+<li>生成されたテストコードを確認し、テストケースが適切か評価してください</li>
+</ol>
+
+<h4>演習5: /docでドキュメント生成(5min)</h4>
+<ol>
+<li>演習2のprocessData関数を選択し、Chatに <code>/doc</code> と入力してください</li>
+<li>JSDocコメントが生成されることを確認します</li>
+<li>生成されたドキュメントがパラメータと戻り値を正しく記述しているか確認してください</li>
+</ol>
+
+<h4>演習6: @workspaceで全体把握(5min)</h4>
+<ol>
+<li>何かしらのプロジェクトフォルダをVS Codeで開いてください(手元のプロジェクトで構いません)</li>
+<li>Chatで以下のように質問します</li>
+</ol>
+<div class="prompt" id="p_s3h4">@workspace このプロジェクトのエントリポイントはどこですか? 主要なファイル構造も教えてください。<button class="cb" onclick="copyP('p_s3h4')">コピー</button></div>
+<p>プロジェクト全体を俯瞰した回答が返ってくることを確認してください。</p>
+
+<details><summary>各演習のポイント</summary><div class="inner">
+<p>演習2では、ネストの深い条件分岐がfilter+mapのチェーンにリファクタリングされるはずです。Copilotは定型的なリファクタリングパターンを良く知っています。演習3のエラー解析は実務で最も使う場面の1つで、スタックトレースから原因箇所を特定する力は人間を超える場合もあります。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.github.com/en/copilot/using-github-copilot/asking-github-copilot-questions-in-your-ide" target="_blank" rel="noopener">Asking Copilot questions in your IDE (GitHub Docs)</a></li>
+<li><a href="https://code.visualstudio.com/docs/copilot/copilot-chat" target="_blank" rel="noopener">VS Code Copilot Chat documentation</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習A: Sec01-03 (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">復習A -- 25min</div><h2>復習ハンズオン A: 補完+Chatで小機能実装</h2>
+
+<div class="handson">
+<div class="hs-title">復習ハンズオン <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: コード補完とCopilot Chatを組み合わせて、3つのユーティリティ関数を実装する</div>
+
+<p>ここまでに習得したインラインサジェストとCopilot Chatを組み合わせて、以下の3関数を実装してください。</p>
+
+<h4>課題: ユーティリティ関数3つを実装</h4>
+<ol>
+<li><strong>formatDate(date)</strong> -- Dateオブジェクトを「YYYY-MM-DD」形式の文字列に変換する</li>
+<li><strong>truncateText(text, maxLength)</strong> -- 指定文字数で切り詰め、末尾に「...」を追加する</li>
+<li><strong>groupBy(arr, key)</strong> -- オブジェクト配列を指定キーでグループ化してMapを返す</li>
+</ol>
+
+<h4>手順</h4>
+<ol>
+<li>関数シグネチャを書いてCopilotの補完で本体を生成(各3min)</li>
+<li>Copilot Chatで各関数のテストコードを生成(各2min)</li>
+<li>テストを実行し、必要に応じて修正(残り時間)</li>
+</ol>
+
+<div class="prompt" id="p_rA">// utils.js
+
+function formatDate(date) {
+
+}
+
+function truncateText(text, maxLength) {
+
+}
+
+function groupBy(arr, key) {
+
+}
+
+// テスト
+console.log(formatDate(new Date(2026, 3, 2))); // "2026-04-02"
+console.log(truncateText("GitHub Copilot は便利なツールです", 15)); // "GitHub Copilot..."
+console.log(groupBy([{type:"a",v:1},{type:"b",v:2},{type:"a",v:3}], "type"));
+// Map { "a" => [{...},{...}], "b" => [{...}] }<button class="cb" onclick="copyP('p_rA')">コピー</button></div>
+
+<ul class="checklist">
+<li>formatDateが正しい日付文字列を返す</li>
+<li>truncateTextが指定文字数で切り詰め、短い文字列はそのまま返す</li>
+<li>groupByがキーごとにグループ化されたMapを返す</li>
+<li>各関数のテストが通る</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: インラインチャット (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 50min(講義20 + ハンズオン30)</div><h2>インラインチャット</h2>
+
+<h3>インラインチャットとは</h3>
+<p>コードエディタの中でCtrl+I(macOSはCmd+I)を押すと起動する、軽量な対話インターフェースです。サイドパネルのChatとは違い、コードの文脈に直接結びついた操作ができます。選択範囲に対して「TypeScriptに変換して」「エラーハンドリングを追加して」と指示するだけで、差分プレビュー付きで変更案が表示されます。</p>
+
+<h3>主な使い方</h3>
+<ul>
+<li><strong>選択範囲への指示</strong> -- コードを選択してCtrl+I、自然言語で指示</li>
+<li><strong>部分修正</strong> -- 関数の一部だけを改善する場合に最適</li>
+<li><strong>コメント生成</strong> -- 選択してCtrl+I、「JSDocコメントを追加して」</li>
+<li><strong>言語変換</strong> -- JavaScript→TypeScript、Python→JavaScriptなど</li>
+</ul>
+
+<h3>Copilot Edits(マルチファイル編集)</h3>
+<p>Copilot Editsは複数ファイルにまたがる変更を一度に行える機能です。Edit Modeに入り、変更したいファイルをWorking Setに追加し、「全コンポーネントにエラーバウンダリを追加して」のような横断的な指示を出せます。変更は差分プレビューで確認してから適用します。</p>
+
+<h4>Copilot Editsの具体的な操作手順</h4>
+<ol>
+<li>Copilot Chatパネル上部の「Edit」タブ(ペンアイコン)をクリックしてEdit Modeに切り替える</li>
+<li>Working Setに対象ファイルを追加する。「Add Files...」ボタンから選択するか、エクスプローラーからドラッグ&ドロップ</li>
+<li>チャット欄に変更指示を入力。「すべてのファイルでconsole.logをlogger.infoに置換して」のように横断的な指示が可能</li>
+<li>各ファイルの差分プレビューが表示される。ファイルごとに Accept / Discard を選択</li>
+<li>全ての変更を確認したら Done で完了</li>
+</ol>
+
+<div class="box tip"><div class="bt">Tips: Working Setの選び方</div>Working Setに入れるファイルが多すぎると、Copilotが全ファイルの文脈を処理しきれず精度が落ちます。1回のEdit操作では5ファイル以内に絞り、関連性の高いファイルだけを追加するのが実用的です。10ファイル以上の変更が必要な場合は、2-3回に分けて実行してください。</div>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart TD
+  A["コードを修正したい"] --> B{"修正の範囲は?"}
+  B -->|1行〜数行| C["インラインサジェスト<br/>Tab / Esc"]
+  B -->|関数1つ程度| D["Inline Chat<br/>Ctrl+I"]
+  B -->|調査・学習・設計| E["Copilot Chat<br/>サイドパネル"]
+  B -->|複数ファイル横断| F["Copilot Edits<br/>Edit Mode"]
+</pre><div class="caption">修正の範囲に応じた機能の使い分けフロー</div></div>
+
+<div class="box tip"><div class="bt">Tips: Inline Chatの差分プレビュー</div>Inline Chatの結果は、変更前と変更後が色分けされた差分で表示されます。緑が追加、赤が削除。内容を確認して「Accept」で適用、「Discard」で取り消しです。盲目的にAcceptせず、差分を読む癖をつけてください。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 04</h4>
+<div class="q"><p>Q4. Copilot Editsが適している場面はどれですか?</p>
+<label><input type="radio" name="q4" value="a">1つの関数のバグを直す</label>
+<label><input type="radio" name="q4" value="b">変数名の意味を調べる</label>
+<label><input type="radio" name="q4" value="c">複数のコンポーネントファイルにまたがる一括変更</label>
+<label><input type="radio" name="q4" value="d">コードの実行結果を確認する</label>
+<div class="ans" id="a4">正解: C。Copilot Editsは複数ファイルのWorking Setに対して横断的な変更を指示できる機能です。1ファイル内の修正ならInline Chatの方が手軽です。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 04 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: インラインチャットの操作 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: Ctrl+Iの操作に慣れ、選択範囲への指示、変換、コメント追加を体験する</div>
+
+<h4>演習1: JavaScriptからTypeScriptに変換(5min)</h4>
+<ol>
+<li>以下のJavaScriptコードをファイルに貼り付けてください</li>
+<li>コード全体を選択し、Ctrl+I を押して「TypeScriptに変換してください。引数と戻り値に型を付けてください」と入力します</li>
+</ol>
+<div class="prompt" id="p_s4h1">function findUser(users, id) {
+  return users.find(user => user.id === id);
+}
+
+function getFullName(user) {
+  return `${user.firstName} ${user.lastName}`;
+}
+
+function calculateAge(birthDate) {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+
+<h4>演習2: try-catch追加(5min)</h4>
+<ol>
+<li>以下のコードを選択し、Ctrl+Iで「try-catchでエラーハンドリングを追加してください」と指示します</li>
+</ol>
+<div class="prompt" id="p_s4h2">async function fetchUserData(userId) {
+  const response = await fetch(`https://api.example.com/users/${userId}`);
+  const data = await response.json();
+  return data;
+}<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<h4>演習3: async/awaitに書き換え(5min)</h4>
+<div class="prompt" id="p_s4h3">function getData() {
+  return fetch('https://api.example.com/data')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      return data;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      throw error;
+    });
+}<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+<p>選択してCtrl+I、「async/awaitで書き直してください」と入力します。</p>
+
+<h4>演習4: JSDocコメント追加(5min)</h4>
+<ol>
+<li>演習1で変換したTypeScriptの各関数を選択してください</li>
+<li>Ctrl+Iで「JSDocコメントを追加してください」と指示します</li>
+<li>param、returns、exampleが含まれているか確認してください</li>
+</ol>
+
+<h4>演習5: 変数名のリネーム(5min)</h4>
+<div class="prompt" id="p_s4h5">function calc(d, r) {
+  const t = d.map(x => x.v * r);
+  const s = t.reduce((a, b) => a + b, 0);
+  return { t, s };
+}<button class="cb" onclick="copyP('p_s4h5')">コピー</button></div>
+<p>選択してCtrl+I、「変数名をわかりやすい名前にリネームしてください」と入力します。d、r、t、s、x、v、a、bといった1文字変数が説明的な名前に変わることを確認してください。</p>
+
+<h4>演習6: 複数ファイルの一括変更(5min)</h4>
+<ol>
+<li>Copilot Chatパネルで「Edit」モードに切り替えます(ペンアイコン)</li>
+<li>Working Setに2つ以上のファイルを追加してください</li>
+<li>「すべてのconsole.logをlogger.infoに置き換えてください」のような横断的な指示を出します</li>
+<li>各ファイルの差分プレビューを確認し、Acceptで適用します</li>
+</ol>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: コメントドリブン開発 (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 50min(講義20 + ハンズオン30)</div><h2>コメントドリブン開発</h2>
+
+<h3>コメントドリブン開発とは</h3>
+<p>コードを書く前に、コメントで「何をする関数か」を書き、CopilotにImplementationを生成させる手法です。先にコメントを書き、EnterでCopilotにコードを提案させ、Tabで受け入れる。この流れを繰り返すだけで、驚くほどの精度でコードが生成されます。</p>
+
+<h3>なぜ効果的か</h3>
+<p>Copilotはコメントを最重要コンテキストとして扱います。コメントの直後に来るコードを予測する精度は、変数名や型情報だけの場合よりも格段に高くなります。「何を書くか迷ったらまずコメントを書く」が鉄則です。</p>
+
+<h3>コメントの書き方</h3>
+<p>効果的なコメントには4つの要素があります。</p>
+<ol>
+<li><strong>目的</strong> -- この関数は何をするのか</li>
+<li><strong>入力</strong> -- どんなデータを受け取るか</li>
+<li><strong>出力</strong> -- 何を返すか</li>
+<li><strong>制約条件</strong> -- エッジケースや性能要件</li>
+</ol>
+
+<h3>良いコメント vs 悪いコメント</h3>
+<div class="cols">
+<div class="col-card"><h4>良いコメント</h4>
+<div class="prompt" id="p_s5_good">// ユーザーリストをageで昇順ソートし、
+// activeなユーザーのみ返す
+// 入力: User[]
+// 出力: User[] (age昇順、isActive===true)
+// 制約: 元の配列を変更しない<button class="cb" onclick="copyP('p_s5_good')">コピー</button></div>
+<p style="font-size:13px;color:var(--text-muted);">目的、入出力、制約が明確。Copilotは高精度なコードを生成できます。</p>
+</div>
+<div class="col-card"><h4>悪いコメント</h4>
+<div class="prompt" id="p_s5_bad">// ユーザーの処理をする<button class="cb" onclick="copyP('p_s5_bad')">コピー</button></div>
+<p style="font-size:13px;color:var(--text-muted);">曖昧すぎてCopilotが何を生成すべきかわかりません。意図しないコードが出てくる確率が高い。</p>
+</div>
+</div>
+
+<div class="box tip"><div class="bt">Tips: 日本語コメントでも動く</div>Copilotは日本語コメントも理解します。「// ユーザーリストを年齢でソートする」と書けば英語と同等の精度でコードを生成します。ただし、変数名は英語の方がLLMの学習データとの親和性が高いため、コメントは日本語、コードは英語というスタイルが実用的です。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 05</h4>
+<div class="q"><p>Q5. コメントドリブン開発で、Copilotの精度を最も上げる要素はどれですか?</p>
+<label><input type="radio" name="q5" value="a">コメントをできるだけ短く書く</label>
+<label><input type="radio" name="q5" value="b">英語だけで書く</label>
+<label><input type="radio" name="q5" value="c">目的、入力、出力、制約条件を含む具体的なコメントを書く</label>
+<label><input type="radio" name="q5" value="d">コメントの代わりに変数名だけ工夫する</label>
+<div class="ans" id="a5">正解: C。Copilotは目的・入出力・制約を含む具体的なコメントから、意図に合ったコードを高精度に生成します。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 05 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: コメントから関数を生成 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: コメントを設計書として書き、Copilotにコード生成させる一連の流れを体験する</div>
+
+<h4>演習1: データバリデーション関数(10min)</h4>
+<p>以下のコメントをコピーし、その直後にカーソルを置いてCopilotの提案を待ってください。</p>
+<div class="prompt" id="p_s5h1">// メールアドレスのバリデーション
+// 入力: string (メールアドレス)
+// 出力: { valid: boolean, errors: string[] }
+// チェック項目:
+//   - 空文字でないこと
+//   - @が1つ含まれること
+//   - @の前後が空でないこと
+//   - ドメイン部分に.が含まれること
+// 制約: 正規表現は使わず、文字列操作で実装する
+function validateEmail(email) {<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+<p>「正規表現は使わず」という制約がCopilotの生成にどう影響するか確認してください。制約を外すと正規表現ベースのコードが出るはずです。</p>
+
+<h4>演習2: API呼び出し+エラーハンドリング(10min)</h4>
+<div class="prompt" id="p_s5h2">// REST APIからユーザーデータを取得する
+// エンドポイント: https://jsonplaceholder.typicode.com/users/{id}
+// 入力: userId (number)
+// 出力: Promise&lt;User | null&gt;
+// エラーハンドリング:
+//   - ネットワークエラー → コンソールにログを出して null を返す
+//   - 404 → null を返す
+//   - その他のHTTPエラー → Error をスローする
+// リトライ: 最大3回、1秒間隔
+async function fetchUser(userId) {<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+<p>リトライロジックまで含めたコメントを書くと、Copilotがfor/whileループでリトライ処理を実装するのが確認できます。</p>
+
+<h4>演習3: CSVパース+集計(10min)</h4>
+<div class="prompt" id="p_s5h3">// CSV文字列をパースして部門別の売上合計を集計する
+// 入力: csvString (string) - ヘッダー行あり、カンマ区切り
+//   形式: "部門,製品,売上\n営業,SaaS A,500\n開発,ツールB,300\n..."
+// 出力: Map&lt;string, number&gt; - キー:部門名, 値:売上合計
+// 制約:
+//   - 1行目はヘッダーとしてスキップ
+//   - 売上が数値でない行は無視する
+//   - 空行は無視する
+function aggregateSalesByDepartment(csvString) {<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+
+<details><summary>各演習のポイント</summary><div class="inner">
+<p>演習1では制約条件の威力を体験します。「正規表現を使わず」と書くだけでCopilotの出力が変わる。制約を書き換えて別バージョンも生成させると、コメントの力がよくわかります。演習2のリトライ処理は、コメントなしでは生成されにくいパターンです。演習3はヘッダースキップや数値変換のエッジケース処理がコメントの制約から生成されることを確認してください。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://github.blog/developer-skills/github/how-to-write-better-prompts-for-github-copilot/" target="_blank" rel="noopener">How to write better prompts for GitHub Copilot (GitHub Blog)</a></li>
+<li><a href="https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot" target="_blank" rel="noopener">Best practices for using Copilot (GitHub Docs)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習B: Sec04-05 (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">復習B -- 25min</div><h2>復習ハンズオン B: コメント設計からテストまで</h2>
+
+<div class="handson">
+<div class="hs-title">復習ハンズオン <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: コメント設計 → インラインチャットで実装 → Chatでテスト生成の一連フローを体験する</div>
+
+<h4>課題: 簡易カート計算モジュール(3関数)</h4>
+<p>ECサイトのカート計算を行う3つの関数を以下のフローで実装してください。</p>
+
+<ol>
+<li><strong>コメントを書く</strong> -- 各関数の目的・入出力・制約をコメントとして記述(5min)</li>
+<li><strong>Copilotで実装</strong> -- コメントドリブンで本体を生成、インラインチャットで微調整(10min)</li>
+<li><strong>テスト生成</strong> -- Copilot Chatの /tests でテストを生成し実行(10min)</li>
+</ol>
+
+<div class="prompt" id="p_rB">// cart.js
+
+// 関数1: calculateSubtotal
+// カート内の商品の小計を計算する
+// 入力: items - [{name, price, quantity}, ...]
+// 出力: number (小計)
+
+// 関数2: applyDiscount
+// 合計金額に割引を適用する
+// 入力: subtotal (number), discountCode (string)
+// 出力: { total: number, discount: number, code: string }
+// 割引コード: "SAVE10" → 10%OFF, "SAVE20" → 20%OFF, 不明なコード → 割引なし
+
+// 関数3: calculateShipping
+// 配送料を計算する
+// 入力: subtotal (number), prefecture (string)
+// 出力: number (配送料)
+// ルール: 5000円以上は送料無料、北海道・沖縄は+500円、それ以外は一律800円<button class="cb" onclick="copyP('p_rB')">コピー</button></div>
+
+<ul class="checklist">
+<li>3つの関数すべてがコメントドリブンで生成された</li>
+<li>インラインチャットで少なくとも1箇所の改善を行った</li>
+<li>Copilot Chatで各関数のテストを生成した</li>
+<li>テストが通ることを確認した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: テスト生成とリファクタリング (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 50min(講義20 + ハンズオン30)</div><h2>テスト生成とリファクタリング</h2>
+
+<h3>/testsコマンドの活用</h3>
+<p>Copilot Chatの <code>/tests</code> コマンドは、選択したコードに対してユニットテストを自動生成します。JestやMochaなどのテストフレームワークを認識し、プロジェクトに合ったテストコードを出力してくれます。</p>
+
+<h3>対応テストフレームワーク</h3>
+<table class="ct"><thead><tr><th>言語</th><th>フレームワーク</th><th>備考</th></tr></thead><tbody>
+<tr><td>JavaScript/TypeScript</td><td>Jest, Mocha, Vitest</td><td>package.jsonの依存関係から自動判別</td></tr>
+<tr><td>Python</td><td>pytest, unittest</td><td>pytestが優先される傾向</td></tr>
+<tr><td>Java</td><td>JUnit 5</td><td>アノテーションベースのテスト生成</td></tr>
+<tr><td>Go</td><td>testing</td><td>テーブル駆動テストを生成しやすい</td></tr>
+</tbody></table>
+
+<h3>生成テストの検証ポイント</h3>
+<p>AIが生成したテストをそのまま使うのは危険です。以下の観点で検証してください。</p>
+<ul>
+<li><strong>カバレッジ</strong> -- 正常系だけでなく、異常系(null、空文字、境界値)がカバーされているか</li>
+<li><strong>エッジケース</strong> -- 配列の空、0、負数、最大値などの境界条件が含まれているか</li>
+<li><strong>モックの適切性</strong> -- 外部依存(API、DB)が正しくモックされているか</li>
+<li><strong>アサーションの妥当性</strong> -- テストが本当に意図した動作を検証しているか</li>
+</ul>
+
+<h3>リファクタリング提案の活用</h3>
+<p>Copilot Chatに「この関数を小さく分割して」「デザインパターンを適用して」と依頼するとリファクタリング提案を得られます。長い関数の分割、ネストの解消、早期リターンの導入など、定型的なリファクタリングパターンの提案精度は高いレベルにあります。</p>
+
+<div class="box warn"><div class="bt">AI生成テストの限界</div>Copilotはコードの構造からテストケースを推測しますが、ビジネスロジックの「意図」まではわかりません。「この関数は特定の業務ルールに基づいて10%の手数料を加算する」という背景知識はAIにはなく、テストケースが業務要件を満たしているかは人間が判断する必要があります。</div>
+
+<!-- Section 06 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: テスト生成とリファクタリング <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: /testsコマンドでテストを自動生成し、リファクタリングの流れを体験する</div>
+
+<h4>演習1: 既存関数にテストを生成(10min)</h4>
+<ol>
+<li>以下の関数をファイルに貼り付けてください</li>
+<li>関数を選択し、Copilot Chatで <code>/tests</code> と入力します</li>
+<li>生成されたテストコードをテストファイルに保存してください</li>
+</ol>
+<div class="prompt" id="p_s6h1">function calculateTax(price, taxRate, isExempt) {
+  if (isExempt) return price;
+  if (price < 0) throw new Error('Price cannot be negative');
+  if (taxRate < 0 || taxRate > 1) throw new Error('Tax rate must be between 0 and 1');
+  const tax = Math.round(price * taxRate);
+  return price + tax;
+}
+
+function applyBulkDiscount(items) {
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  if (total >= 100000) return total * 0.85;
+  if (total >= 50000) return total * 0.9;
+  if (total >= 10000) return total * 0.95;
+  return total;
+}<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+
+<h4>演習2: エッジケースの追加(5min)</h4>
+<ol>
+<li>生成されたテストに対し、Chatで「以下のエッジケースのテストを追加してください」と依頼します</li>
+</ol>
+<div class="prompt" id="p_s6h2">エッジケースを追加してください:
+- price が 0 の場合
+- taxRate が 0 の場合
+- taxRate が 1 の場合
+- items が空配列の場合
+- quantity が 0 の商品がある場合<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+
+<h4>演習3: テスト実行(5min)</h4>
+<ol>
+<li>Node.jsの場合: <code>node --test テストファイル名</code> で実行できます</li>
+<li>Jestを使う場合: <code>npx jest</code> で実行してください</li>
+<li>テストが失敗した場合、エラーメッセージをChatに貼り付けて修正を依頼します</li>
+</ol>
+
+<h4>演習4: 長い関数のリファクタリング(10min)</h4>
+<div class="prompt" id="p_s6h3">function processOrder(order) {
+  let total = 0;
+  for (let i = 0; i &lt; order.items.length; i++) {
+    let item = order.items[i];
+    let price = item.price;
+    if (item.discount) {
+      if (item.discount.type === 'percent') {
+        price = price * (1 - item.discount.value / 100);
+      } else if (item.discount.type === 'fixed') {
+        price = price - item.discount.value;
+      }
+      if (price &lt; 0) price = 0;
+    }
+    total += price * item.quantity;
+  }
+  if (order.coupon) {
+    if (order.coupon.type === 'percent') {
+      total = total * (1 - order.coupon.value / 100);
+    } else if (order.coupon.type === 'fixed') {
+      total = total - order.coupon.value;
+    }
+    if (total &lt; 0) total = 0;
+  }
+  let shipping = 0;
+  if (total &lt; 5000) {
+    shipping = 800;
+    if (order.address.prefecture === '北海道' || order.address.prefecture === '沖縄県') {
+      shipping += 500;
+    }
+  }
+  total += shipping;
+  let tax = Math.round(total * 0.1);
+  total += tax;
+  return { subtotal: total - tax - shipping, shipping, tax, total };
+}<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+<ol>
+<li>この関数全体を選択し、Copilot Chatで「この関数を小さな関数に分割してリファクタリングしてください」と依頼します</li>
+<li>分割された各関数の責務が明確になっていることを確認してください</li>
+<li>リファクタリング後のコードに対しても /tests でテストを生成し、動作が変わっていないことを検証します</li>
+</ol>
+
+<details><summary>リファクタリングのポイント</summary><div class="inner">
+<p>この関数には少なくとも4つの責務が混在しています。商品価格の割引計算、クーポン適用、配送料計算、税計算です。各責務を独立した関数に分割すると、テストしやすくなり、後からの修正も容易になります。Copilotはこの分割を的確に提案できるはずです。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.github.com/en/copilot/using-github-copilot/using-github-copilot-for-refactoring" target="_blank" rel="noopener">Using Copilot for refactoring (GitHub Docs)</a></li>
+<li><a href="https://jestjs.io/docs/getting-started" target="_blank" rel="noopener">Jest Getting Started</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: セキュリティとガバナンス (40min: 講義25 + ハンズオン15) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 40min(講義25 + ハンズオン15)</div><h2>セキュリティとガバナンス</h2>
+
+<h3>コード提案のライセンス問題</h3>
+<p>Copilotはパブリックリポジトリのコードを学習データに含んでいます。そのため、提案されたコードが既存のオープンソースコードと一致する可能性があります。GitHubはこの問題に対処するため「パブリックコード一致検出フィルター」を提供しています。フィルターを有効にすると、約150文字以上の一致が検出された場合に提案がブロックされます。</p>
+
+<h3>パブリックコード一致フィルターの仕組み</h3>
+<p>このフィルターはCopilotの提案を送信する前に、GitHubのパブリックリポジトリと照合する仕組みです。具体的には以下の流れで動作します。</p>
+<ol>
+<li>Copilotがコード提案を生成する</li>
+<li>生成された提案を、GitHubのパブリックコードインデックスと照合する</li>
+<li>約150文字以上の連続一致が検出された場合、その提案をブロックする</li>
+<li>ブロックされた場合は別の提案を生成するか、提案なしとする</li>
+</ol>
+<p>フィルターの対象はコードの文字列レベルの一致であり、意味的な類似性(ロジックは同じだが変数名が違う等)は検出しません。GPLライセンスのコードと構造が似ているが文字列が異なるコードは通過するため、ライセンスリスクを完全にゼロにするものではない点に注意してください。</p>
+<p>設定場所はGitHub.comの <a href="https://github.com/settings/copilot" target="_blank" rel="noopener">Settings > Copilot</a> ページ。「Suggestions matching public code」の項目でBlock/Allowを選択できます。Business/Enterpriseプランでは組織管理者が全メンバーに対して一括でBlockを強制する設定も可能です。</p>
+
+<h3>Copilot Business管理画面</h3>
+<p>Business/Enterpriseプランでは、組織管理者がCopilotの利用を統制できます。</p>
+<ul>
+<li><strong>ポリシー設定</strong> -- パブリックコード一致提案のブロック、Chat機能のON/OFF</li>
+<li><strong>利用統計</strong> -- メンバーごとの使用状況、受入れ率、言語別利用率</li>
+<li><strong>アクセス管理</strong> -- 特定チーム/リポジトリへの利用制限</li>
+</ul>
+
+<h3>社内ポリシー設定のポイント</h3>
+<table class="ct"><thead><tr><th>設定項目</th><th>推奨値</th><th>理由</th></tr></thead><tbody>
+<tr><td>パブリックコード一致フィルター</td><td>有効</td><td>ライセンスリスクの低減</td></tr>
+<tr><td>テレメトリデータ送信</td><td>無効(またはBusiness以上で管理)</td><td>コードスニペットが外部に送信されるリスク</td></tr>
+<tr><td>利用可能リポジトリの制限</td><td>組織の方針に合わせて設定</td><td>機密プロジェクトでの利用を制御</td></tr>
+<tr><td>Chat機能</td><td>有効(レビュー文化と併用)</td><td>生産性向上の効果が大きい</td></tr>
+</tbody></table>
+
+<h3>セキュリティリスク</h3>
+<ul>
+<li><strong>シークレットの補完提案</strong> -- Copilotは文脈から <code>const API_KEY = "sk-..."</code> のようなパターンを提案することがあります。ダミー値を提案しているだけですが、習慣的にハードコードする癖がつく危険があります</li>
+<li><strong>生成コードのレビュー必須</strong> -- SQLインジェクション、XSS、パストラバーサルなどの脆弱性を含むコードが生成される可能性があります。PRレビューの際に「このコードはCopilotが生成した」と明記するルールを設けている組織もあります</li>
+<li><strong>機密コードの送信</strong> -- Copilotを有効にすると、開いているファイルの内容がGitHub/Microsoftのサーバーに送信されます。Business以上のプランではデータ保持ポリシーが明示されていますが、Freeプランでは注意が必要です</li>
+</ul>
+
+<div class="box warn"><div class="bt">原則: Copilotの提案は「コードレビュー必須」</div>AI生成コードだからといって品質が保証されるわけではありません。むしろ、一見正しそうに見えて微妙にバグを含むコードが混入するリスクが人間が書く場合と異なります。通常のPRレビューに加え、生成コードの出所を意識した検証プロセスを設けてください。</div>
+
+<!-- Section 07 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: セキュリティ設定の確認 <span class="hs-time">15min</span></div>
+<div class="hs-goal">目標: Copilotのセキュリティ設定を確認し、危険な提案パターンを理解する</div>
+
+<h4>演習1: フィルター設定の確認(5min)</h4>
+<ol>
+<li>VS Codeの設定(Ctrl+,)を開き、「copilot」で検索してください</li>
+<li>「GitHub > Copilot: Enable」がオンになっていることを確認します</li>
+<li>GitHub.comのCopilot設定ページ(<a href="https://github.com/settings/copilot" target="_blank" rel="noopener">github.com/settings/copilot</a>)にアクセスし、「Suggestions matching public code」の設定を確認してください</li>
+</ol>
+
+<h4>演習2: APIキーのハードコード体験(5min)</h4>
+<ol>
+<li>新規ファイルで以下を入力し、Copilotの挙動を観察してください</li>
+</ol>
+<div class="prompt" id="p_s7h1">const API_KEY = "<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+<p>Copilotがダミーの文字列を提案する場合があります。本番コードでこのパターンを使ってはいけません。</p>
+
+<h4>演習3: 安全なパターンへの修正(5min)</h4>
+<ol>
+<li>以下のコードを貼り付け、Ctrl+Iで「環境変数から読み取る安全なパターンに修正してください」と指示します</li>
+</ol>
+<div class="prompt" id="p_s7h2">const config = {
+  apiKey: "sk-1234567890abcdef",
+  dbPassword: "mypassword123",
+  jwtSecret: "super-secret-key"
+};<button class="cb" onclick="copyP('p_s7h2')">コピー</button></div>
+<p>環境変数 (<code>process.env</code>) を使うパターンに変換されることを確認してください。</p>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.github.com/en/copilot/managing-copilot/managing-copilot-for-your-enterprise/managing-policies-and-features-for-copilot-in-your-enterprise" target="_blank" rel="noopener">Managing policies for Copilot (GitHub Docs)</a></li>
+<li><a href="https://github.com/features/copilot/trust-center" target="_blank" rel="noopener">Copilot Trust Center</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: トレンド (20min: 講義のみ) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 20min(講義のみ)</div><h2>トレンド</h2>
+
+<h3>Copilot Agent Mode</h3>
+<p>Agent Modeは、Copilotが自律的にタスクを実行する機能です。チャットで指示を出すと、Copilotがターミナルコマンドの実行、ファイルの編集、テストの実行を自分で行います。人間は結果を確認してAccept/Rejectするだけ。「テストが通るまで修正を繰り返して」のような複合的な指示が可能になりました。</p>
+
+<h3>Copilot Workspace</h3>
+<p>GitHub Issueから出発して、仕様策定、実装計画、コード生成、PRの作成までを一気通貫で行う機能です。Issueに書かれた要件をCopilotが解析し、影響するファイルを特定し、変更計画を立案し、コードを生成します。開発者は各ステップでレビューと修正を行い、納得したらPRを作成します。</p>
+
+<h3>Multi-file Editing(Copilot Edits)の進化</h3>
+<p>Section 04で触れたCopilot Editsは、継続的に進化しています。Working Setの自動提案、変更のundo/redo、コンテキストのより深い理解が改善されており、実用性が着実に上がっています。</p>
+
+<h3>Copilot Extensions</h3>
+<p>サードパーティの開発者がCopilotの機能を拡張できる仕組みです。@docker、@azure、@sentry のようにChat内で外部サービスと連携できます。自社のAPIやツールをCopilot Extensionとして公開し、チーム内で共有する使い方も可能です。</p>
+
+<div class="box tip"><div class="bt">Tips: Copilotの進化を追う</div>Copilotは月単位で機能が追加されます。<a href="https://github.blog/" target="_blank" rel="noopener">GitHub Blog</a> と <a href="https://code.visualstudio.com/updates" target="_blank" rel="noopener">VS Code Release Notes</a> を定期的にチェックしてください。VS Codeの「Copilot」カテゴリのリリースノートが特に参考になります。</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://github.blog/" target="_blank" rel="noopener">GitHub Blog</a> -- 最新のCopilot機能発表</li>
+<li><a href="https://githubnext.com/" target="_blank" rel="noopener">GitHub Next</a> -- 実験的機能のプレビュー</li>
+<li><a href="https://code.visualstudio.com/updates" target="_blank" rel="noopener">VS Code Release Notes</a> -- 月次アップデート情報</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 09: 総合ハンズオン (75min: 講義10 + 実践65) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 75min(講義10 + 実践65)</div><h2>総合ハンズオン: Node.js CLIツールをCopilotで完成させる</h2>
+
+<h3>ゴール</h3>
+<p>これまで学んだCopilotの機能を総動員して、Node.jsのTODOアプリ(CLIツール)を完成させます。コメントドリブンで設計し、インラインサジェストで実装し、Chatでテストを生成し、インラインチャットでエラーハンドリングを追加する。一連の開発フロー全体をCopilotと協働して進めてください。</p>
+
+<h3>7ステップの流れ</h3>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["1. 初期化<br/>5min"] --> B["2. コメント設計<br/>10min"]
+  B --> C["3. 実装<br/>15min"]
+  C --> D["4. テスト<br/>10min"]
+  D --> E["5. エラー処理<br/>10min"]
+  E --> F["6. README<br/>5min"]
+  F --> G["7. 動作確認<br/>10min"]
+</pre><div class="caption">総合ハンズオンの7ステップフロー</div></div>
+
+<div class="handson">
+<div class="hs-title">総合ハンズオン: TODO CLIツール <span class="hs-time">65min</span></div>
+<div class="hs-goal">目標: Copilotの全機能を使って実用的なCLIツールを完成させる</div>
+
+<h4>Step 1: プロジェクト初期化(5min)</h4>
+<div class="prompt" id="p_s9h1">mkdir todo-cli && cd todo-cli
+npm init -y
+# TypeScriptを使う場合
+# npm install typescript @types/node --save-dev
+# npx tsc --init<button class="cb" onclick="copyP('p_s9h1')">コピー</button></div>
+<p>package.jsonが作成されたら、メインファイル(todo.js または todo.ts)を作成してください。</p>
+
+<h4>Step 2: コメントドリブンで主要関数を設計(10min)</h4>
+<p>以下のコメントテンプレートをファイルに貼り付け、各関数の仕様をコメントとして書いてください。</p>
+<div class="prompt" id="p_s9h2">// todo.js - TODOアプリCLIツール
+// データはJSONファイル(todos.json)に永続化する
+
+const fs = require('fs');
+const path = require('path');
+const DATA_FILE = path.join(__dirname, 'todos.json');
+
+// loadTodos: JSONファイルからTODOリストを読み込む
+// ファイルが存在しない場合は空配列を返す
+// 出力: Array&lt;{id, title, done, createdAt}&gt;
+
+// saveTodos: TODOリストをJSONファイルに保存する
+// 入力: todos (Array)
+
+// addTodo: 新しいTODOを追加する
+// 入力: title (string)
+// 出力: 追加されたTODOオブジェクト
+// idはDate.now()で生成
+
+// listTodos: TODOリストを一覧表示する
+// 完了済みは[x]、未完了は[ ]で表示
+
+// completeTodo: 指定IDのTODOを完了にする
+// 入力: id (number)
+// 出力: boolean (成功/失敗)
+
+// deleteTodo: 指定IDのTODOを削除する
+// 入力: id (number)
+// 出力: boolean (成功/失敗)
+
+// main: CLIのエントリポイント
+// process.argvからコマンドと引数を解析
+// コマンド: add, list, done, delete<button class="cb" onclick="copyP('p_s9h2')">コピー</button></div>
+
+<h4>Step 3: Copilot補完で実装(15min)</h4>
+<ol>
+<li>各コメントの下にカーソルを移動し、Copilotのサジェストを受け入れて実装します</li>
+<li>提案内容を確認し、必要に応じて候補を切り替えてください(Alt+]/[)</li>
+<li>main関数のコマンド解析部分は、switch文またはif-else分岐が提案されるはずです</li>
+</ol>
+
+<h4>Step 4: Chatでテスト生成(10min)</h4>
+<ol>
+<li>実装した関数を選択し、Copilot Chatで <code>/tests</code> を実行してください</li>
+<li>addTodo、completeTodo、deleteTodoの各関数にテストが生成されることを確認します</li>
+<li>テストファイルを保存し、実行してみてください</li>
+</ol>
+
+<h4>Step 5: インラインチャットでエラーハンドリング追加(10min)</h4>
+<ol>
+<li>loadTodos関数を選択し、Ctrl+Iで「JSONパースエラーのハンドリングを追加してください」と指示します</li>
+<li>main関数を選択し、「不正なコマンドが渡された場合のエラーメッセージとヘルプ表示を追加してください」と指示します</li>
+<li>deleteTodo関数に「存在しないIDが指定された場合のエラーメッセージを追加してください」と指示します</li>
+</ol>
+
+<h4>Step 6: /docでREADME生成(5min)</h4>
+<ol>
+<li>Copilot Chatで以下のように依頼してください</li>
+</ol>
+<div class="prompt" id="p_s9h3">@workspace このCLIツールのREADME.mdを生成してください。
+使い方、コマンド一覧、インストール方法を含めてください。<button class="cb" onclick="copyP('p_s9h3')">コピー</button></div>
+
+<h4>Step 7: 最終動作確認(10min)</h4>
+<div class="prompt" id="p_s9h4"># TODOの追加
+node todo.js add "GitHub Copilotの使い方を復習する"
+node todo.js add "テストを書く"
+node todo.js add "READMEを更新する"
+
+# 一覧表示
+node todo.js list
+
+# 完了にする(IDは実行時に確認)
+node todo.js done 1234567890
+
+# 削除
+node todo.js delete 1234567890
+
+# もう一度一覧表示して結果を確認
+node todo.js list<button class="cb" onclick="copyP('p_s9h4')">コピー</button></div>
+
+<h4>成果物チェックリスト</h4>
+<ul class="checklist">
+<li>todo.js(またはtodo.ts)が動作する</li>
+<li>add, list, done, delete の4コマンドが動く</li>
+<li>データがtodos.jsonに永続化される</li>
+<li>テストファイルが作成されている</li>
+<li>エラーハンドリングが追加されている</li>
+<li>README.mdが生成されている</li>
+<li>コメントドリブン設計の痕跡がコードに残っている</li>
+</ul>
+
+<details><summary>うまくいかない場合のヒント</summary><div class="inner">
+<p>ファイルの読み書きでエラーが出る場合は、DATA_FILEのパスを確認してください。__dirnameが期待するディレクトリを指しているか、todos.jsonの書き込み権限があるかを確認します。テストでファイルI/Oが絡む場合は、テスト用の一時ディレクトリを使うか、fs.writeFileSync/readFileSyncをモックすることをChatに相談してみてください。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://nodejs.org/api/fs.html" target="_blank" rel="noopener">Node.js File System API</a></li>
+<li><a href="https://docs.github.com/en/copilot/using-github-copilot/getting-code-suggestions-in-your-ide-with-github-copilot" target="_blank" rel="noopener">Getting code suggestions with Copilot (GitHub Docs)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- DLテンプレート -->
+<!-- ============================================================ -->
+<div class="sec" style="border-bottom:none;"><div class="sec-label">ダウンロード</div><h2>テンプレート・サンプルファイル</h2>
+<p>各セクションで使用するテンプレートとサンプルファイルです。クリックでダウンロードできます。</p>
+<div style="margin:20px 0;">
+<a class="dl" onclick="downloadCommentTemplate()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>コメントドリブン設計テンプレート.md</a>
+<a class="dl" onclick="downloadPolicyTemplate()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Copilot社内利用ポリシー雛形.md</a>
+<a class="dl" onclick="downloadBuggyCode()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルコード(バグ入り).js</a>
+<a class="dl" onclick="downloadChecklist()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Copilot環境チェックリスト.md</a>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C05 GitHub Copilot基礎<br>
+  全9セクション + 復習2回 = 480分(8時間)<br>
+  次の推奨コース: C06 Cursor基礎 / C07 Claude Code基礎
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadCommentTemplate(){const t=`# コメントドリブン設計テンプレート\n\nGitHub Copilotで高精度なコード生成を得るためのコメント設計テンプレートです。\n各関数の実装前に、このテンプレートに沿ってコメントを書いてください。\n\n---\n\n## 基本テンプレート\n\n\`\`\`javascript\n// [関数名]: [1行で何をする関数か]\n// 入力: [パラメータ名] ([型]) - [説明]\n// 出力: [戻り値の型] - [説明]\n// 制約:\n//   - [制約条件1]\n//   - [制約条件2]\n// エッジケース:\n//   - [入力がnull/undefinedの場合の動作]\n//   - [空配列/空文字列の場合の動作]\nfunction 関数名(引数) {\n}\n\`\`\`\n\n## 実例1: バリデーション\n\n\`\`\`javascript\n// validatePassword: パスワードの強度を検証する\n// 入力: password (string) - 検証対象のパスワード\n// 出力: { valid: boolean, errors: string[] }\n// ルール:\n//   - 8文字以上であること\n//   - 大文字と小文字を各1文字以上含むこと\n//   - 数字を1文字以上含むこと\n//   - 特殊文字(!@#$%^&*)を1文字以上含むこと\n// エッジケース:\n//   - null/undefined → { valid: false, errors: ["パスワードが入力されていません"] }\nfunction validatePassword(password) {\n}\n\`\`\`\n\n## 実例2: データ変換\n\n\`\`\`javascript\n// transformToCSV: オブジェクト配列をCSV文字列に変換する\n// 入力: data (Array<Object>) - 変換元のデータ\n// 入力: options ({ headers?: boolean, delimiter?: string })\n// 出力: string - CSV形式の文字列\n// 制約:\n//   - 1行目はヘッダー行(options.headers !== false の場合)\n//   - 値にカンマが含まれる場合はダブルクォートで囲む\n//   - 値にダブルクォートが含まれる場合はエスケープする\n// エッジケース:\n//   - 空配列 → 空文字列\n//   - ネストしたオブジェクト → JSON.stringifyして文字列化\nfunction transformToCSV(data, options = {}) {\n}\n\`\`\`\n\n## 実例3: API呼び出し\n\n\`\`\`javascript\n// fetchWithRetry: リトライ機能付きのHTTP GETリクエスト\n// 入力: url (string) - リクエスト先URL\n// 入力: options ({ maxRetries?: number, delay?: number, timeout?: number })\n// 出力: Promise<Response>\n// リトライ条件:\n//   - ネットワークエラー → リトライする\n//   - 5xx エラー → リトライする\n//   - 4xx エラー → リトライしない(即座にthrow)\n// リトライ間隔: 指数バックオフ(delay * 2^retryCount)\n// タイムアウト: options.timeout ミリ秒(デフォルト5000)\nasync function fetchWithRetry(url, options = {}) {\n}\n\`\`\`\n\n---\n\n## コメントの品質チェックリスト\n\n- [ ] 関数の目的が1行で明確に書かれている\n- [ ] すべての入力パラメータに型と説明がある\n- [ ] 戻り値の型と内容が明記されている\n- [ ] エッジケースの動作が定義されている\n- [ ] 制約条件やビジネスルールが含まれている\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='コメントドリブン設計テンプレート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadPolicyTemplate(){const t=`# GitHub Copilot 社内利用ポリシー (雛形)\n\n最終更新: ____年__月__日\n承認者: ____________\n\n---\n\n## 1. 目的\n\n本ポリシーは、GitHub Copilotの業務利用におけるルールを定め、\n生産性向上とセキュリティリスクの低減を両立することを目的とする。\n\n## 2. 利用対象者\n\n- 対象: ____________ 部門のエンジニア\n- プラン: Copilot Business / Enterprise (該当するものを選択)\n- 管理者: ____________\n\n## 3. 利用可能な場面\n\n| 場面 | 利用可否 | 備考 |\n|------|---------|------|\n| 社内プロジェクトのコード作成 | OK | レビュー必須 |\n| テストコードの生成 | OK | カバレッジ確認必須 |\n| ドキュメント・コメント生成 | OK | 内容の正確性を確認 |\n| 顧客納品物のコード作成 | 条件付きOK | ライセンスフィルター必須 |\n| 機密情報を含むファイルの編集 | 要注意 | 設定確認の上、管理者承認 |\n| セキュリティ関連コード | 要注意 | セキュリティレビュー必須 |\n\n## 4. 禁止事項\n\n- APIキー、パスワード等のシークレットをCopilotに入力すること\n- Copilotの提案をレビューなしで本番コードに組み込むこと\n- 個人プラン(Free/Pro)での業務利用\n- ライセンスフィルターを無効にすること\n\n## 5. セキュリティ設定 (必須)\n\n- [ ] パブリックコード一致フィルター: 有効\n- [ ] テレメトリ: 組織ポリシーに従い設定\n- [ ] 利用可能リポジトリ: 指定リポジトリのみ / 全リポジトリ\n\n## 6. コードレビュールール\n\n- Copilotが生成したコードは、PRの説明に「AI生成コードを含む」と明記する\n- セキュリティ関連コード(認証、暗号化、入力検証)はセキュリティレビューを必須とする\n- テストコードは手動でエッジケースを追加する\n\n## 7. 利用状況の監視\n\n- 月次で利用統計レポートを確認\n- 受入れ率、言語別利用率を記録\n- 問題事象が発生した場合は管理者に報告\n\n## 8. 教育・周知\n\n- 新メンバーへのオンボーディングに本ポリシーの説明を含める\n- 四半期ごとにポリシーの見直しを実施\n\n---\n\n## 変更履歴\n\n| 日付 | 変更内容 | 変更者 |\n|------|---------|--------|\n| ____/__/__ | 初版作成 | ______ |\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Copilot社内利用ポリシー雛形.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadBuggyCode(){const t=`// サンプルコード(バグ入り) - Copilot Chatでバグを発見・修正してください\n// ヒント: 各関数に1つ以上のバグがあります\n\n// バグ1: オフバイワンエラー\nfunction getLastNItems(arr, n) {\n  return arr.slice(arr.length - n - 1);\n}\n\n// バグ2: 型変換の問題\nfunction sumStringNumbers(numbers) {\n  let total = "";\n  for (const num of numbers) {\n    total += num;\n  }\n  return total;\n}\n\n// バグ3: 非同期処理の問題\nfunction fetchAllUsers(ids) {\n  const results = [];\n  ids.forEach(async (id) => {\n    const response = await fetch(\`https://api.example.com/users/\${id}\`);\n    const user = await response.json();\n    results.push(user);\n  });\n  return results;\n}\n\n// バグ4: 参照の問題\nfunction addDefaultSettings(users) {\n  const defaultSettings = { theme: "light", language: "ja", notifications: true };\n  return users.map(user => {\n    user.settings = defaultSettings;\n    return user;\n  });\n}\n\n// バグ5: 境界値の問題\nfunction calculateDiscount(price, discountPercent) {\n  if (discountPercent > 100) {\n    return 0;\n  }\n  return price - (price * discountPercent / 100);\n}\n\n// --- 使い方 ---\n// 1. このファイルをVS Codeで開く\n// 2. 各関数を選択してCopilot Chatで「このコードのバグを見つけてください」と質問\n// 3. 指摘されたバグを確認し、修正する\n// 4. 修正後にテストを生成して検証する\n`;const b=new Blob([t],{type:'text/javascript'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプルコード_バグ入り.js';a.click();URL.revokeObjectURL(u);}
+
+function downloadChecklist(){const t=`# GitHub Copilot 環境チェックリスト\n\n## 事前準備\n\n- [ ] GitHubアカウントを持っている\n- [ ] Copilotプランに加入している (Free / Pro / Business / Enterprise)\n- [ ] VS Code がインストールされている (バージョン 1.90以上推奨)\n- [ ] Node.js がインストールされている (v18以上推奨)\n\n## VS Code 拡張機能\n\n- [ ] GitHub Copilot (v1.200以上)\n- [ ] GitHub Copilot Chat (v0.20以上)\n- [ ] GitHubアカウントで認証済み\n- [ ] ステータスバーにCopilotアイコンが表示されている\n\n## 動作確認\n\n- [ ] 新規JSファイルで \`function add(a, b) {\` と入力するとサジェストが表示される\n- [ ] Tabキーでサジェストを受け入れられる\n- [ ] Escキーでサジェストを拒否できる\n- [ ] Ctrl+I (Cmd+I) でインラインチャットが起動する\n- [ ] サイドバーのCopilot Chatが開ける\n- [ ] /explain コマンドが動作する\n- [ ] /tests コマンドが動作する\n\n## セキュリティ設定\n\n- [ ] github.com/settings/copilot でフィルター設定を確認した\n- [ ] パブリックコード一致フィルターの状態を確認した\n- [ ] テレメトリ設定を確認した\n\n## トラブルシューティング\n\nサジェストが表示されない場合:\n1. ステータスバーのCopilotアイコンを確認\n2. アイコンにスラッシュがある → クリックして \"Enable Globally\" を選択\n3. \"Sign in\" を求められる → GitHubアカウントで再認証\n4. 上記で解決しない → VS Codeを再起動\n5. それでも解決しない → 拡張機能を再インストール\n\n---\n確認日: ____年__月__日\n確認者: ____________\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Copilot環境チェックリスト.md';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

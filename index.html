@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EzoAI GenAI Training Series</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --asagi: #00A5BF;
+    --asagi-light: #33C4DA;
+    --asagi-dark: #007A8F;
+    --asagi-subtle: rgba(0,165,191,0.08);
+    --asagi-border: rgba(0,165,191,0.25);
+    --bg: #0a0a0a;
+    --bg-card: #141414;
+    --bg-card-hover: #1a1a1a;
+    --text: #e8e8e8;
+    --text-muted: #999;
+    --text-dim: #666;
+    --border: #222;
+    --radius: 6px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── header ── */
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .site-header img { height: 28px; }
+  .site-header nav { display: flex; gap: 24px; margin-left: auto; }
+  .site-header nav a {
+    color: var(--text-muted); text-decoration: none; font-size: 13px;
+    transition: color .2s;
+  }
+  .site-header nav a:hover { color: var(--asagi); }
+
+  /* ── hero ── */
+  .hero {
+    padding: 100px 40px 80px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(0,165,191,0.06) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-badge {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--asagi);
+    border: 1px solid var(--asagi-border);
+    padding: 4px 16px; border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 42px; font-weight: 800; letter-spacing: -1px;
+    line-height: 1.25; margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--asagi); }
+  .hero p {
+    font-size: 16px; color: var(--text-muted);
+    max-width: 960px; margin: 0 auto;
+  }
+
+  /* ── section ── */
+  section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--asagi); margin-bottom: 8px;
+  }
+  section > h2 {
+    font-size: 28px; font-weight: 700; margin-bottom: 12px;
+  }
+  section > .section-desc {
+    color: var(--text-muted); font-size: 15px;
+    margin-bottom: 48px;
+  }
+
+  /* ── layer strip ── */
+  .layer-strip {
+    padding: 10px 40px;
+    background: var(--asagi-dark);
+    color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .layer-strip .layer-num {
+    background: rgba(255,255,255,0.15);
+    padding: 2px 10px; border-radius: 4px;
+    font-size: 12px;
+  }
+
+  /* ── course grid ── */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .course-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: border-color .2s, background .2s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .course-card:hover {
+    border-color: var(--asagi-border);
+    background: var(--bg-card-hover);
+  }
+  .course-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--asagi);
+    opacity: 0; transition: opacity .2s;
+  }
+  .course-card:hover::before { opacity: 1; }
+  .course-id {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    color: var(--asagi); margin-bottom: 6px;
+  }
+  .course-card h3 {
+    font-size: 18px; font-weight: 700; margin-bottom: 4px;
+  }
+  .course-card .sub {
+    font-size: 13px; color: var(--text-muted); margin-bottom: 16px;
+  }
+  .course-meta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .meta-tag {
+    font-size: 11px; color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 2px 10px; border-radius: 3px;
+  }
+  .meta-tag.level { border-color: var(--asagi-border); color: var(--asagi); }
+  .course-sections {
+    list-style: none;
+  }
+  .course-sections li {
+    font-size: 13px; color: var(--text-muted);
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; gap: 8px;
+  }
+  .course-sections li::before {
+    content: '';
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--asagi);
+    margin-top: 8px; flex-shrink: 0;
+  }
+  .course-diff {
+    margin-top: 16px; padding: 12px;
+    background: var(--asagi-subtle);
+    border-left: 3px solid var(--asagi);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .course-link {
+    display: inline-block; margin-top: 16px;
+    padding: 7px 20px; border-radius: 4px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    background: var(--asagi-dark); color: #fff;
+    transition: background .2s;
+  }
+  .course-link:hover { background: var(--asagi); }
+  .course-link.soon {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim); pointer-events: none;
+  }
+
+  /* ── mermaid ── */
+  .mermaid-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    overflow-x: auto;
+    margin-bottom: 48px;
+  }
+  .mermaid { text-align: center; }
+
+  /* ── path table ── */
+  .path-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .path-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .path-card h4 {
+    font-size: 15px; font-weight: 700; margin-bottom: 4px;
+  }
+  .path-card .path-target {
+    font-size: 12px; color: var(--asagi); margin-bottom: 12px;
+  }
+  .path-flow {
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  }
+  .path-flow .pf-node {
+    background: var(--asagi-subtle);
+    border: 1px solid var(--asagi-border);
+    padding: 3px 10px; border-radius: 4px;
+    font-size: 12px; font-weight: 600;
+  }
+  .path-flow .pf-arrow {
+    color: var(--text-dim); font-size: 14px;
+  }
+
+  /* ── security embed table ── */
+  .embed-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 48px;
+  }
+  .embed-table th {
+    text-align: left;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+    color: var(--asagi);
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--asagi-border);
+  }
+  .embed-table td {
+    font-size: 13px; color: var(--text-muted);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .embed-table tr:hover td { background: rgba(0,165,191,0.03); }
+
+  /* ── priority list ── */
+  .priority-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .priority-item {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+  }
+  .priority-rank {
+    font-size: 20px; font-weight: 800;
+    color: var(--asagi);
+    width: 32px; text-align: center; flex-shrink: 0;
+  }
+  .priority-item .pi-name { font-size: 14px; font-weight: 600; }
+  .priority-item .pi-reason { font-size: 12px; color: var(--text-muted); }
+
+  /* ── footer ── */
+  .site-footer {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  /* ── responsive ── */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 28px; }
+    section { padding: 48px 20px; }
+    .course-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════ HEADER ════════ -->
+<header class="site-header">
+  <img src="assets/logo-white.png" alt="EzoAI">
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="#layer0">L0 - 共通基盤</a>
+    <a href="#layer1">L1 - ツール基礎</a>
+    <a href="#layer2">L2 - 応用/特化</a>
+    <a href="#layer3">L3 - 統合</a>
+    <a href="#paths">学習パス</a>
+    <a href="#priority">制作順</a>
+  </nav>
+</header>
+
+<!-- ════════ HERO ════════ -->
+<div class="hero">
+  <div class="hero-badge">Udemy Course Series 2026</div>
+  <h1><span>生成AI研修</span> 全16講座<br>コースカタログ</h1>
+  <p>多くの生成AI研修を手掛けた講師による、入門からマスターまでの体系的カリキュラム。ツール別、技術別、レベル別の4層構造で設計。</p>
+</div>
+
+<!-- ════════ OVERVIEW / ARCHITECTURE ════════ -->
+<section id="overview">
+  <div class="section-label">Architecture</div>
+  <h2>全体構造</h2>
+  <p class="section-desc">
+    4層 (Layer 0-3) でコースを配置する。基礎層にはセキュリティ/ガバナンスと生成AIトレンドキャッチアップを必ず組み込み、どの学習パスを通っても安全な利用と最新動向の把握が保証される。
+  </p>
+
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','tertiaryColor':'#141414','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF','clusterBkg':'#111','clusterBorder':'#333','titleColor':'#e8e8e8','edgeLabelBackground':'#141414'}}}%%
+graph TD
+  C01["<b>C01</b><br/>生成AI完全入門<br/><i>セキュリティ基礎 + トレンド</i>"]
+
+  subgraph L1["Layer 1 : ツール基礎"]
+    C02["<b>C02</b><br/>Claude 基礎"]
+    C03["<b>C03</b><br/>Cowork 基礎"]
+    C04["<b>C04</b><br/>Claude Code 基礎"]
+    C05["<b>C05</b><br/>Copilot 基礎"]
+    C06["<b>C06</b><br/>Codex 基礎"]
+  end
+
+  subgraph L2["Layer 2 : 応用 + 技術特化"]
+    C07["<b>C07</b><br/>Claude Code 応用"]
+    C08["<b>C08</b><br/>Codex 応用"]
+    C09["<b>C09</b><br/>Dify 実践"]
+    C10["<b>C10</b><br/>Vibe Coding"]
+    C11["<b>C11</b><br/>Prompt Eng."]
+    C12["<b>C12</b><br/>RAG 実践"]
+    C13["<b>C13</b><br/>MCP / A2A"]
+    C14["<b>C14</b><br/>Security 実践"]
+  end
+
+  subgraph L3["Layer 3 : 統合マスター"]
+    C15["<b>C15</b><br/>Gemini / 365"]
+    C16["<b>C16</b><br/>AI駆動開発<br/>マスター"]
+  end
+
+  C01 --> C02
+  C01 --> C03
+  C01 --> C04
+  C01 --> C05
+  C01 --> C06
+  C01 --> C09
+  C01 --> C10
+  C01 --> C11
+  C01 --> C14
+  C01 --> C15
+
+  C02 --> C04
+  C04 --> C07
+  C06 --> C08
+  C05 -.-> C16
+  C07 --> C13
+  C07 --> C16
+  C08 --> C16
+  C09 --> C13
+  C12 --> C16
+  C13 --> C16
+  C04 --> C12
+  C06 --> C12
+    </pre>
+  </div>
+</section>
+
+<!-- ════════ SECURITY EMBED TABLE ════════ -->
+<section>
+  <div class="section-label">Security &amp; Trend Integration</div>
+  <h2>セキュリティ/ガバナンス + トレンド 組込み設計</h2>
+  <p class="section-desc">
+    C01で共通の土台を作り、各基礎コースでツール固有のリスクとトレンドを扱う。どのパスを通っても必ず両方に触れる構造。
+  </p>
+
+  <table class="embed-table">
+    <thead>
+      <tr>
+        <th>コース</th>
+        <th>セキュリティ/ガバナンス</th>
+        <th>トレンドキャッチアップ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>C01 入門</td><td>4大リスク概論、社内ルール設計の出発点</td><td>LLMの系譜、2026年の技術動向全体像</td></tr>
+      <tr><td>C02 Claude基礎</td><td>Claudeのデータポリシー、Enterprise安全設計</td><td>Claude 4.x進化、Opus/Sonnet/Haiku使い分け</td></tr>
+      <tr><td>C03 Cowork基礎</td><td>チーム利用時のリスク管理、ガイドライン運用</td><td>Agentic Workflowが協働を変える展望</td></tr>
+      <tr><td>C04 Claude Code基礎</td><td>権限モデル、機密ファイル除外、安全な運用</td><td>Claude Code進化、IDE統合、Agent SDK</td></tr>
+      <tr><td>C05 Copilot基礎</td><td>コード提案のライセンス、Business管理画面</td><td>Agent Mode、Workspace、Multi-file editing</td></tr>
+      <tr><td>C06 Codex基礎</td><td>サンドボックス、ネットワーク制御、APIキー管理</td><td>OpenAI Agent Platform、Codex進化</td></tr>
+      <tr><td>C14 Security実践</td><td colspan="2">C01基礎を組織運用レベルに引き上げる応用編。ガイドライン策定+リスクアセスメント+インシデント対応</td></tr>
+    </tbody>
+  </table>
+
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','tertiaryColor':'#141414','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF','clusterBkg':'#111','clusterBorder':'#333','edgeLabelBackground':'#141414'}}}%%
+graph LR
+  subgraph C01基礎["C01 : セキュリティ基礎"]
+    A1["ハルシネーションとは?"]
+    A2["インジェクションの基本"]
+    A3["情報漏えいの注意点"]
+    A4["社内ルールの出発点"]
+  end
+  subgraph C14応用["C14 : セキュリティ実践"]
+    B1["自動ファクトチェック設計"]
+    B2["多層防御パターン実装"]
+    B3["DLP設計と匿名化"]
+    B4["ガイドライン策定 + 監査"]
+  end
+  A1 -->|深掘り| B1
+  A2 -->|深掘り| B2
+  A3 -->|深掘り| B3
+  A4 -->|深掘り| B4
+    </pre>
+  </div>
+</section>
+
+<!-- ════════ LAYER 0 ════════ -->
+<div class="layer-strip" id="layer0">
+  <span class="layer-num">L0</span> 共通基盤
+</div>
+
+<section>
+  <div class="course-grid">
+
+    <!-- C01 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 01</div>
+      <h3>生成AI完全入門 2026</h3>
+      <div class="sub">全コースの入口。セキュリティ+トレンドを最初から組み込む</div>
+      <div class="course-meta">
+        <span class="meta-tag level">全レベル</span>
+        <span class="meta-tag">10h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>生成AIの仕組みと限界(LLM原理、Transformer、ハルシネーション)</li>
+        <li>トレンドキャッチアップ 2026(モデル進化の系譜、マルチモーダル、エージェント)</li>
+        <li>主要ツール比較と選び方(ChatGPT / Claude / Gemini / Copilot / Codex)</li>
+        <li>プロンプトの基本(指示の型3つ、Few-shot、CoT、構造化出力)</li>
+        <li>ビジネス活用パターン(文書作成、要約、分析、翻訳)</li>
+        <li>セキュリティ/ガバナンス基礎(4大リスク、情報漏えい、社内ルール設計)</li>
+        <li>生成AI資格ロードマップ(G検定、生成AIパスポート、AWS AI等)</li>
+        <li>ミニプロジェクト: 業務改善提案書をAIで作成+リスク評価シート</li>
+      </ul>
+      <div class="course-diff">他コースにないセキュリティ+トレンドの初期組込み。「使い方」の前に「使う覚悟」を作る</div>
+      <a href="courses/c01/index.html" class="course-link">教材を開く</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════ LAYER 1 ════════ -->
+<div class="layer-strip" id="layer1">
+  <span class="layer-num">L1</span> ツール基礎 &mdash; 各ツールの入口。非エンジニアでも受講可
+</div>
+
+<section>
+  <div class="course-grid">
+
+    <!-- C02 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 02</div>
+      <h3>Claude基礎</h3>
+      <div class="sub">claude.ai完全ガイド</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>Claudeとは(Anthropicの思想、Constitutional AI、他LLMとの違い)</li>
+        <li>claude.ai基本操作(会話、ファイル添付、画像認識、PDF分析)</li>
+        <li>Claude Projects(プロジェクト作成、カスタム指示、ナレッジベース)</li>
+        <li>Claude Artifacts(コード生成、ドキュメント作成、インタラクティブ成果物)</li>
+        <li>長文処理と分析(200Kトークン活用、書籍丸ごと要約)</li>
+        <li>Claude API入門(APIキー取得、SDK、基本的なAPI呼び出し)</li>
+        <li>セキュリティとデータの扱い(データポリシー、Enterprise vs Pro)</li>
+        <li>トレンド(Claude 4.x系の進化、モデル使い分け)</li>
+      </ul>
+      <div class="course-diff">claude.ai特化の日本語コースがほぼ存在しない。API入門まで橋渡し</div>
+      <a href="courses/c02/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C03 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 03</div>
+      <h3>Cowork基礎</h3>
+      <div class="sub">AIとの協働術</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>AI協働の大原則(AIは代替ではなく思考の補助)</li>
+        <li>タスク分解の技術(AI向きタスクと人間向きタスクの分離)</li>
+        <li>AIへの委譲と品質管理(出力の検証フレームワーク)</li>
+        <li>チームでのAI活用(共有プロンプト、ナレッジ管理)</li>
+        <li>AI活用の心理的障壁を越える(法人研修で実証済みのアプローチ)</li>
+        <li>業務別AI協働パターン(企画/営業/マーケ/人事/経理/開発)</li>
+        <li>セキュリティとガバナンス(チーム利用時のリスク管理)</li>
+        <li>トレンド(Agentic Workflowが協働をどう変えるか)</li>
+      </ul>
+      <div class="course-diff">ツール操作ではなく「協働の設計」を教える。これ単体で受講する価値がある</div>
+      <a href="courses/c03/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C04 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 04</div>
+      <h3>Claude Code基礎</h3>
+      <div class="sub">ターミナルAI開発入門</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>Claude Codeとは(CLIベースAI開発、GUIとの違い)</li>
+        <li>インストールと初期設定(Mac/Windows/Linux)</li>
+        <li>基本操作(ファイル読み書き、コード生成、検索、Bash実行)</li>
+        <li>CLAUDE.mdの設計(プロジェクトルール定義、AI行動制御)</li>
+        <li>コマンドとスキル(スラッシュコマンド、カスタムコマンド作成)</li>
+        <li>MCP連携入門(MCPサーバー接続、外部ツール統合)</li>
+        <li>セキュリティ(権限モデル、機密情報の取り扱い)</li>
+        <li>トレンド(Claude Code進化、IDE統合、Agent SDK)</li>
+      </ul>
+      <div class="course-diff">Claude Code特化の日本語コースは皆無。公式ドキュメントすら英語のみ</div>
+      <a href="courses/c04/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C05 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 05</div>
+      <h3>GitHub Copilot基礎</h3>
+      <div class="sub">AI駆動開発の入口</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>GitHub Copilotとは(仕組み、料金、プラン比較)</li>
+        <li>セットアップ(VSCode拡張、初期設定)</li>
+        <li>コード補完(インラインサジェスト、Tab受入れ、判断基準)</li>
+        <li>Copilot Chat(質問、コード説明、リファクタリング)</li>
+        <li>インラインチャット(選択範囲への指示、部分修正)</li>
+        <li>コメントドリブン開発(コメントを先に書く型)</li>
+        <li>セキュリティ(ライセンス問題、社内ポリシー設定)</li>
+        <li>トレンド(Agent Mode、Workspace、Multi-file editing)</li>
+      </ul>
+      <div class="course-diff">心理的ハードルを下げる設計。法人研修で実証した因果関係体験型</div>
+      <a href="courses/c05/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C06 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 06</div>
+      <h3>OpenAI Codex基礎</h3>
+      <div class="sub">CLIエージェント入門</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>OpenAI Codexとは(CLIエージェント、GPT-4o/o3連携)</li>
+        <li>インストールと初期設定(Node.js環境、設定ファイル)</li>
+        <li>基本操作(自然言語で指示、ファイル操作、コード生成)</li>
+        <li>自律実行モード(suggest / auto-edit / full-auto)</li>
+        <li>プロジェクト構成の指示(AGENTS.md、codex.toml)</li>
+        <li>Copilot/Claude Codeとの使い分け(得意領域比較)</li>
+        <li>セキュリティ(サンドボックス、ネットワーク制御)</li>
+        <li>トレンド(OpenAI Agent Platform、Codex進化)</li>
+      </ul>
+      <div class="course-diff">Codex CLI特化の日本語コースは存在しない</div>
+      <a href="courses/c06/index.html" class="course-link">教材を開く</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════ LAYER 2 ════════ -->
+<div class="layer-strip" id="layer2">
+  <span class="layer-num">L2</span> ツール応用 + 技術特化 &mdash; 実践的な深掘り
+</div>
+
+<section>
+  <div class="course-grid">
+
+    <!-- C07 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 07</div>
+      <h3>Claude Code応用</h3>
+      <div class="sub">プロダクション開発</div>
+      <div class="course-meta">
+        <span class="meta-tag level">中級-上級</span>
+        <span class="meta-tag">12h</span>
+        <span class="meta-tag">9 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>コンテキストエンジニアリング(CLAUDE.md設計論、3層コンテキスト)</li>
+        <li>カスタムスキル開発(ファイル構造、フロントマター)</li>
+        <li>フック開発(PreToolUse / PostToolUse / Stop)</li>
+        <li>エージェント/サブエージェント(並列実行、worktree分離)</li>
+        <li>MCP統合(カスタムツール、リソース公開)</li>
+        <li>仕様駆動開発(メモ→仕様書→CLAUDE.md→実装→テスト)</li>
+        <li>チーム開発(settings.json共有、レビュー自動化)</li>
+        <li>CI/CD統合(GitHub Actions連携)</li>
+        <li>パフォーマンスとコスト最適化</li>
+      </ul>
+      <div class="course-diff">スキル/フック/エージェント開発まで扱う日本語コースは存在しない</div>
+      <a href="courses/c07/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C08 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 08</div>
+      <h3>OpenAI Codex応用</h3>
+      <div class="sub">自律開発エージェント</div>
+      <div class="course-meta">
+        <span class="meta-tag level">中級-上級</span>
+        <span class="meta-tag">10h</span>
+        <span class="meta-tag">7 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>full-autoモードの設計と安全運用</li>
+        <li>AGENTS.md高度設計(マルチエージェント指示)</li>
+        <li>大規模リファクタリング(レガシーコード変換)</li>
+        <li>テスト自動生成と品質保証</li>
+        <li>マルチリポジトリ運用</li>
+        <li>ツール横断ワークフロー(Copilot / Claude Code併用)</li>
+        <li>本番環境への適用(CI/CD統合、コードレビュー自動化)</li>
+      </ul>
+      <div class="course-diff">Codex応用に特化した教材は日英ともに未成熟</div>
+      <a href="courses/c08/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C09 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 09</div>
+      <h3>Dify実践</h3>
+      <div class="sub">AIワークフロー構築</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">12h</span>
+        <span class="meta-tag">9 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>AIワークフローとは(エージェント基礎、Dify概要)</li>
+        <li>環境構築(クラウド版 / セルフホスト版)</li>
+        <li>チャットボット構築(シンプル応答、変数、コンテキスト)</li>
+        <li>ワークフロー構築(トリガー→LLM処理→出力)</li>
+        <li>RAG実装(ナレッジベース構築、検索精度チューニング)</li>
+        <li>外部連携(Webhook、HTTP Request、LINE/Slack)</li>
+        <li>条件分岐と高度なワークフロー</li>
+        <li>エージェントモード(ツール呼び出し、自律タスク実行)</li>
+        <li>本番運用とセキュリティ</li>
+      </ul>
+      <div class="course-diff">法人向け3日間研修の深さをそのまま活かす</div>
+      <a href="courses/c09/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C10 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 10</div>
+      <h3>Vibe Coding入門</h3>
+      <div class="sub">非エンジニアのためのアプリ開発</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級</span>
+        <span class="meta-tag">10h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>Vibe Codingとは(AIに自然言語で指示してアプリを作る)</li>
+        <li>ツール選択とセットアップ(Cursor / Claude Code / Codex)</li>
+        <li>はじめてのアプリ(メモ帳を自然言語だけで作る体験)</li>
+        <li>要件の言語化(ビジネスアイデア→要件→AI指示)</li>
+        <li>HTMLプロトタイプ生成(30分でモックアップ)</li>
+        <li>データベース連携(簡単なCRUDアプリ)</li>
+        <li>デプロイ(Vercel / Netlifyで公開)</li>
+        <li>ベンダーコントロール(プロトタイプで仕様を詰める)</li>
+      </ul>
+      <div class="course-diff">ベンダーコントロールまで踏み込む。作って終わりではない</div>
+      <a href="courses/c10/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C11 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 11</div>
+      <h3>プロンプトエンジニアリング実践</h3>
+      <div class="sub">評価と改善サイクルまで</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">10h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>プロンプトの構造(役割、文脈、制約、出力形式)</li>
+        <li>基本テクニック(Zero-shot / Few-shot / CoT)</li>
+        <li>高度テクニック(Tree of Thought / ReAct / メタプロンプト)</li>
+        <li>マルチモーダルプロンプト(画像 / PDF / 音声)</li>
+        <li>パーソナルAI構築(Gem / GPTs / Claude Projects)</li>
+        <li>業務別テンプレート集(議事録、レビュー、分析、提案書)</li>
+        <li>評価と改善サイクル(A/Bテスト、スコアリング)</li>
+        <li>セキュリティ(インジェクション防御、ガードレール設計)</li>
+      </ul>
+      <div class="course-diff">評価と改善サイクルで差別化。作って終わりにしない</div>
+      <a href="courses/c11/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C12 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 12</div>
+      <h3>RAG実践</h3>
+      <div class="sub">LangChain / LangGraph 完全ガイド</div>
+      <div class="course-meta">
+        <span class="meta-tag level">中級-上級</span>
+        <span class="meta-tag">12h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>RAGアーキテクチャ(仕組みと設計パターン)</li>
+        <li>LangChain基礎(Chain / Prompt Template / Output Parser)</li>
+        <li>ベクトルDB(Chroma / FAISS / Pinecone)</li>
+        <li>チャンク戦略(分割粒度が精度を決める)</li>
+        <li>検索精度チューニング(Hybrid Search / Re-ranking)</li>
+        <li>LangGraph入門(ステートマシンによるマルチステップRAG)</li>
+        <li>LangSmith(デバッグ / 評価 / プロダクション監視)</li>
+        <li>高度なRAGパターン(Self-RAG / Adaptive RAG)</li>
+      </ul>
+      <div class="course-diff">LangGraphまでカバーする日本語コースが皆無</div>
+      <a href="courses/c12/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C13 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 13</div>
+      <h3>MCP / A2A</h3>
+      <div class="sub">AIエージェント開発</div>
+      <div class="course-meta">
+        <span class="meta-tag level">中級-上級</span>
+        <span class="meta-tag">10h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>AIエージェントとは(自律タスク実行、ツール使用)</li>
+        <li>MCP(MCPサーバー構築、ツール定義、リソース公開)</li>
+        <li>MCPクライアント実装(Claude Desktop / VSCode)</li>
+        <li>A2A(エージェント間通信プロトコル)</li>
+        <li>マルチエージェントシステム(協調、委譲、オーケストレーション)</li>
+        <li>Claude Agent SDK(公式SDKでのエージェント開発)</li>
+        <li>n8n / Dify連携(ノーコードとコードの橋渡し)</li>
+        <li>本番運用(セキュリティ / 認証 / コスト制御)</li>
+      </ul>
+      <div class="course-diff">MCP/A2A特化の日本語コースは存在しない。先行者利益が最大</div>
+      <a href="courses/c13/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C14 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 14</div>
+      <h3>セキュリティ/ガバナンス実践</h3>
+      <div class="sub">C01基礎の深掘り版</div>
+      <div class="course-meta">
+        <span class="meta-tag level">中級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>生成AI時代のリスク全体像(4大リスクの深掘り)</li>
+        <li>ハルシネーション(自動ファクトチェック、Grounding技術)</li>
+        <li>プロンプトインジェクション(攻撃分類と多層防御)</li>
+        <li>著作権/知財リスク(判例分析、企業防衛策)</li>
+        <li>情報漏えい/プライバシー(DLP設計、匿名化)</li>
+        <li>AI利用ガイドライン策定(フレームワーク、他社事例)</li>
+        <li>リスクアセスメント実践(監査手法)</li>
+        <li>インシデント対応(事故対応フロー、再発防止)</li>
+      </ul>
+      <div class="course-diff">攻撃と防御の両面+組織運用。基礎を知っているから意味がある応用編</div>
+      <a href="courses/c14/index.html" class="course-link">教材を開く</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════ LAYER 3 ════════ -->
+<div class="layer-strip" id="layer3">
+  <span class="layer-num">L3</span> 統合マスター
+</div>
+
+<section>
+  <div class="course-grid">
+
+    <!-- C15 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 15</div>
+      <h3>Gemini &amp; Google Workspace</h3>
+      <div class="sub">AI活用マスター</div>
+      <div class="course-meta">
+        <span class="meta-tag level">初級-中級</span>
+        <span class="meta-tag">8h</span>
+        <span class="meta-tag">7 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>Gemini for Workspace概要(Docs / Sheets / Slides / Gmail)</li>
+        <li>NotebookLM(社内資料AI分析、FAQ自動生成)</li>
+        <li>Docs x Gemini(文書作成、校正、要約の自動化)</li>
+        <li>Sheets x Gemini(データ分析、関数生成、可視化)</li>
+        <li>Slides x Gemini(プレゼン自動生成)</li>
+        <li>Gem / Canvas / Deep Research(高度な調査と分析)</li>
+        <li>Imagen 3による画像生成(資料用ビジュアル)</li>
+      </ul>
+      <a href="courses/c15/index.html" class="course-link">教材を開く</a>
+    </div>
+
+    <!-- C16 -->
+    <div class="course-card">
+      <div class="course-id">COURSE 16</div>
+      <h3>AI駆動開発マスター</h3>
+      <div class="sub">統合プロジェクト</div>
+      <div class="course-meta">
+        <span class="meta-tag level">上級</span>
+        <span class="meta-tag">15h</span>
+        <span class="meta-tag">8 Sections</span>
+      </div>
+      <ul class="course-sections">
+        <li>コンテキストエンジニアリング(AIに渡す文脈の設計論)</li>
+        <li>AI開発環境の最適構成(Copilot + Claude Code + Codex + MCP)</li>
+        <li>PJ1: SaaS型Webアプリ(要件定義→設計→実装→テスト→デプロイ)</li>
+        <li>PJ2: RAG搭載チャットボット(LangGraph + Dify + Slack)</li>
+        <li>PJ3: マルチエージェントシステム(MCP + A2A)</li>
+        <li>AI時代のチーム開発(CLAUDE.md / Agent MD / AGENTS.md横断設計)</li>
+        <li>パフォーマンス最適化とコスト管理</li>
+        <li>ポートフォリオ作成(受講証明に使えるプロジェクト一式)</li>
+      </ul>
+      <div class="course-diff">全ツール・全技術を組み合わせた卒業制作型。日本語圏にない</div>
+      <a href="courses/c16/index.html" class="course-link">教材を開く</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════ LEARNING PATHS ════════ -->
+<section id="paths">
+  <div class="section-label">Learning Paths</div>
+  <h2>推奨学習パス</h2>
+  <p class="section-desc">受講者の職種とゴールに応じた7つのルート。</p>
+
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','tertiaryColor':'#141414','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF','clusterBkg':'#111','clusterBorder':'#333','edgeLabelBackground':'#141414'}}}%%
+graph LR
+  START["<b>C01</b><br/>生成AI完全入門"] --> PA
+  START --> PB
+  START --> PC
+  START --> PD
+  START --> PE
+  START --> PF
+
+  subgraph PA["Path A : ビジネスユーザー"]
+    A1["C03<br/>Cowork"] --> A2["C02<br/>Claude"] --> A3["C11<br/>Prompt"] --> A4["C15<br/>Gemini"]
+  end
+
+  subgraph PB["Path B : 非エンジニア→アプリ開発"]
+    B1["C03<br/>Cowork"] --> B2["C10<br/>Vibe Coding"] --> B3["C14<br/>Security"]
+  end
+
+  subgraph PC["Path C : Anthropic / Claude軸"]
+    CC1["C02<br/>Claude"] --> CC2["C04<br/>CC基礎"] --> CC3["C07<br/>CC応用"] --> CC4["C13<br/>MCP/A2A"] --> CC5["C16<br/>Master"]
+  end
+
+  subgraph PD["Path D : GitHub / OpenAI軸"]
+    D1["C05<br/>Copilot"] --> D2["C06<br/>Codex"] --> D3["C08<br/>Codex応用"] --> D4["C12<br/>RAG"] --> D5["C16<br/>Master"]
+  end
+
+  subgraph PE["Path E : ノーコード / ワークフロー軸"]
+    E1["C09<br/>Dify"] --> E2["C13<br/>MCP/A2A"] --> E3["C16<br/>Master"]
+  end
+
+  subgraph PF["Path F : セキュリティ / 管理職"]
+    F1["C14<br/>Security実践"]
+  end
+    </pre>
+  </div>
+
+  <div class="path-grid">
+    <div class="path-card">
+      <h4>Path A</h4>
+      <div class="path-target">ビジネスユーザー</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C03</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C02</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C11</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C15</span>
+      </div>
+    </div>
+    <div class="path-card">
+      <h4>Path B</h4>
+      <div class="path-target">非エンジニア → アプリ開発</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C03</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C10</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C14</span>
+      </div>
+    </div>
+    <div class="path-card">
+      <h4>Path C</h4>
+      <div class="path-target">エンジニア Anthropic / Claude軸</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C02</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C04</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C07</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C13</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C16</span>
+      </div>
+    </div>
+    <div class="path-card">
+      <h4>Path D</h4>
+      <div class="path-target">エンジニア GitHub / OpenAI軸</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C05</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C06</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C08</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C12</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C16</span>
+      </div>
+    </div>
+    <div class="path-card">
+      <h4>Path E</h4>
+      <div class="path-target">ノーコード / ワークフロー軸</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C09</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C13</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C16</span>
+      </div>
+    </div>
+    <div class="path-card">
+      <h4>Path F</h4>
+      <div class="path-target">情報セキュリティ / 管理職</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C14</span>
+      </div>
+    </div>
+    <div class="path-card">
+      <h4>Path G</h4>
+      <div class="path-target">フルスタック(全部やる人)</div>
+      <div class="path-flow">
+        <span class="pf-node">C01</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C02</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C04</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C07</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C05</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C06</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C08</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C09</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C12</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C13</span><span class="pf-arrow">&rarr;</span>
+        <span class="pf-node">C16</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ PRIORITY ════════ -->
+<section id="priority">
+  <div class="section-label">Production Priority</div>
+  <h2>制作優先順位</h2>
+  <p class="section-desc">市場機会、既存教材の完成度、競合状況から判断。</p>
+
+  <div class="priority-list">
+    <div class="priority-item"><div class="priority-rank">1</div><div><div class="pi-name">C04 Claude Code基礎</div><div class="pi-reason">競合ゼロ。自社運用ノウハウが最も厚い</div></div></div>
+    <div class="priority-item"><div class="priority-rank">2</div><div><div class="pi-name">C07 Claude Code応用</div><div class="pi-reason">C04とセットで先行者利益。スキル/フック開発は独自性が高い</div></div></div>
+    <div class="priority-item"><div class="priority-rank">3</div><div><div class="pi-name">C13 MCP/A2A</div><div class="pi-reason">競合ゼロ。技術トレンドの中心</div></div></div>
+    <div class="priority-item"><div class="priority-rank">4</div><div><div class="pi-name">C05 Copilot基礎</div><div class="pi-reason">最多実績。教材が最も成熟</div></div></div>
+    <div class="priority-item"><div class="priority-rank">5</div><div><div class="pi-name">C06 Codex基礎</div><div class="pi-reason">競合ゼロ。C04との対比で受講者獲得</div></div></div>
+    <div class="priority-item"><div class="priority-rank">6</div><div><div class="pi-name">C01 生成AI完全入門</div><div class="pi-reason">全コースの入口。シリーズとして成立させる</div></div></div>
+    <div class="priority-item"><div class="priority-rank">7</div><div><div class="pi-name">C09 Dify実践</div><div class="pi-reason">3日間研修の教材が完成度高い</div></div></div>
+    <div class="priority-item"><div class="priority-rank">8</div><div><div class="pi-name">C02 Claude基礎</div><div class="pi-reason">C04/C07の前段として需要がある</div></div></div>
+    <div class="priority-item"><div class="priority-rank">9</div><div><div class="pi-name">C10 Vibe Coding</div><div class="pi-reason">トレンド真っ只中</div></div></div>
+    <div class="priority-item"><div class="priority-rank">10</div><div><div class="pi-name">C16 AI駆動開発マスター</div><div class="pi-reason">Layer 2が揃ってから</div></div></div>
+    <div class="priority-item"><div class="priority-rank">11</div><div><div class="pi-name">C08 Codex応用</div><div class="pi-reason">C06とセットで制作</div></div></div>
+    <div class="priority-item"><div class="priority-rank">12</div><div><div class="pi-name">C12 RAG実践</div><div class="pi-reason">既存RAG研修がベース</div></div></div>
+    <div class="priority-item"><div class="priority-rank">13</div><div><div class="pi-name">C03 Cowork基礎</div><div class="pi-reason">素材はあるが新規構成が必要</div></div></div>
+    <div class="priority-item"><div class="priority-rank">14</div><div><div class="pi-name">C14 Security実践</div><div class="pi-reason">既存セキュリティ研修がベース</div></div></div>
+    <div class="priority-item"><div class="priority-rank">15</div><div><div class="pi-name">C11 Prompt Eng.</div><div class="pi-reason">競合多い。差別化を練ってから</div></div></div>
+    <div class="priority-item"><div class="priority-rank">16</div><div><div class="pi-name">C15 Gemini/365</div><div class="pi-reason">素材がやや少ない</div></div></div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="site-footer">
+  EzoAI GenAI Training Series &mdash; 2026 &mdash; Mitsuki Yasuda
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#00A5BF',
+      primaryBorderColor: '#007A8F',
+      primaryTextColor: '#e8e8e8',
+      lineColor: '#00A5BF',
+      secondaryColor: '#1a1a1a',
+      tertiaryColor: '#141414',
+      background: '#141414',
+      mainBkg: '#1a1a1a',
+      nodeBorder: '#00A5BF',
+      clusterBkg: '#111',
+      clusterBorder: '#333',
+      titleColor: '#e8e8e8',
+      edgeLabelBackground: '#141414',
+      fontFamily: '"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'
+    },
+    flowchart: { curve: 'basis', padding: 20 }
+  });
+</script>
+</body>
+</html>

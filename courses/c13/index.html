@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C13 MCP/A2A AIエージェント開発 - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 エージェント</a><a href="#s2">02 MCPサーバー</a><a href="#s3">03 MCPクライアント</a><a href="#rA">Review A</a><a href="#s4">04 A2A</a><a href="#s5">05 マルチエージェント</a><a href="#rB">Review B</a><a href="#s6">06 Agent SDK</a><a href="#s7">07 n8n/Dify</a><a href="#s8">08 本番運用</a><a href="#s9">09 総合</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 13 / Layer 2 -- 技術特化</div>
+  <h1><span>MCP / A2A</span> AIエージェント開発</h1>
+  <p class="lead">AIエージェントがツールを使い、他のエージェントと協調して自律的にタスクを遂行する仕組みを構築します。MCP(Model Context Protocol)によるツール連携、A2A(Agent-to-Agent)によるエージェント間通信、Claude Agent SDKによる本格開発まで。MCP/A2A特化の日本語コースは他にありません。</p>
+  <div class="meta"><span class="tag">中級-上級</span><span class="tag">約10時間(600分)</span><span class="tag">9 Sections + 2 Review</span><span class="tag">ハンズオン比率 66%</span><span class="tag">理解度クイズ付き</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">AIエージェントとは <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s2">MCP -- MCPサーバー構築とツール定義 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s3">MCPクライアント実装 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li class="review-item"><a href="#rA">復習A -- MCPサーバー構築から動作テストまで <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s4">A2A -- エージェント間通信 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s5">マルチエージェントシステム <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li class="review-item"><a href="#rB">復習B -- A2A+マルチエージェント統合演習 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s6">Claude Agent SDK <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s7">n8n/Dify連携 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s8">本番運用 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s9">総合ハンズオン: MCPサーバー3つ+マルチエージェントWF <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">105min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: AIエージェントとは (50min: 講義30 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 50min(講義30 + ハンズオン20)</div><h2>AIエージェントとは</h2>
+<img src="assets/multi-agent.png" alt="マルチエージェントシステムの概念図" class="sec-hero-img">
+
+<h3>エージェントの定義</h3>
+<p>AIエージェントとは、与えられた目標に対して自律的に行動を計画し、ツールを使い、結果を観察して次の行動を決めるAIシステムのことです。チャットボットとの決定的な違いは「1回の質問に1回答える」のではなく「ゴールに到達するまでループを回す」点にあります。</p>
+<p>ファイルを検索してデータベースに書き込み、結果をSlackに通知する。この一連の流れを人間の介入なしにこなせるのがエージェントです。従来のチャットAIは「質問→回答」の1往復で完結していました。エージェントはそこに「判断→行動→観察」のサイクルを加え、複数ステップのタスクを自力で遂行します。</p>
+
+<h3>エージェントの構成要素</h3>
+<p>エージェントは4つのコンポーネントで構成されます。LLMが頭脳、Toolsが手足、Memoryが記憶、Planningが計画立案。どれが欠けてもエージェントとして機能しません。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TB
+  U["ユーザーの指示"] --> P["Planning<br/>計画立案"]
+  P --> L["LLM<br/>推論エンジン"]
+  L --> T["Tools<br/>ツール実行"]
+  T --> O["観察<br/>結果の評価"]
+  O -->|目標未達| L
+  O -->|目標達成| R["最終結果"]
+  M["Memory<br/>文脈・履歴"] <--> L
+</pre><div class="caption">エージェントの4コンポーネント: LLM + Tools + Memory + Planning</div></div>
+
+<table class="ct"><thead><tr><th>コンポーネント</th><th>役割</th><th>具体例</th></tr></thead><tbody>
+<tr><td>LLM(推論)</td><td>状況判断、次のアクション決定</td><td>Claude, GPT-4o, Gemini</td></tr>
+<tr><td>Tools(行動)</td><td>外部システムへの操作</td><td>ファイル読み書き、API呼出し、DB検索</td></tr>
+<tr><td>Memory(記憶)</td><td>過去の会話・結果の保持</td><td>コンテキストウィンドウ、外部ストレージ</td></tr>
+<tr><td>Planning(計画)</td><td>ゴールからの逆算、タスク分解</td><td>ReActパターン、ツリー探索</td></tr>
+</tbody></table>
+
+<h3>ReActパターン</h3>
+<p>エージェントの思考ループとして広く使われているのがReAct(Reasoning + Acting)パターンです。LLMがまず推論(Thought)を行い、次に行動(Action)を選択し、その結果を観察(Observation)する。この3ステップを目標達成まで繰り返します。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  T["Thought<br/>推論"] --> A["Action<br/>行動"]
+  A --> O["Observation<br/>観察"]
+  O -->|継続| T
+  O -->|完了| F["Final Answer"]
+</pre><div class="caption">ReActループ: 推論 → 行動 → 観察 を繰り返す</div></div>
+
+<details><summary>ReActの具体例: 天気に応じた服装提案</summary><div class="inner">
+<p>ユーザーが「明日の東京の天気に合った服装を提案して」と依頼した場合のReActループ:</p>
+<p>Thought 1: 明日の東京の天気を調べる必要がある。天気APIツールを使おう。</p>
+<p>Action 1: get_weather(location="Tokyo", date="tomorrow")</p>
+<p>Observation 1: 最高気温28度、晴れ時々曇り、降水確率20%</p>
+<p>Thought 2: 28度で晴れ。軽装で良いが、念のため薄手の上着も提案すべき。最終回答を作成する。</p>
+<p>Final Answer: 明日の東京は最高28度の晴れ予報です。半袖+薄手のカーディガンをお勧めします。</p>
+</div></details>
+
+<h3>エージェントの応用例</h3>
+<div class="cols">
+<div class="col-card"><h4>カスタマーサポート自動化</h4><p>問い合わせ内容を分類し、FAQから回答を検索。解決できない場合は自動でチケットを起票してエスカレーション。</p></div>
+<div class="col-card"><h4>コード生成・レビュー</h4><p>仕様書を読み取り、コードを生成し、テストを実行し、失敗したら自力でデバッグ。Claude CodeやCursor Agentがこのパターン。</p></div>
+<div class="col-card"><h4>データ分析</h4><p>CSVを読み込み、統計処理を行い、グラフを描画し、要約レポートを生成する。Code Interpreterの発展形。</p></div>
+<div class="col-card"><h4>調査レポート</h4><p>複数のWebソースを検索・要約し、整合性をチェックした上で構造化レポートとして出力。Deep Researchがこの代表例。</p></div>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. AIエージェントとチャットボットの最も本質的な違いはどれですか?</p>
+<label><input type="radio" name="q1" value="a">エージェントのほうがレスポンスが速い</label>
+<label><input type="radio" name="q1" value="b">エージェントは目標達成まで自律的にループを回す</label>
+<label><input type="radio" name="q1" value="c">エージェントは画像も扱える</label>
+<label><input type="radio" name="q1" value="d">エージェントはインターネットに接続できる</label>
+<div class="ans" id="a1">正解: B。チャットボットは1往復の質問応答で完結しますが、エージェントは推論→行動→観察のループを目標達成まで繰り返します。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. ReActパターンの3ステップの正しい順序はどれですか?</p>
+<label><input type="radio" name="q2" value="a">Action → Thought → Observation</label>
+<label><input type="radio" name="q2" value="b">Observation → Thought → Action</label>
+<label><input type="radio" name="q2" value="c">Thought → Action → Observation</label>
+<label><input type="radio" name="q2" value="d">Thought → Observation → Action</label>
+<div class="ans" id="a2">正解: C。まず推論(Thought)で次の行動を決め、行動(Action)を実行し、結果を観察(Observation)します。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: エージェント動作の体験 <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: Claude/ChatGPTのツール利用機能でエージェント的な動作を体験し、従来のチャットとの違いを実感する</div>
+
+<h4>パート1: ChatGPTのCode Interpreterでエージェント動作を観察(10min)</h4>
+<ol>
+<li>ChatGPT(GPT-4o)を開き、以下のプロンプトを送信してください</li>
+</ol>
+<div class="prompt" id="p_s1h1">以下のデータをCSVとして生成し、分析してください。
+
+商品名,売上(万円),前月比(%)
+商品A,520,105
+商品B,180,92
+商品C,340,118
+商品D,90,78
+商品E,410,101
+
+分析してほしいこと:
+1. 売上降順でソートした表
+2. 前月比が100%未満の商品を警告付きでリスト
+3. 棒グラフの作成
+4. 3行の要約コメント<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+<ol start="2">
+<li>ChatGPTがPythonコードを生成→実行→結果確認→次のステップへ進む様子を観察してください。これがReActループの実例です</li>
+</ol>
+
+<h4>パート2: Claudeのツール利用を観察(10min)</h4>
+<ol>
+<li>Claude(claude.ai)を開き、Artifactsがオンになっていることを確認してください</li>
+<li>以下のプロンプトを送信してください</li>
+</ol>
+<div class="prompt" id="p_s1h2">以下の要件でインタラクティブなダッシュボードを作ってください。
+
+データ:
+- 月次売上: 1月520万、2月490万、3月610万、4月580万
+- 目標: 月550万
+
+要件:
+- 棒グラフで月次売上を表示
+- 目標ラインを赤の点線で表示
+- 各月をクリックすると詳細がポップアップ
+- 達成/未達を色分け(達成=浅葱色、未達=グレー)<button class="cb" onclick="copyP('p_s1h2')">コピー</button></div>
+<ol start="3">
+<li>Claudeがコードを生成し、Artifactとしてプレビューを表示する流れを確認してください</li>
+<li>ChatGPTとClaudeのアプローチの違い(Pythonコード実行 vs Artifact生成)を比較してみてください</li>
+</ol>
+
+<details><summary>観察ポイント</summary><div class="inner">
+<p>ChatGPTはCode Interpreterでサーバーサイド実行し、画像やファイルとして結果を返します。Claudeはフロントエンドで動くHTML/JS/Reactを生成し、ブラウザ上でインタラクティブに動くアプリケーションを返します。どちらもエージェント的な動作ですが、ツールの性質が異なるため出力の形も変わります。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">ReAct: Synergizing Reasoning and Acting in Language Models</a> -- ReActパターンの原論文</li>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents (Anthropic)</a> -- エージェント設計のベストプラクティス</li>
+<li><a href="https://docs.anthropic.com/en/docs/agents-and-tools" target="_blank" rel="noopener">Anthropic Docs: Agents and Tools</a> -- Claudeのツール利用公式ドキュメント</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: MCP -- MCPサーバー構築とツール定義 (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 60min(講義25 + ハンズオン35)</div><h2>MCP -- MCPサーバー構築とツール定義</h2>
+
+<img src="assets/mcp-docs.png" alt="MCP公式ドキュメントサイト" class="sec-hero-img" style="max-width:640px;">
+<p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:8px;">MCP公式サイト(modelcontextprotocol.io) -- 仕様書、チュートリアル、SDK、サーバー一覧が揃っている</p>
+
+<h3>MCPとは</h3>
+<p>MCP(Model Context Protocol)は、Anthropicが2024年11月に公開したAIツール連携の標準プロトコルです。LLMが外部ツールやデータにアクセスする際の「共通言語」を定めたもので、USB-Cのように1つの規格でさまざまなツールとつながります。</p>
+<p>MCP以前は、各AIプラットフォームがそれぞれ独自のツール連携方式を持っていました。OpenAIのFunction Calling、AnthropicのTool Use、GoogleのFunction Callingは微妙に仕様が違い、開発者は各プラットフォーム向けに個別実装を強いられていた。MCPはその統一規格として登場し、一度作ったサーバーをClaude Desktop、Claude Code、VS Code、Cursor、n8nなど複数のホストから使い回せるようにしました。</p>
+
+<h3>MCPアーキテクチャ</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  H["Host<br/>Claude Desktop等"] --> C["MCP Client<br/>プロトコル処理"]
+  C -->|JSON-RPC| S1["MCP Server A<br/>天気API"]
+  C -->|JSON-RPC| S2["MCP Server B<br/>DB検索"]
+  C -->|JSON-RPC| S3["MCP Server C<br/>ファイル操作"]
+  S1 --> E1["外部API"]
+  S2 --> E2["PostgreSQL"]
+  S3 --> E3["ローカルFS"]
+</pre><div class="caption">MCPアーキテクチャ: Host → Client → Server → External Resource</div></div>
+
+<table class="ct"><thead><tr><th>レイヤー</th><th>役割</th><th>具体例</th></tr></thead><tbody>
+<tr><td>Host</td><td>ユーザーとLLMの接点</td><td>Claude Desktop, Claude Code, Cursor</td></tr>
+<tr><td>MCP Client</td><td>サーバーとの通信管理</td><td>Host内部に組み込まれている</td></tr>
+<tr><td>MCP Server</td><td>ツール・リソースの提供</td><td>自作サーバー、公式サーバー群</td></tr>
+<tr><td>External Resource</td><td>実際のデータ・システム</td><td>API、DB、ファイルシステム</td></tr>
+</tbody></table>
+
+<h3>MCPの3つの機能</h3>
+<div class="cols">
+<div class="col-card"><h4>Tools(ツール実行)</h4><p>LLMが関数として呼び出せるアクション。天気取得、DB検索、ファイル作成など。MCPの最も基本的な機能で、このコースの主軸です。</p></div>
+<div class="col-card"><h4>Resources(データ読取)</h4><p>LLMが読み取れるデータソース。ファイル内容、API応答、ログなど。ツールと違い「データを返すだけ」で外部に副作用を起こしません。</p></div>
+</div>
+<div class="cols">
+<div class="col-card" style="grid-column:span 2;"><h4>Prompts(テンプレート)</h4><p>再利用可能なプロンプトテンプレート。ユーザーがスラッシュコマンドのように呼び出せます。例: /summarize で要約テンプレートを呼び出す。</p></div>
+</div>
+
+<h3>公開MCPサーバー -- 人気Top10</h3>
+<p><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">公式リポジトリ</a>には、すぐに使えるMCPサーバーが多数公開されています。自作する前に、既存のサーバーで要件を満たせないか確認してください。</p>
+<table class="ct"><thead><tr><th>#</th><th>サーバー名</th><th>機能</th><th>利用場面</th></tr></thead><tbody>
+<tr><td>1</td><td>filesystem</td><td>ローカルファイルの読み書き・検索</td><td>コード生成時のファイル操作、ドキュメント参照</td></tr>
+<tr><td>2</td><td>github</td><td>リポジトリ操作、Issue/PR管理</td><td>開発ワークフロー自動化、コードレビュー支援</td></tr>
+<tr><td>3</td><td>postgres</td><td>PostgreSQLのクエリ実行・スキーマ取得</td><td>DB分析、データ抽出、SQLデバッグ</td></tr>
+<tr><td>4</td><td>slack</td><td>メッセージ送信・チャンネル管理</td><td>通知自動化、チャンネル要約</td></tr>
+<tr><td>5</td><td>google-drive</td><td>Drive内ファイルの検索・読取</td><td>社内ドキュメント検索、RAGのデータソース</td></tr>
+<tr><td>6</td><td>brave-search</td><td>Web検索(Brave Search API)</td><td>最新情報の取得、ファクトチェック</td></tr>
+<tr><td>7</td><td>puppeteer</td><td>ブラウザ自動操作、スクレイピング</td><td>Web UI テスト、データ収集</td></tr>
+<tr><td>8</td><td>sqlite</td><td>SQLiteのDB操作</td><td>ローカルDB分析、プロトタイプ開発</td></tr>
+<tr><td>9</td><td>memory</td><td>永続的なキーバリュー記憶</td><td>会話履歴の保持、ユーザー設定の記憶</td></tr>
+<tr><td>10</td><td>fetch</td><td>HTTP リクエスト送信</td><td>外部API呼出し、Webhook連携</td></tr>
+</tbody></table>
+<p>これらはnpx -y @modelcontextprotocol/server-[名前] の形式でインストールできるものが多く、claude_desktop_config.jsonに数行追記するだけで使い始められます。</p>
+
+<h3>TypeScript SDKでMCPサーバーを自作する</h3>
+<p>MCPサーバーの実装は驚くほどシンプルです。@modelcontextprotocol/sdk パッケージをインストールし、server.tool() でツールを定義するだけ。以下が最小構成のコードです。</p>
+
+<div class="prompt" id="p_s2code1">// weather-server.ts -- 天気情報取得MCPサーバー
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+// サーバーインスタンス生成
+const server = new McpServer({
+  name: "weather-server",
+  version: "1.0.0",
+});
+
+// ツール定義: get_weather
+server.tool(
+  "get_weather",                          // ツール名
+  "指定都市の天気情報を取得します",          // 説明文(LLMがツール選択時に参照)
+  {
+    city: z.string().describe("都市名(例: Tokyo, Osaka)"),
+    units: z.enum(["celsius", "fahrenheit"]).default("celsius")
+      .describe("温度単位"),
+  },
+  async ({ city, units }) => {
+    // ここで実際の天気APIを呼ぶ(例ではモックデータ)
+    const weatherData = {
+      city,
+      temperature: units === "celsius" ? 22 : 72,
+      condition: "晴れ",
+      humidity: 45,
+    };
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify(weatherData, null, 2),
+      }],
+    };
+  }
+);
+
+// stdioトランスポートで起動
+const transport = new StdioServerTransport();
+await server.connect(transport);
+console.error("Weather MCP Server running on stdio");<button class="cb" onclick="copyP('p_s2code1')">コピー</button></div>
+
+<h4>コードのポイント</h4>
+<ul>
+<li><strong>McpServer</strong> -- サーバーの中核。name/versionはAgent Cardとして使われる</li>
+<li><strong>server.tool()</strong> -- 第1引数がツール名、第2引数がLLM向け説明、第3引数がinputSchema(Zodで定義)、第4引数がhandler関数</li>
+<li><strong>Zod</strong> -- inputSchemaの定義にZodを使う。.describe()でパラメータの説明を付与するとLLMの精度が上がる</li>
+<li><strong>StdioServerTransport</strong> -- stdin/stdoutで通信。Claude DesktopやClaude Codeとの接続に最適</li>
+</ul>
+
+<div class="box tip"><div class="bt">Tips: ツール説明文がLLMの精度を決める</div>server.tool()の第2引数(説明文)とZodスキーマの.describe()は、LLMがどのツールをいつ使うか判断する際の手がかりになります。曖昧な説明だとLLMは正しくツールを選べません。「天気を返す」ではなく「指定都市の現在の天気情報(気温、天候、湿度)をJSON形式で取得します」のように具体的に書いてください。</div>
+
+<h4>package.jsonの設定</h4>
+<div class="prompt" id="p_s2pkg">{
+  "name": "weather-mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  }
+}<button class="cb" onclick="copyP('p_s2pkg')">コピー</button></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: カスタムMCPサーバー構築 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: TypeScript SDKで天気情報MCPサーバーを構築し、MCP Inspectorでテストする</div>
+
+<h4>Step 1: プロジェクト作成(5min)</h4>
+<div class="prompt" id="p_s2h1"># プロジェクトディレクトリ作成
+mkdir weather-mcp-server && cd weather-mcp-server
+
+# package.json初期化
+npm init -y
+
+# 依存パッケージインストール
+npm install @modelcontextprotocol/sdk zod
+npm install -D typescript @types/node
+
+# TypeScript設定
+npx tsc --init --target es2022 --module nodenext --moduleResolution nodenext --outDir dist
+
+# package.jsonに "type": "module" を追加
+# (手動でpackage.jsonを編集してください)<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>Step 2: サーバーコード作成(10min)</h4>
+<p>src/index.ts を作成し、上記のweather-server.tsの内容を記述してください。余裕がある方は以下の拡張に挑戦してみてください:</p>
+<ul>
+<li>get_forecast ツールを追加(3日間の天気予報を返す)</li>
+<li>都市名のバリデーションを追加(Tokyo, Osaka, Nagoya等の限定リスト)</li>
+</ul>
+
+<h4>Step 3: ビルドとテスト(10min)</h4>
+<div class="prompt" id="p_s2h3"># TypeScriptビルド
+npx tsc
+
+# MCP Inspectorで動作確認
+npx @modelcontextprotocol/inspector node dist/index.js</div>
+<p>MCP Inspectorが起動したら、ブラウザで表示されるUIからget_weatherツールを実行し、レスポンスを確認してください。</p>
+
+<h4>Step 4: ツールの追加(10min)</h4>
+<p>もう1つのツール get_forecast を追加してください。</p>
+<div class="prompt" id="p_s2h4">// get_forecast ツールを追加
+server.tool(
+  "get_forecast",
+  "指定都市の3日間天気予報を取得します",
+  {
+    city: z.string().describe("都市名"),
+    days: z.number().min(1).max(7).default(3).describe("予報日数"),
+  },
+  async ({ city, days }) => {
+    const forecast = Array.from({ length: days }, (_, i) => ({
+      date: new Date(Date.now() + (i + 1) * 86400000)
+        .toISOString().split("T")[0],
+      city,
+      temperature: Math.round(18 + Math.random() * 12),
+      condition: ["晴れ", "曇り", "雨"][Math.floor(Math.random() * 3)],
+    }));
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify(forecast, null, 2),
+      }],
+    };
+  }
+);<button class="cb" onclick="copyP('p_s2h4')">コピー</button></div>
+
+<details><summary>うまくいかない場合のチェックリスト</summary><div class="inner">
+<p>tsconfig.json の module が "nodenext" になっているか確認してください。ESModuleのimport文に .js 拡張子が必要な場合があります。</p>
+<p>package.jsonに "type": "module" が入っているか確認してください。</p>
+<p>npx tsc でビルドエラーが出る場合はTypeScriptのバージョンを5.7以上に更新してください。</p>
+</div></details>
+</div>
+
+<a href="#" class="dl" onclick="downloadMcpServerTemplate();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>MCPサーバーテンプレート(.ts)をダウンロード</a>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol 公式サイト</a> -- 仕様書とチュートリアル</li>
+<li><a href="https://modelcontextprotocol.io/quickstart/server" target="_blank" rel="noopener">MCP Quickstart: Server</a> -- 公式のサーバー構築ガイド</li>
+<li><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">MCP公式サーバーリポジトリ</a> -- 公式・コミュニティ製サーバーの一覧</li>
+<li><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank" rel="noopener">TypeScript SDK</a> -- @modelcontextprotocol/sdk のソースコード</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: MCPクライアント実装 (55min: 講義20 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 55min(講義20 + ハンズオン35)</div><h2>MCPクライアント実装</h2>
+
+<h3>Claude DesktopでのMCP接続</h3>
+<p>Claude Desktopは設定ファイル1つでMCPサーバーに接続できます。macOSでは ~/Library/Application Support/Claude/claude_desktop_config.json 、Windowsでは %APPDATA%\Claude\claude_desktop_config.json に以下を記述します。</p>
+
+<div class="prompt" id="p_s3cfg1">// claude_desktop_config.json
+{
+  "mcpServers": {
+    "weather": {
+      "command": "node",
+      "args": ["/absolute/path/to/weather-mcp-server/dist/index.js"]
+    }
+  }
+}<button class="cb" onclick="copyP('p_s3cfg1')">コピー</button></div>
+
+<p>Claude Desktopを再起動すると、チャット画面のツールアイコンに get_weather と get_forecast が表示されるはずです。「東京の天気を教えて」と聞けば、Claudeが自動的にget_weatherツールを呼び出します。</p>
+
+<h3>Claude Code / VS CodeでのMCP接続</h3>
+<p>Claude Codeでは、プロジェクトルートに .mcp.json を置きます。</p>
+
+<div class="prompt" id="p_s3cfg2">// .mcp.json(プロジェクトルートに配置)
+{
+  "mcpServers": {
+    "weather": {
+      "command": "node",
+      "args": ["./weather-mcp-server/dist/index.js"]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"]
+    }
+  }
+}<button class="cb" onclick="copyP('p_s3cfg2')">コピー</button></div>
+
+<div class="box tip"><div class="bt">Tips: .mcp.json のスコープ</div>
+.mcp.json はプロジェクトスコープです。グローバルに使いたいMCPサーバーは ~/.claude.json の mcpServers に定義してください。チーム共有する場合は .mcp.json をGitにコミットし、個人のAPIキー等は環境変数経由で渡すのが定番の運用です。
+</div>
+
+<h3>トランスポートの種類</h3>
+<table class="ct"><thead><tr><th>トランスポート</th><th>通信方式</th><th>用途</th><th>対応ホスト</th></tr></thead><tbody>
+<tr><td>stdio</td><td>stdin/stdout</td><td>ローカル実行。最もシンプル</td><td>Claude Desktop, Claude Code, Cursor</td></tr>
+<tr><td>SSE</td><td>HTTP Server-Sent Events</td><td>リモートサーバー。レガシー</td><td>一部ホスト</td></tr>
+<tr><td>Streamable HTTP</td><td>HTTP POST + SSE</td><td>リモートサーバー。推奨</td><td>最新ホスト</td></tr>
+</tbody></table>
+
+<p>ローカル開発ではstdioを選んでおけば間違いありません。本番運用でリモートサーバーとしてデプロイする場合はStreamable HTTPが推奨されています。SSEは後方互換のために残っていますが、新規開発では使わないでください。</p>
+
+<h3>カスタムクライアントの実装</h3>
+<p>Claude DesktopやClaude Code以外のアプリケーションからMCPサーバーを呼びたい場合は、自前でMCPクライアントを実装します。</p>
+
+<div class="prompt" id="p_s3client">// mcp-client.ts -- カスタムMCPクライアント
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
+// MCPサーバープロセスを起動して接続
+const transport = new StdioClientTransport({
+  command: "node",
+  args: ["./weather-mcp-server/dist/index.js"],
+});
+
+const client = new Client({
+  name: "my-app",
+  version: "1.0.0",
+});
+
+await client.connect(transport);
+
+// 利用可能なツール一覧を取得
+const tools = await client.listTools();
+console.log("Available tools:", tools.tools.map(t => t.name));
+
+// ツールを実行
+const result = await client.callTool({
+  name: "get_weather",
+  arguments: { city: "Tokyo", units: "celsius" },
+});
+console.log("Result:", result.content);
+
+// 切断
+await client.close();<button class="cb" onclick="copyP('p_s3client')">コピー</button></div>
+
+<div class="quiz"><h4>理解度チェック: Section 03</h4>
+<div class="q"><p>Q3. Claude DesktopでMCPサーバーに接続する際、設定ファイルの名前はどれですか?</p>
+<label><input type="radio" name="q3" value="a">.mcp.json</label>
+<label><input type="radio" name="q3" value="b">claude_desktop_config.json</label>
+<label><input type="radio" name="q3" value="c">mcp_settings.yaml</label>
+<label><input type="radio" name="q3" value="d">config.toml</label>
+<div class="ans" id="a3">正解: B。Claude Desktopは claude_desktop_config.json を使います。.mcp.json はClaude Code/VS Code用のプロジェクトスコープ設定です。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: MCPサーバーをClaude Desktop/Claude Codeに接続 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: Sec02で構築した天気MCPサーバーをClaude DesktopとClaude Codeに接続し、自然言語で天気ツールを呼び出す</div>
+
+<h4>Step 1: Claude Desktop接続(15min)</h4>
+<ol>
+<li>claude_desktop_config.json を作成/編集してください(パスは上記参照)</li>
+<li>mcpServersにweatherサーバーの設定を追加(絶対パスを使用)</li>
+<li>Claude Desktopを再起動</li>
+<li>チャット画面で「東京の天気を教えて」と入力し、ツールが呼び出されることを確認</li>
+<li>「大阪の3日間の天気予報を見せて」と入力し、get_forecastが呼ばれることも確認</li>
+</ol>
+
+<h4>Step 2: Claude Code接続(10min)</h4>
+<ol>
+<li>作業ディレクトリに .mcp.json を作成</li>
+<li>Claude Codeを起動して /mcp コマンドでサーバーの接続状態を確認</li>
+<li>「天気サーバーで札幌の天気を取得して」と指示</li>
+</ol>
+
+<h4>Step 3: カスタムクライアントの実行(10min)</h4>
+<ol>
+<li>上記のmcp-client.tsをプロジェクトに追加</li>
+<li>ビルドして実行し、ツール一覧とget_weatherの実行結果がコンソールに出力されることを確認</li>
+</ol>
+
+<div class="prompt" id="p_s3h3"># カスタムクライアントをビルド・実行
+npx tsc
+node dist/mcp-client.js<button class="cb" onclick="copyP('p_s3h3')">コピー</button></div>
+
+<details><summary>Claude Desktopでツールが表示されない場合</summary><div class="inner">
+<p>claude_desktop_config.json のパスが絶対パスになっているか確認してください。相対パスだとサーバープロセスが見つかりません。</p>
+<p>Claude Desktopのログ(~/Library/Logs/Claude/ 以下)を確認し、MCPサーバーの起動エラーがないか見てください。</p>
+<p>nodeコマンドのパスが通っているかも確認点です。which nodeの出力をcommandフィールドに直接指定すると確実です。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://modelcontextprotocol.io/quickstart/client" target="_blank" rel="noopener">MCP Quickstart: Client</a> -- 公式のクライアント構築ガイド</li>
+<li><a href="https://modelcontextprotocol.io/docs/concepts/transports" target="_blank" rel="noopener">MCP Transports</a> -- stdio / SSE / Streamable HTTPの仕様</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習A (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">復習A -- 30min</div><h2>復習: MCPサーバー構築から動作テストまで</h2>
+<p>Sec02〜03で学んだ内容を一気通貫で実践します。新しいMCPサーバーをゼロから構築し、Claude DesktopまたはClaude Codeに接続して動作確認するまでを30分で完了してください。</p>
+
+<div class="handson">
+<div class="hs-title">復習演習: 計算ツールMCPサーバー <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 四則演算ツールを持つMCPサーバーを構築し、ホストアプリから呼び出す</div>
+
+<h4>要件</h4>
+<ul>
+<li>サーバー名: calc-server</li>
+<li>ツール1: calculate -- 2つの数値と演算子(+, -, *, /)を受け取り結果を返す</li>
+<li>ツール2: convert_unit -- 値と変換元単位・変換先単位を受け取り変換結果を返す(例: km→miles)</li>
+<li>Claude DesktopまたはClaude Codeに接続して「100kmをマイルに変換して」で動作確認</li>
+</ul>
+
+<ul class="checklist">
+<li>プロジェクトを作成し依存パッケージをインストールした</li>
+<li>calculateツールを実装した</li>
+<li>convert_unitツールを実装した</li>
+<li>MCP Inspectorでテストした</li>
+<li>Claude Desktop or Claude Codeに接続した</li>
+<li>自然言語で呼び出して結果を確認した</li>
+</ul>
+
+<details><summary>ヒント: convert_unitの実装例</summary><div class="inner">
+<div class="prompt" id="p_rAhint">server.tool(
+  "convert_unit",
+  "単位変換を行います(距離、重量、温度に対応)",
+  {
+    value: z.number().describe("変換する値"),
+    from: z.string().describe("変換元の単位(例: km, kg, celsius)"),
+    to: z.string().describe("変換先の単位(例: miles, lbs, fahrenheit)"),
+  },
+  async ({ value, from, to }) => {
+    const conversions: Record&lt;string, Record&lt;string, (v: number) => number>> = {
+      km: { miles: (v) => v * 0.621371 },
+      miles: { km: (v) => v * 1.60934 },
+      kg: { lbs: (v) => v * 2.20462 },
+      lbs: { kg: (v) => v * 0.453592 },
+      celsius: { fahrenheit: (v) => v * 9/5 + 32 },
+      fahrenheit: { celsius: (v) => (v - 32) * 5/9 },
+    };
+    const fn = conversions[from]?.[to];
+    if (!fn) {
+      return { content: [{ type: "text", text: `未対応の変換: ${from} → ${to}` }] };
+    }
+    const result = fn(value);
+    return {
+      content: [{ type: "text", text: `${value} ${from} = ${result.toFixed(4)} ${to}` }],
+    };
+  }
+);<button class="cb" onclick="copyP('p_rAhint')">コピー</button></div>
+</div></details>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: A2A -- エージェント間通信 (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 55min(講義25 + ハンズオン30)</div><h2>A2A -- エージェント間通信</h2>
+
+<h3>A2Aプロトコルとは</h3>
+<p>A2A(Agent-to-Agent)は、Googleが2025年4月に公開したエージェント間通信の標準プロトコルです。MCPが「AIがツールを使う」ための規格なのに対し、A2Aは「AIがAIに仕事を委託する」ための規格です。</p>
+<p>人間の組織に例えるとわかりやすい。MCPはオフィスの複合機やデータベースのような「道具」との接続。A2Aは社内の別部署や外注先への「依頼」。道具は使い方を知っていれば誰でも操作できますが、他の部署に仕事を頼むには相手の能力(何ができるか)を知り、依頼のフォーマットを合わせ、成果物を受け取る手順が必要です。A2Aはそのプロトコルを標準化したものです。</p>
+
+<h3>MCPとA2Aの使い分け</h3>
+<table class="ct"><thead><tr><th>項目</th><th>MCP(Model Context Protocol)</th><th>A2A(Agent-to-Agent)</th></tr></thead><tbody>
+<tr><td>提唱元</td><td>Anthropic(2024年11月)</td><td>Google(2025年4月)</td></tr>
+<tr><td>目的</td><td>AIがツール/データにアクセス</td><td>AIがAIに仕事を委託</td></tr>
+<tr><td>比喩</td><td>道具を使う</td><td>同僚に頼む</td></tr>
+<tr><td>通信相手</td><td>MCPサーバー(ツール)</td><td>他のAIエージェント</td></tr>
+<tr><td>発見方法</td><td>設定ファイルで手動接続</td><td>Agent Cardで自動発見</td></tr>
+<tr><td>状態管理</td><td>ステートレス(各呼び出しが独立)</td><td>ステートフル(タスクの進捗管理)</td></tr>
+<tr><td>主なユースケース</td><td>DB検索、ファイル操作、API呼出し</td><td>調査依頼、翻訳依頼、レビュー依頼</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: MCP + A2Aの併用が本命</div>MCPとA2Aは競合ではなく補完関係にあります。各エージェントがMCPでツールを使い、エージェント同士はA2Aで連携する。この組み合わせがマルチエージェントシステムの設計パターンとして定着しつつあります。</div>
+
+<h3>A2Aの構成要素</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  CA["Client Agent<br/>依頼者"] -->|1. Agent Card取得| AC["/.well-known/<br/>agent.json"]
+  CA -->|2. Task送信| SA["Server Agent<br/>実行者"]
+  SA -->|3. Message返信| CA
+  SA -->|4. Artifact生成| CA
+</pre><div class="caption">A2Aの基本フロー: Agent Card発見 → Task送信 → Message/Artifact受信</div></div>
+
+<table class="ct"><thead><tr><th>要素</th><th>役割</th><th>説明</th></tr></thead><tbody>
+<tr><td>Agent Card</td><td>エージェントの自己紹介</td><td>name, description, skills, endpointを含むJSON。/.well-known/agent.json に配置</td></tr>
+<tr><td>Task</td><td>仕事の単位</td><td>一意のIDを持ち、状態(submitted, working, completed, failed)を遷移</td></tr>
+<tr><td>Message</td><td>タスク内のやりとり</td><td>テキスト、ファイル等を含む。roleはuser/agent</td></tr>
+<tr><td>Artifact</td><td>成果物</td><td>タスクの最終出力。ファイル、テキスト、構造化データ</td></tr>
+</tbody></table>
+
+<h3>Agent Cardの設計</h3>
+<p>Agent CardはA2Aの出発点です。他のエージェントがあなたのエージェントを「発見」し「何ができるか」を理解するための名刺のようなものです。</p>
+
+<div class="prompt" id="p_s4card">// /.well-known/agent.json -- Agent Card
+{
+  "name": "research-agent",
+  "description": "Webリサーチを行い、構造化されたレポートを生成するエージェント",
+  "url": "https://research-agent.example.com",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "web-research",
+      "name": "Webリサーチ",
+      "description": "指定トピックについてWebを検索し、要約レポートを生成します",
+      "tags": ["research", "summarization", "web-search"],
+      "examples": [
+        "2026年のAIエージェント市場動向を調査して",
+        "MCPとA2Aの技術比較レポートを作成して"
+      ]
+    }
+  ],
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text", "file"]
+}<button class="cb" onclick="copyP('p_s4card')">コピー</button></div>
+
+<h3>Agent Cardの完全なJSON例</h3>
+<p>Agent Cardは A2Aにおけるエージェントの「名刺」です。実運用レベルのAgent Cardには、capabilities、authentication、skills の各セクションを網羅的に記述する必要があります。</p>
+<div class="prompt" id="p_s4card_full">{
+  "name": "translation-agent",
+  "description": "多言語翻訳を行うエージェント。技術文書、ビジネス文書、カジュアルな文体に対応",
+  "url": "https://translation.example.com",
+  "version": "2.1.0",
+  "documentationUrl": "https://translation.example.com/docs",
+  "provider": {
+    "organization": "Example Corp",
+    "url": "https://example.com"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": true,
+    "stateTransitionHistory": false
+  },
+  "authentication": {
+    "schemes": ["bearer"],
+    "credentials": "OAuth2 Bearer Token required"
+  },
+  "defaultInputModes": ["text", "file"],
+  "defaultOutputModes": ["text", "file"],
+  "skills": [
+    {
+      "id": "translate-document",
+      "name": "ドキュメント翻訳",
+      "description": "PDF/DOCX/テキストファイルを指定言語に翻訳。原文のフォーマットを可能な限り保持",
+      "tags": ["translation", "document", "multilingual"],
+      "examples": [
+        "この技術仕様書を英語に翻訳して",
+        "README.mdを日本語に翻訳して、技術用語は英語のまま残して"
+      ],
+      "inputModes": ["text", "file"],
+      "outputModes": ["text", "file"]
+    },
+    {
+      "id": "review-translation",
+      "name": "翻訳レビュー",
+      "description": "既存の翻訳文の品質をチェックし、改善提案を返す",
+      "tags": ["review", "quality-check", "translation"],
+      "examples": [
+        "この英訳の自然さをチェックして改善案を出して"
+      ],
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    }
+  ]
+}<button class="cb" onclick="copyP('p_s4card_full')">コピー</button></div>
+<p>authenticationセクションを入れることで、認証が必要なエージェント同士の連携が可能になります。providerフィールドは「このエージェントを誰が運営しているか」を示す情報で、信頼性の判断材料として使われます。</p>
+
+<div class="quiz"><h4>理解度チェック: Section 04</h4>
+<div class="q"><p>Q4. MCPとA2Aの最も本質的な違いはどれですか?</p>
+<label><input type="radio" name="q4" value="a">MCPはGoogle製、A2AはAnthropic製</label>
+<label><input type="radio" name="q4" value="b">MCPはAIがツールにアクセス、A2AはAIがAIに仕事を委託</label>
+<label><input type="radio" name="q4" value="c">MCPはPython用、A2AはTypeScript用</label>
+<label><input type="radio" name="q4" value="d">MCPは無料、A2Aは有料</label>
+<div class="ans" id="a4">正解: B。MCPは道具との接続、A2Aは同僚への依頼。提唱元はMCPがAnthropic、A2AがGoogleです(Aの記述は逆)。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: Agent Cardの設計とタスク委譲 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 自分のエージェント用Agent Cardを設計し、A2Aプロトコルに基づくタスク委譲の流れを実装する</div>
+
+<h4>Step 1: Agent Cardの設計(10min)</h4>
+<p>以下のいずれかのエージェントのAgent Cardを設計してください:</p>
+<ul>
+<li>翻訳エージェント -- 日英翻訳を行う</li>
+<li>コードレビューエージェント -- TypeScriptコードのレビューを行う</li>
+<li>データ可視化エージェント -- CSVデータからグラフを生成する</li>
+</ul>
+<p>上記のresearch-agentの例を参考に、skills, examples, inputModes, outputModesを具体的に定義してください。</p>
+
+<h4>Step 2: タスク送信のシミュレーション(10min)</h4>
+<div class="prompt" id="p_s4h2">// A2Aタスク送信のリクエスト例
+const taskRequest = {
+  jsonrpc: "2.0",
+  method: "tasks/send",
+  params: {
+    id: "task-001",
+    message: {
+      role: "user",
+      parts: [{
+        type: "text",
+        text: "MCPとA2Aの技術比較レポートを日本語で作成してください。各プロトコルの目的、アーキテクチャ、ユースケースを比較する形式でお願いします。"
+      }]
+    }
+  }
+};
+
+// タスクのレスポンス例
+const taskResponse = {
+  jsonrpc: "2.0",
+  result: {
+    id: "task-001",
+    status: { state: "completed" },
+    artifacts: [{
+      name: "comparison-report",
+      parts: [{
+        type: "text",
+        text: "# MCP vs A2A 技術比較レポート\n..."
+      }]
+    }]
+  }
+};<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<h4>Step 3: Agent Card発見フローの理解(10min)</h4>
+<p>A2Aでは、エージェントの発見に /.well-known/agent.json を使います。Webのrobots.txtやopenid-configurationと同じ発想です。</p>
+<div class="prompt" id="p_s4h3"># エージェント発見のHTTPリクエスト
+# 相手のドメインの /.well-known/agent.json を取得する
+curl https://research-agent.example.com/.well-known/agent.json
+
+# レスポンスからskillsを確認し、適切なエージェントかどうか判断
+# → skillsにweb-researchがあれば、調査タスクを委託可能<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+
+<details><summary>A2Aの現在の普及状況</summary><div class="inner">
+<p>A2Aは2025年4月にGoogleが公開した比較的新しいプロトコルです。2026年4月時点では、Google Cloud, Salesforce, SAP, LangChainなどが対応を表明しています。MCPほどの普及には至っていませんが、エージェント間連携の標準として注目度は高い。自前で完全なA2Aサーバーを実装するケースはまだ少なく、LangGraphやCrewAIなどのフレームワーク経由で利用するのが現実的です。</p>
+</div></details>
+</div>
+
+<a href="#" class="dl" onclick="downloadAgentCardTemplate();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Agent Cardテンプレート(.json)をダウンロード</a>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://google.github.io/A2A/" target="_blank" rel="noopener">A2A Protocol 公式ドキュメント</a> -- Googleによる仕様書</li>
+<li><a href="https://google.github.io/A2A/specification/" target="_blank" rel="noopener">A2A Specification</a> -- プロトコルの詳細仕様</li>
+<li><a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/" target="_blank" rel="noopener">A2A発表ブログ</a> -- Googleによる公式発表</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: マルチエージェントシステム (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 60min(講義25 + ハンズオン35)</div><h2>マルチエージェントシステム</h2>
+
+<h3>協調パターン3種</h3>
+<p>複数のエージェントが協力してタスクをこなす仕組みをマルチエージェントシステムと呼びます。設計パターンは大きく3つに分かれます。</p>
+
+<div class="cols">
+<div class="col-card"><h4>1. オーケストレーター型</h4><p>1つの統括エージェントが全体を制御し、サブエージェントにタスクを振り分ける。指揮者とオーケストラの関係。最も直感的で制御しやすいパターンです。</p></div>
+<div class="col-card"><h4>2. ピアツーピア型</h4><p>エージェント同士が対等に連携。中央制御がなく、各エージェントが自律的に他のエージェントに依頼する。柔軟だが設計の難度が高い。</p></div>
+</div>
+<div class="cols">
+<div class="col-card" style="grid-column:span 2;"><h4>3. パイプライン型</h4><p>エージェントが直列に並び、前のエージェントの出力が次のエージェントの入力になる。工場のラインのように順次処理。単純明快だが並列化できない。</p></div>
+</div>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TB
+  subgraph "1. オーケストレーター型"
+    O["Orchestrator"] --> A1["Research Agent"]
+    O --> A2["Writer Agent"]
+    O --> A3["Review Agent"]
+  end
+</pre><div class="caption">オーケストレーター型: 統括エージェントがサブエージェントを制御する</div></div>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  subgraph "2. ピアツーピア型"
+    P1["Agent A"] <--> P2["Agent B"]
+    P2 <--> P3["Agent C"]
+    P1 <--> P3
+  end
+</pre><div class="caption">ピアツーピア型: エージェントが対等に連携する</div></div>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  subgraph "3. パイプライン型"
+    L1["Researcher"] --> L2["Writer"] --> L3["Editor"] --> L4["Publisher"]
+  end
+</pre><div class="caption">パイプライン型: 前工程の出力が次工程の入力になる</div></div>
+
+<h3>設計上の注意点</h3>
+<table class="ct"><thead><tr><th>観点</th><th>問題</th><th>対策</th></tr></thead><tbody>
+<tr><td>タスク粒度</td><td>粒度が大きすぎるとエージェントが迷う</td><td>1エージェント=1責務の原則。明確なinput/outputを定義</td></tr>
+<tr><td>エラーハンドリング</td><td>1つのエージェントが失敗すると全体が停止</td><td>リトライ、フォールバック、タイムアウトの設定</td></tr>
+<tr><td>デッドロック</td><td>エージェントA→B→A→B...の無限ループ</td><td>最大ループ回数の設定、進捗チェック</td></tr>
+<tr><td>コスト</td><td>エージェント間のやりとりでトークン消費が爆発</td><td>要約を挟む、コンテキスト長を制限</td></tr>
+</tbody></table>
+
+<div class="box warn"><div class="bt">注意: デッドロック防止の具体策3つ</div>マルチエージェントシステムで最も危険なのは無限ループとデッドロックです。以下の3つの対策を必ず組み込んでください。
+<br><br>
+1. タイムアウト設定 -- 各エージェントの応答に制限時間を設ける(例: 30秒)。タイムアウトしたら「応答なし」として処理を続行するか、エラーを上位に返す。asyncio.wait_forやPromise.raceで実装可能
+<br><br>
+2. 最大ループ回数制限 -- エージェント間のやりとりに上限を設定(5〜10回が目安)。retry_countをStateに持たせ、上限に達したら強制的にENDノードへ遷移させる。LangGraphのConditional Edgeでの実装が最もシンプル
+<br><br>
+3. エスカレーション条件 -- 「解決できない」と判断した場合に人間に委ねるフロー。3回リトライしても品質NGなら「人間レビューが必要です」と返して処理を終了する。自律的に動き続けるのではなく「止まる判断」ができるエージェントが堅牢なシステムを作る
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 05</h4>
+<div class="q"><p>Q5. 以下のユースケースに最も適したマルチエージェントパターンはどれですか? 「調査→執筆→校正→公開」の順番で記事を作成する。</p>
+<label><input type="radio" name="q5" value="a">オーケストレーター型</label>
+<label><input type="radio" name="q5" value="b">ピアツーピア型</label>
+<label><input type="radio" name="q5" value="c">パイプライン型</label>
+<label><input type="radio" name="q5" value="d">どのパターンでも同じ</label>
+<div class="ans" id="a5">正解: C。順次処理で前工程の出力が次工程の入力になる典型的なパイプラインパターンです。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: オーケストレーター型マルチエージェント <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: リサーチ+ライティング+レビューの3エージェントを統括するオーケストレーターを構築する</div>
+
+<h4>概要</h4>
+<p>Claude APIを使い、3つの専門エージェントを持つオーケストレーターを構築します。各エージェントはsystem promptで専門性を定義し、オーケストレーターが順番に呼び出します。</p>
+
+<div class="prompt" id="p_s5h1">// multi-agent-orchestrator.ts
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+// 各エージェントのsystem prompt
+const agents = {
+  researcher: `あなたはリサーチ専門のエージェントです。
+与えられたトピックについて、以下の形式で調査結果を返してください:
+- 主要なポイント(3〜5個)
+- 各ポイントの根拠
+- 注意すべき点や限界`,
+
+  writer: `あなたはライティング専門のエージェントです。
+リサーチ結果を受け取り、読みやすい記事に仕上げてください:
+- 導入・本文・結論の構成
+- 専門用語には簡潔な説明を添える
+- 800〜1200文字程度`,
+
+  reviewer: `あなたはレビュー専門のエージェントです。
+記事を受け取り、以下の観点でフィードバックしてください:
+- 事実関係の正確性(疑わしい点を指摘)
+- 論理の一貫性
+- 改善提案(具体的に)
+- 総合評価(A/B/C)`,
+};
+
+async function callAgent(
+  role: string,
+  systemPrompt: string,
+  userMessage: string
+): Promise&lt;string> {
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 2048,
+    system: systemPrompt,
+    messages: [{ role: "user", content: userMessage }],
+  });
+  const text = response.content
+    .filter((b) => b.type === "text")
+    .map((b) => b.text)
+    .join("\n");
+  console.log(`\n--- ${role} output ---\n${text}\n`);
+  return text;
+}
+
+async function orchestrate(topic: string) {
+  console.log(`Orchestrating: "${topic}"\n`);
+
+  // Step 1: リサーチ
+  const research = await callAgent(
+    "Researcher",
+    agents.researcher,
+    `以下のトピックを調査してください: ${topic}`
+  );
+
+  // Step 2: ライティング
+  const article = await callAgent(
+    "Writer",
+    agents.writer,
+    `以下のリサーチ結果をもとに記事を書いてください:\n\n${research}`
+  );
+
+  // Step 3: レビュー
+  const review = await callAgent(
+    "Reviewer",
+    agents.reviewer,
+    `以下の記事をレビューしてください:\n\n${article}`
+  );
+
+  return { research, article, review };
+}
+
+// 実行
+const result = await orchestrate("MCPとA2Aプロトコルの比較");
+console.log("\n=== Orchestration Complete ===");<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>Step 1: セットアップ(5min)</h4>
+<div class="prompt" id="p_s5setup">mkdir multi-agent && cd multi-agent
+npm init -y
+npm install @anthropic-ai/sdk
+npm install -D typescript @types/node
+npx tsc --init --target es2022 --module nodenext --moduleResolution nodenext --outDir dist
+
+# ANTHROPIC_API_KEYが環境変数に設定されていることを確認
+echo $ANTHROPIC_API_KEY<button class="cb" onclick="copyP('p_s5setup')">コピー</button></div>
+
+<h4>Step 2: コード作成・実行(15min)</h4>
+<p>上記のコードをsrc/index.tsとして作成し、ビルド・実行してください。3つのエージェントが順番に実行される様子を観察します。</p>
+
+<h4>Step 3: 改良(15min)</h4>
+<p>以下のいずれかの改良に挑戦してください:</p>
+<ul>
+<li>レビューでB以下の場合、ライターに書き直しを依頼するループ</li>
+<li>リサーチャーにMCPツール(Web検索)を持たせる</li>
+<li>実行結果をMarkdownファイルとして出力</li>
+</ul>
+</div>
+
+<a href="#" class="dl" onclick="downloadMultiAgentSheet();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>マルチエージェント設計シート(.md)をダウンロード</a>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents (Anthropic)</a> -- オーケストレーターパターンの解説</li>
+<li><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph</a> -- Pythonでマルチエージェントを構築するフレームワーク</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習B (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">復習B -- 30min</div><h2>復習: A2A+マルチエージェントの統合演習</h2>
+
+<div class="handson">
+<div class="hs-title">復習演習: カスタマーサポートマルチエージェント <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 問い合わせ分類エージェント+FAQ検索エージェント+回答生成エージェントの3体構成を構築する</div>
+
+<h4>シナリオ</h4>
+<p>カスタマーサポートの自動化を想定します。ユーザーからの問い合わせを受け取り、3つのエージェントが協調して回答を生成します。</p>
+<ul>
+<li>Classifier Agent -- 問い合わせを「技術的問題」「請求関連」「一般質問」「その他」に分類</li>
+<li>FAQ Agent -- 分類結果に基づきFAQデータベースから関連情報を検索</li>
+<li>Responder Agent -- FAQ情報をもとに丁寧な回答を生成</li>
+</ul>
+
+<p>Sec05のオーケストレーターパターンを応用し、以下のテスト問い合わせで動作確認してください:</p>
+<ol>
+<li>「パスワードをリセットしたいのですが方法がわかりません」</li>
+<li>「先月の請求額が通常より高いのですが確認できますか」</li>
+<li>「サービスの解約手続きを教えてください」</li>
+</ol>
+
+<ul class="checklist">
+<li>3つのエージェント(Classifier, FAQ, Responder)のsystem promptを定義した</li>
+<li>オーケストレーターが3エージェントを順番に呼び出す実装をした</li>
+<li>3つのテスト問い合わせで動作確認した</li>
+<li>分類結果が適切だったか評価した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: Claude Agent SDK (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 60min(講義25 + ハンズオン35)</div><h2>Claude Agent SDK</h2>
+
+<h3>Claude Agent SDKとは</h3>
+<p>Claude Agent SDKは、Anthropicが公式に提供するエージェント開発フレームワークです。Pythonベースで、エージェント定義、ツール定義、ハンドオフ(エージェント間のタスク委譲)、ガードレールをシンプルなAPIで実装できます。</p>
+<p>Sec05ではsystem promptの切り替えでマルチエージェントを模倣しましたが、Agent SDKはその仕組みをフレームワークとして整理し、ツール呼び出し、ハンドオフ、ガードレールの制御を宣言的に書けるようにしたものです。</p>
+
+<h3>基本構成</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TB
+  U["ユーザー入力"] --> R["Runner.run()"]
+  R --> A["Agent<br/>(model + instructions)"]
+  A --> T1["@tool: search_web"]
+  A --> T2["@tool: read_file"]
+  A --> T3["@tool: send_email"]
+  A --> H["Handoff<br/>→ 別Agent"]
+  G["Guardrail<br/>入出力チェック"] -.-> A
+</pre><div class="caption">Claude Agent SDKの構成: Agent + Tools + Handoff + Guardrails</div></div>
+
+<h4>Agent定義</h4>
+<div class="prompt" id="p_s6agent">from claude_agent_sdk import Agent, tool, Runner
+
+# エージェントの定義
+research_agent = Agent(
+    name="research-agent",
+    model="claude-sonnet-4-20250514",
+    instructions="""あなたはリサーチ専門のエージェントです。
+ユーザーの質問に対し、search_webツールで情報を収集し、
+構造化されたレポートを返してください。""",
+    tools=[search_web, read_file],
+)<button class="cb" onclick="copyP('p_s6agent')">コピー</button></div>
+
+<h4>ツール定義(@tool デコレータ)</h4>
+<div class="prompt" id="p_s6tool">from claude_agent_sdk import tool
+
+@tool
+def search_web(query: str) -> str:
+    """Webを検索して結果を返します。
+
+    Args:
+        query: 検索クエリ(日本語可)
+    """
+    # 実際のWeb検索API呼出し(例ではモック)
+    return f"検索結果: '{query}' に関する情報が3件見つかりました..."
+
+@tool
+def read_file(path: str) -> str:
+    """ローカルファイルの内容を読み取ります。
+
+    Args:
+        path: ファイルパス
+    """
+    with open(path, "r") as f:
+        return f.read()
+
+@tool
+def send_email(to: str, subject: str, body: str) -> str:
+    """メールを送信します。
+
+    Args:
+        to: 送信先メールアドレス
+        subject: 件名
+        body: 本文
+    """
+    # 実際のメール送信処理
+    return f"メール送信完了: {to} / {subject}"<button class="cb" onclick="copyP('p_s6tool')">コピー</button></div>
+
+<h4>Handoff(タスク委譲)</h4>
+<p>Handoffは、あるエージェントが「この仕事は自分の専門外だ」と判断したとき、適切な別エージェントに引き継ぐ仕組みです。</p>
+
+<div class="prompt" id="p_s6handoff">from claude_agent_sdk import Agent, handoff
+
+# 専門エージェントの定義
+writer_agent = Agent(
+    name="writer",
+    model="claude-sonnet-4-20250514",
+    instructions="リサーチ結果を受け取り記事を執筆するエージェントです。",
+)
+
+reviewer_agent = Agent(
+    name="reviewer",
+    model="claude-sonnet-4-20250514",
+    instructions="記事をレビューしフィードバックするエージェントです。",
+)
+
+# メインエージェントにhandoffを設定
+main_agent = Agent(
+    name="orchestrator",
+    model="claude-sonnet-4-20250514",
+    instructions="""あなたはオーケストレーターです。
+リサーチ完了後、writerに執筆を依頼してください。
+執筆完了後、reviewerにレビューを依頼してください。""",
+    tools=[search_web],
+    handoffs=[writer_agent, reviewer_agent],
+)<button class="cb" onclick="copyP('p_s6handoff')">コピー</button></div>
+
+<h4>Handoffの具体的な動作例</h4>
+<p>Handoffの実際の動きをもう少し詳しく見ます。オーケストレーターが「このタスクは自分の担当外」と判断したとき、handoffs配列に登録された別エージェントに制御を移します。委譲先のエージェントは独自のinstructionsとtoolsを持ち、タスク完了後に結果を返します。</p>
+<div class="prompt" id="p_s6handoff_detail">from claude_agent_sdk import Agent, tool, Runner
+
+# 専門エージェント1: 翻訳
+@tool
+def translate_text(text: str, target_lang: str) -> str:
+    """テキストを指定言語に翻訳します。"""
+    # 実際にはDeepL APIやGoogle Translate APIを呼ぶ
+    return f"[{target_lang}翻訳] {text}"
+
+translation_agent = Agent(
+    name="translator",
+    model="claude-sonnet-4-20250514",
+    instructions="""翻訳専門のエージェントです。
+依頼されたテキストを指定言語に翻訳してください。
+技術用語は原語を括弧書きで残してください。""",
+    tools=[translate_text],
+)
+
+# 専門エージェント2: コードレビュー
+@tool
+def analyze_code(code: str) -> str:
+    """コードの問題点を分析します。"""
+    return f"分析結果: {len(code)}文字のコードを検査しました"
+
+code_review_agent = Agent(
+    name="code-reviewer",
+    model="claude-sonnet-4-20250514",
+    instructions="""コードレビュー専門のエージェントです。
+セキュリティ、パフォーマンス、可読性の3観点でレビューしてください。""",
+    tools=[analyze_code],
+)
+
+# メインエージェント: ユーザーの意図に応じてHandoff
+main_agent = Agent(
+    name="dispatcher",
+    model="claude-sonnet-4-20250514",
+    instructions="""ユーザーのリクエストを判断し、適切な専門エージェントに委譲してください。
+- 翻訳リクエスト -> translatorに委譲
+- コードレビュー -> code-reviewerに委譲
+- それ以外 -> 自分で対応""",
+    handoffs=[translation_agent, code_review_agent],
+)
+
+# 実行: main_agentが自動的にHandoff先を判断
+result = await Runner.run(
+    agent=main_agent,
+    input="このPythonコードをレビューして: def f(x): return x*2",
+)
+# main_agentがcode_review_agentにHandoffし、レビュー結果が返る<button class="cb" onclick="copyP('p_s6handoff_detail')">コピー</button></div>
+<p>handoffs配列にエージェントを追加するだけで、メインエージェントが自動的にタスクの性質を判断して委譲先を選びます。委譲のタイミングや条件をinstructionsで制御できるため、細かいルーティングロジックをコードで書く必要はありません。</p>
+
+<h4>Guardrails(ガードレール)</h4>
+<p>ガードレールは、エージェントの入出力を監視し、不適切な動作を防止する仕組みです。個人情報の出力防止、不適切なコンテンツのブロックなどに使います。</p>
+
+<div class="prompt" id="p_s6guard">from claude_agent_sdk import Agent, input_guardrail, output_guardrail, GuardrailResult
+
+@input_guardrail
+async def check_sensitive_input(input_text: str) -> GuardrailResult:
+    """入力に機密情報が含まれていないかチェック"""
+    sensitive_patterns = ["パスワード", "クレジットカード", "マイナンバー"]
+    for pattern in sensitive_patterns:
+        if pattern in input_text:
+            return GuardrailResult(
+                should_block=True,
+                message=f"機密情報({pattern})が含まれています。入力を修正してください。"
+            )
+    return GuardrailResult(should_block=False)
+
+@output_guardrail
+async def check_output_quality(output_text: str) -> GuardrailResult:
+    """出力の品質チェック"""
+    if len(output_text) < 50:
+        return GuardrailResult(
+            should_block=True,
+            message="回答が短すぎます。より詳細な回答を生成してください。"
+        )
+    return GuardrailResult(should_block=False)
+
+# ガードレール付きエージェント
+safe_agent = Agent(
+    name="safe-agent",
+    model="claude-sonnet-4-20250514",
+    instructions="ユーザーの質問に丁寧に回答するエージェントです。",
+    input_guardrails=[check_sensitive_input],
+    output_guardrails=[check_output_quality],
+)<button class="cb" onclick="copyP('p_s6guard')">コピー</button></div>
+
+<h4>実行(Runner)</h4>
+<div class="prompt" id="p_s6run">from claude_agent_sdk import Runner
+
+# エージェントの実行
+result = await Runner.run(
+    agent=main_agent,
+    input="MCPプロトコルについて調査し、技術ブログ記事を作成してください",
+)
+
+print(result.final_output)<button class="cb" onclick="copyP('p_s6run')">コピー</button></div>
+
+<div class="quiz"><h4>理解度チェック: Section 06</h4>
+<div class="q"><p>Q6. Claude Agent SDKのHandoffの役割はどれですか?</p>
+<label><input type="radio" name="q6" value="a">エージェントのログを記録する</label>
+<label><input type="radio" name="q6" value="b">エージェントが別のエージェントにタスクを引き継ぐ</label>
+<label><input type="radio" name="q6" value="c">エージェントのレスポンスをキャッシュする</label>
+<label><input type="radio" name="q6" value="d">エージェントを強制終了する</label>
+<div class="ans" id="a6">正解: B。Handoffはエージェントが自分の専門外のタスクを適切な別エージェントに委譲する仕組みです。</div>
+<button class="rb" onclick="document.getElementById('a6').style.display='block'">答えを見る</button></div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: Claude Agent SDKで3ツール持ちエージェント構築 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: search_web, read_file, send_emailの3ツールを持つエージェントを構築し、複合タスクを実行する</div>
+
+<h4>Step 1: セットアップ(5min)</h4>
+<div class="prompt" id="p_s6setup"># 仮想環境の作成
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# パッケージインストール
+pip install claude-agent-sdk
+
+# ANTHROPIC_API_KEYが設定されていることを確認
+echo $ANTHROPIC_API_KEY<button class="cb" onclick="copyP('p_s6setup')">コピー</button></div>
+
+<h4>Step 2: エージェント構築(15min)</h4>
+<p>上記のコード例を参考に、3つのツールを持つエージェントをmain.pyとして実装してください。</p>
+
+<h4>Step 3: テスト実行(10min)</h4>
+<p>以下のタスクでエージェントを実行してください:</p>
+<div class="prompt" id="p_s6test"># テストタスク1: 単一ツール
+"プロジェクトのREADME.mdを読んで内容を要約して"
+
+# テストタスク2: 複合ツール
+"MCPの最新動向をWeb検索し、調査結果をまとめたメールを
+team@example.com に送って。件名は'MCP調査レポート'"<button class="cb" onclick="copyP('p_s6test')">コピー</button></div>
+
+<h4>Step 4: ガードレール追加(5min)</h4>
+<p>上記のcheck_sensitive_inputガードレールを追加し、機密情報を含む入力がブロックされることを確認してください。</p>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK 公式ドキュメント</a></li>
+<li><a href="https://github.com/anthropics/claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK GitHub</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: n8n/Dify連携 (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 50min(講義20 + ハンズオン30)</div><h2>n8n/Dify連携</h2>
+
+<h3>ノーコードとコードの橋渡し</h3>
+<p>MCP/A2Aはコードベースの技術ですが、現実の組織にはコードを書かないチームも多い。DifyやN8Nのようなノーコード/ローコードツールがMCPサーバーを呼び出せるようになり、エンジニアが作ったツールを非エンジニアが使えるようになりました。</p>
+
+<table class="ct"><thead><tr><th>ユーザー層</th><th>適切なツール</th><th>MCP/A2Aとの接点</th></tr></thead><tbody>
+<tr><td>非エンジニア(業務担当者)</td><td>Dify</td><td>GUIでMCPツールを呼び出すワークフロー構築</td></tr>
+<tr><td>IT担当者/業務エンジニア</td><td>n8n</td><td>ノードベースでMCPサーバー連携を設定</td></tr>
+<tr><td>エンジニア</td><td>Claude Code / Agent SDK</td><td>MCPサーバー自作、A2A実装</td></tr>
+</tbody></table>
+
+<h3>n8nでのMCPサーバー呼出し</h3>
+<p>n8nは2025年後半からMCPノードをサポートしています。ワークフロー内で直接MCPサーバーのツールを呼び出せます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  T["Trigger<br/>(Webhook/Schedule)"] --> AI["AI Agent Node<br/>(Claude)"]
+  AI --> MCP["MCP Tool Node<br/>(天気取得)"]
+  MCP --> IF["IF Node<br/>(条件分岐)"]
+  IF -->|雨| S["Slack通知"]
+  IF -->|晴れ| E["End"]
+</pre><div class="caption">n8nワークフロー例: 天気取得→条件分岐→Slack通知</div></div>
+
+<h3>DifyでのOpenAPI Tool連携</h3>
+<p>DifyはMCPサーバーを直接呼び出す機能は限定的ですが、OpenAPI仕様に準拠したAPIとして公開すれば連携できます。MCPサーバーにHTTPエンドポイントを追加し、OpenAPIスキーマを定義してDifyのカスタムツールとして登録する流れです。</p>
+
+<div class="prompt" id="p_s7dify">// MCPサーバーにHTTPエンドポイントを追加する例
+// (Expressを使用)
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+// Dify用のHTTPエンドポイント
+app.post("/api/weather", async (req, res) => {
+  const { city, units } = req.body;
+  // MCPサーバーの同じロジックを再利用
+  const weatherData = {
+    city,
+    temperature: units === "celsius" ? 22 : 72,
+    condition: "晴れ",
+    humidity: 45,
+  };
+  res.json(weatherData);
+});
+
+app.listen(3001, () => {
+  console.log("HTTP endpoint for Dify running on port 3001");
+});<button class="cb" onclick="copyP('p_s7dify')">コピー</button></div>
+
+<div class="box tip"><div class="bt">Tips: 使い分けの判断基準</div>
+「誰がメンテナンスするか」で選んでください。エンジニアが常駐するチームならMCP/Agent SDKで直接実装。IT担当者がいるならn8n。完全ノーコードで運用したいならDify。重要なのは、MCPサーバーを1つ作っておけばどのルートからでも呼び出せるという点です。
+</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: DifyからカスタムMCPツールを呼び出す <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: Sec02で作成した天気MCPサーバーにHTTPエンドポイントを追加し、Difyのワークフローから呼び出す</div>
+
+<h4>Step 1: HTTPエンドポイント追加(10min)</h4>
+<ol>
+<li>天気MCPサーバーのプロジェクトにexpressを追加</li>
+</ol>
+<div class="prompt" id="p_s7h1">npm install express @types/express<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+<ol start="2">
+<li>上記のExpressコードを参考にHTTPエンドポイントを追加</li>
+<li>ビルドして起動し、curlでテスト</li>
+</ol>
+<div class="prompt" id="p_s7h1b"># HTTPエンドポイントのテスト
+curl -X POST http://localhost:3001/api/weather \
+  -H "Content-Type: application/json" \
+  -d '{"city": "Tokyo", "units": "celsius"}'<button class="cb" onclick="copyP('p_s7h1b')">コピー</button></div>
+
+<h4>Step 2: Difyでカスタムツール登録(10min)</h4>
+<ol>
+<li>Difyにログイン(cloud.dify.ai)</li>
+<li>「ツール」→「カスタムツール作成」を選択</li>
+<li>OpenAPIスキーマとして以下を登録</li>
+</ol>
+<div class="prompt" id="p_s7schema">{
+  "openapi": "3.0.0",
+  "info": { "title": "Weather API", "version": "1.0.0" },
+  "servers": [{ "url": "http://localhost:3001" }],
+  "paths": {
+    "/api/weather": {
+      "post": {
+        "summary": "天気情報を取得",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "city": { "type": "string", "description": "都市名" },
+                  "units": { "type": "string", "enum": ["celsius", "fahrenheit"] }
+                },
+                "required": ["city"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "天気情報" }
+        }
+      }
+    }
+  }
+}<button class="cb" onclick="copyP('p_s7schema')">コピー</button></div>
+
+<h4>Step 3: ワークフロー構築(10min)</h4>
+<ol>
+<li>Difyで新規ワークフローを作成</li>
+<li>「開始」→「LLM(Claude)」→「カスタムツール(天気取得)」→「LLM(回答生成)」→「終了」のフローを構築</li>
+<li>「明日のお出かけの服装をアドバイスして」と入力してテスト</li>
+</ol>
+
+<details><summary>Difyを使わない場合の代替</summary><div class="inner">
+<p>Difyのアカウントがない場合は、n8nのセルフホスト版(Docker)で同様のフローを構築できます。または、curlやPostmanでHTTPエンドポイントを直接叩いて動作確認するだけでも、MCPサーバーのHTTP公開の手順は学べます。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.n8n.io/" target="_blank" rel="noopener">n8n 公式ドキュメント</a></li>
+<li><a href="https://docs.dify.ai/" target="_blank" rel="noopener">Dify 公式ドキュメント</a></li>
+<li><a href="https://docs.dify.ai/guides/tools/custom-tool" target="_blank" rel="noopener">Dify カスタムツール</a> -- OpenAPIベースのツール登録方法</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: 本番運用 (45min: 講義25 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 45min(講義25 + ハンズオン20)</div><h2>本番運用</h2>
+
+<h3>セキュリティ</h3>
+<p>MCPサーバーを本番環境で動かすとき、セキュリティは最優先事項です。MCPサーバーは外部リソースへのアクセス権を持つため、不正利用されると深刻な被害につながります。</p>
+
+<h4>認証(OAuth 2.0)</h4>
+<p>リモートMCPサーバーではOAuth 2.0による認証が推奨されています。MCP仕様は2025年のアップデートでOAuth 2.0のサポートを正式に追加しました。</p>
+
+<div class="prompt" id="p_s8auth">// MCPサーバーに認証を追加する例
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import express from "express";
+
+const app = express();
+const server = new McpServer({ name: "secure-server", version: "1.0.0" });
+
+// 認証ミドルウェア
+function authenticate(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token || !validateToken(token)) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  next();
+}
+
+function validateToken(token: string): boolean {
+  // OAuth 2.0トークン検証ロジック
+  // 実際にはJWTの検証やトークンイントロスペクションを行う
+  return token === process.env.MCP_AUTH_TOKEN;
+}
+
+// 認証付きエンドポイント
+app.use("/mcp", authenticate);
+app.post("/mcp", async (req, res) => {
+  // Streamable HTTP transport の処理
+  // ...
+});<button class="cb" onclick="copyP('p_s8auth')">コピー</button></div>
+
+<h4>最小権限の原則</h4>
+<ul>
+<li><strong>ファイルアクセス</strong> -- 必要なディレクトリのみ許可。ルート(/)を渡さない</li>
+<li><strong>DB操作</strong> -- READ ONLYのロールで接続。更新が必要な場合は別のツールとして分離</li>
+<li><strong>API呼出し</strong> -- スコープを最小限に。全権限のAPIキーを使わない</li>
+<li><strong>ネットワーク</strong> -- 必要なホストだけに通信を許可。ワイルドカードは使わない</li>
+</ul>
+
+<h4>入力バリデーション</h4>
+<div class="prompt" id="p_s8valid">// Zodによる厳密な入力バリデーション
+server.tool(
+  "query_database",
+  "データベースを検索します",
+  {
+    // テーブル名は許可リストから選択
+    table: z.enum(["products", "orders", "categories"])
+      .describe("検索対象のテーブル"),
+    // SQLインジェクション防止: 検索条件を構造化
+    filters: z.object({
+      column: z.string().regex(/^[a-zA-Z_]+$/).describe("カラム名"),
+      operator: z.enum(["=", ">", "<", ">=", "<=", "LIKE"]),
+      value: z.union([z.string(), z.number()]).describe("検索値"),
+    }).array().max(5).describe("検索条件(最大5個)"),
+    limit: z.number().min(1).max(100).default(10).describe("取得件数上限"),
+  },
+  async ({ table, filters, limit }) => {
+    // パラメータ化クエリで実行(SQLインジェクション防止)
+    // ...
+  }
+);<button class="cb" onclick="copyP('p_s8valid')">コピー</button></div>
+
+<h3>エラーハンドリング</h3>
+<table class="ct"><thead><tr><th>問題</th><th>対策</th><th>推奨設定</th></tr></thead><tbody>
+<tr><td>タイムアウト</td><td>ツール実行に制限時間を設ける</td><td>30秒(APIコール)、60秒(DB)</td></tr>
+<tr><td>リトライ</td><td>一時的障害は指数バックオフで再試行</td><td>最大3回、初回1秒</td></tr>
+<tr><td>フォールバック</td><td>ツール失敗時の代替動作を定義</td><td>キャッシュ返却、デフォルト値</td></tr>
+<tr><td>サーキットブレーカー</td><td>連続失敗時にツールを一時無効化</td><td>5回連続失敗で30秒間停止</td></tr>
+</tbody></table>
+
+<h3>コスト制御</h3>
+<p>エージェントはループ処理するため、従来のチャットよりもトークン消費が激しくなりがちです。</p>
+<ul>
+<li><strong>ループ回数制限</strong> -- 最大10回のReActループで強制停止</li>
+<li><strong>トークンバジェット</strong> -- 1タスクあたりの最大トークン数を設定(例: 100Kトークン)</li>
+<li><strong>モニタリング</strong> -- Anthropic ConsoleやLangSmithでトークン消費を可視化</li>
+<li><strong>モデル使い分け</strong> -- 簡単な判断はHaiku、複雑な推論はSonnetと使い分ける</li>
+</ul>
+
+<div class="box warn"><div class="bt">注意: コスト爆発のパターン</div>エージェントが「十分な情報が集まらない」と判断してWeb検索を何十回も繰り返すパターンが最も危険です。1回のタスクで数十ドルのAPIコストが発生した事例も報告されています。ループ回数制限は必ず設定してください。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 認証付きMCPサーバー+エラーハンドリング <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: Sec02の天気サーバーに認証とエラーハンドリングを追加する</div>
+
+<h4>Step 1: 認証の追加(10min)</h4>
+<p>天気MCPサーバーのHTTPエンドポイントにBearer Token認証を追加してください。環境変数 MCP_AUTH_TOKEN にトークンを設定し、リクエストヘッダーの Authorization: Bearer {token} と照合します。</p>
+
+<h4>Step 2: エラーハンドリング追加(10min)</h4>
+<p>以下のエラーハンドリングを追加してください:</p>
+<ul>
+<li>タイムアウト: ツール実行が5秒を超えたらエラーを返す</li>
+<li>入力バリデーション: cityが空文字の場合はエラー</li>
+<li>リトライ: 外部API呼出し失敗時に最大3回リトライ(指数バックオフ)</li>
+</ul>
+
+<div class="prompt" id="p_s8h2">// タイムアウト付きのツール実行ヘルパー
+async function withTimeout&lt;T>(
+  promise: Promise&lt;T>,
+  timeoutMs: number,
+  errorMessage: string
+): Promise&lt;T> {
+  const timer = new Promise&lt;never>((_, reject) =>
+    setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+  );
+  return Promise.race([promise, timer]);
+}
+
+// リトライヘルパー(指数バックオフ)
+async function withRetry&lt;T>(
+  fn: () => Promise&lt;T>,
+  maxRetries: number = 3,
+  baseDelayMs: number = 1000
+): Promise&lt;T> {
+  for (let i = 0; i &lt; maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      const delay = baseDelayMs * Math.pow(2, i);
+      console.error(`Retry ${i + 1}/${maxRetries} after ${delay}ms`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw new Error("Unreachable");
+}<button class="cb" onclick="copyP('p_s8h2')">コピー</button></div>
+</div>
+
+<a href="#" class="dl" onclick="downloadAuthTemplate();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>MCP認証設定テンプレート(.json)をダウンロード</a>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://modelcontextprotocol.io/docs/concepts/security" target="_blank" rel="noopener">MCP Security</a> -- 公式のセキュリティガイド</li>
+<li><a href="https://docs.anthropic.com/en/docs/agents-and-tools/tool-use" target="_blank" rel="noopener">Anthropic Tool Use Best Practices</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 09: 総合ハンズオン (105min: 講義10 + ハンズオン95) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 105min(講義10 + ハンズオン95)</div><h2>総合ハンズオン: MCPサーバー3つ+マルチエージェントWF</h2>
+
+<h3>ゴール</h3>
+<p>このセクションでは、コース全体の集大成としてMCPサーバー3つとマルチエージェントワークフロー1つを完成させます。Sec02〜08で学んだ技術を総動員する実践演習です。</p>
+
+<div class="box note"><div class="bt">全体構成</div>
+<p>作るもの:</p>
+<ul>
+<li>MCPサーバー1: ファイル検索ツール -- 指定ディレクトリからファイルを検索</li>
+<li>MCPサーバー2: データベースクエリツール -- SQLite DBへのクエリ実行</li>
+<li>MCPサーバー3: Slack通知ツール -- Slack Webhookで通知送信</li>
+<li>オーケストレーターエージェント -- 3つのMCPサーバーを束ねたマルチエージェントWF</li>
+</ul>
+</div>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TB
+  U["ユーザー指示"] --> O["Orchestrator Agent"]
+  O --> S1["MCP Server 1<br/>ファイル検索"]
+  O --> S2["MCP Server 2<br/>DBクエリ"]
+  O --> S3["MCP Server 3<br/>Slack通知"]
+  S1 --> FS["ファイルシステム"]
+  S2 --> DB["SQLite DB"]
+  S3 --> SL["Slack Webhook"]
+</pre><div class="caption">総合ハンズオンの全体構成</div></div>
+
+<div class="handson">
+<div class="hs-title">総合ハンズオン: 10ステップ <span class="hs-time">95min</span></div>
+<div class="hs-goal">目標: MCPサーバー3つとマルチエージェントワークフローを構築し、エンドツーエンドで動作させる</div>
+
+<h4>Step 1: 要件定義(10min)</h4>
+<p>以下のシナリオを想定します:</p>
+<p>「社内のプロジェクトファイルから特定の情報を検索し、データベースと照合し、結果をSlackで通知する」</p>
+<ul>
+<li>ファイル検索ツール: パターンマッチでファイルを検索、内容を返す</li>
+<li>DBクエリツール: SQLiteに対しSELECTクエリを実行</li>
+<li>Slack通知ツール: Webhook URLにメッセージをPOST</li>
+</ul>
+
+<h4>Step 2: MCPサーバー1 -- ファイル検索ツール(15min)</h4>
+<div class="prompt" id="p_s9step2">// file-search-server.ts
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+import { readdir, readFile } from "fs/promises";
+import { join } from "path";
+
+const server = new McpServer({ name: "file-search-server", version: "1.0.0" });
+
+server.tool(
+  "search_files",
+  "指定ディレクトリからパターンに一致するファイルを検索し内容を返します",
+  {
+    directory: z.string().describe("検索対象ディレクトリのパス"),
+    pattern: z.string().describe("ファイル名の検索パターン(部分一致)"),
+    maxResults: z.number().min(1).max(20).default(5).describe("最大結果数"),
+  },
+  async ({ directory, pattern, maxResults }) => {
+    try {
+      const files = await readdir(directory);
+      const matched = files
+        .filter(f => f.toLowerCase().includes(pattern.toLowerCase()))
+        .slice(0, maxResults);
+
+      const results = await Promise.all(
+        matched.map(async (f) => {
+          const content = await readFile(join(directory, f), "utf-8");
+          return { filename: f, content: content.slice(0, 500) };
+        })
+      );
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify(results, null, 2),
+        }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `エラー: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);<button class="cb" onclick="copyP('p_s9step2')">コピー</button></div>
+
+<h4>Step 3: MCPサーバー2 -- データベースクエリツール(15min)</h4>
+<div class="prompt" id="p_s9step3">// db-query-server.ts
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+import Database from "better-sqlite3";
+
+const server = new McpServer({ name: "db-query-server", version: "1.0.0" });
+const db = new Database("./data.db");
+
+// サンプルテーブル作成
+db.exec(`
+  CREATE TABLE IF NOT EXISTS projects (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    status TEXT DEFAULT 'active',
+    budget REAL,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+server.tool(
+  "query_projects",
+  "プロジェクトデータベースを検索します(SELECTのみ)",
+  {
+    status: z.enum(["active", "completed", "on-hold", "all"]).default("all")
+      .describe("フィルタするステータス"),
+    search: z.string().optional().describe("プロジェクト名の部分一致検索"),
+    limit: z.number().min(1).max(50).default(10).describe("取得件数"),
+  },
+  async ({ status, search, limit }) => {
+    let query = "SELECT * FROM projects WHERE 1=1";
+    const params: unknown[] = [];
+
+    if (status !== "all") {
+      query += " AND status = ?";
+      params.push(status);
+    }
+    if (search) {
+      query += " AND name LIKE ?";
+      params.push(`%${search}%`);
+    }
+    query += " ORDER BY updated_at DESC LIMIT ?";
+    params.push(limit);
+
+    const rows = db.prepare(query).all(...params);
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify(rows, null, 2),
+      }],
+    };
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);<button class="cb" onclick="copyP('p_s9step3')">コピー</button></div>
+
+<h4>Step 4: MCPサーバー3 -- Slack通知ツール(15min)</h4>
+<div class="prompt" id="p_s9step4">// slack-notify-server.ts
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({ name: "slack-notify-server", version: "1.0.0" });
+
+server.tool(
+  "send_slack_message",
+  "Slackチャンネルにメッセージを送信します",
+  {
+    message: z.string().min(1).max(4000).describe("送信するメッセージ"),
+    channel: z.string().default("#general").describe("送信先チャンネル"),
+    priority: z.enum(["low", "normal", "high"]).default("normal")
+      .describe("優先度(highはメンション付き)"),
+  },
+  async ({ message, channel, priority }) => {
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    if (!webhookUrl) {
+      return {
+        content: [{ type: "text", text: "エラー: SLACK_WEBHOOK_URL が未設定です" }],
+        isError: true,
+      };
+    }
+
+    const prefix = priority === "high" ? "<!channel> " : "";
+    const payload = {
+      channel,
+      text: `${prefix}${message}`,
+      username: "MCP Agent",
+    };
+
+    try {
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error(`Slack API error: ${res.status}`);
+
+      return {
+        content: [{ type: "text", text: `メッセージを${channel}に送信しました` }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `送信失敗: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);<button class="cb" onclick="copyP('p_s9step4')">コピー</button></div>
+
+<h4>Step 5: 3サーバーの接続テスト(10min)</h4>
+<div class="prompt" id="p_s9step5">// .mcp.json -- 3サーバーをまとめて接続
+{
+  "mcpServers": {
+    "file-search": {
+      "command": "node",
+      "args": ["./file-search-server/dist/index.js"]
+    },
+    "db-query": {
+      "command": "node",
+      "args": ["./db-query-server/dist/index.js"]
+    },
+    "slack-notify": {
+      "command": "node",
+      "args": ["./slack-notify-server/dist/index.js"],
+      "env": {
+        "SLACK_WEBHOOK_URL": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+      }
+    }
+  }
+}<button class="cb" onclick="copyP('p_s9step5')">コピー</button></div>
+<p>Claude Codeを起動し、/mcp コマンドで3つのサーバーが接続されていることを確認してください。各サーバーのツールをひとつずつ呼び出し、正常に動作することをテストします。</p>
+
+<h4>Step 6: オーケストレーターエージェントの構築(15min)</h4>
+<div class="prompt" id="p_s9step6">// orchestrator.ts -- 3つのMCPサーバーを統合するオーケストレーター
+import Anthropic from "@anthropic-ai/sdk";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
+const anthropic = new Anthropic();
+
+// MCPクライアントを3つ起動
+async function createMcpClient(command: string, args: string[]) {
+  const transport = new StdioClientTransport({ command, args });
+  const client = new Client({ name: "orchestrator", version: "1.0.0" });
+  await client.connect(transport);
+  return client;
+}
+
+const fileClient = await createMcpClient("node", ["./file-search-server/dist/index.js"]);
+const dbClient = await createMcpClient("node", ["./db-query-server/dist/index.js"]);
+const slackClient = await createMcpClient("node", ["./slack-notify-server/dist/index.js"]);
+
+// 全ツール一覧を収集
+const allTools = [
+  ...(await fileClient.listTools()).tools,
+  ...(await dbClient.listTools()).tools,
+  ...(await slackClient.listTools()).tools,
+];
+
+// オーケストレーター実行
+async function orchestrate(task: string) {
+  console.log(`Task: ${task}\n`);
+
+  // Claude APIにツール定義を渡してReActループ
+  let messages: Anthropic.MessageParam[] = [
+    { role: "user", content: task },
+  ];
+
+  const maxIterations = 10;
+  for (let i = 0; i &lt; maxIterations; i++) {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 4096,
+      system: `あなたは3つのMCPツールを持つオーケストレーターです。
+ファイル検索、DB検索、Slack通知を組み合わせてタスクを遂行してください。`,
+      tools: allTools.map(t => ({
+        name: t.name,
+        description: t.description || "",
+        input_schema: t.inputSchema as Anthropic.Tool.InputSchema,
+      })),
+      messages,
+    });
+
+    // ツール呼出しがあれば実行
+    if (response.stop_reason === "tool_use") {
+      const toolUse = response.content.find(b => b.type === "tool_use");
+      if (toolUse && toolUse.type === "tool_use") {
+        console.log(`Calling tool: ${toolUse.name}`);
+        // 適切なクライアントでツール実行
+        const client = toolUse.name.includes("file") ? fileClient
+          : toolUse.name.includes("project") || toolUse.name.includes("query") ? dbClient
+          : slackClient;
+        const result = await client.callTool({
+          name: toolUse.name,
+          arguments: toolUse.input as Record&lt;string, unknown>,
+        });
+        messages.push({ role: "assistant", content: response.content });
+        messages.push({
+          role: "user",
+          content: [{ type: "tool_result", tool_use_id: toolUse.id,
+            content: JSON.stringify(result.content) }],
+        });
+      }
+    } else {
+      // 最終回答
+      const text = response.content
+        .filter(b => b.type === "text")
+        .map(b => b.type === "text" ? b.text : "")
+        .join("\n");
+      console.log(`\nFinal answer:\n${text}`);
+      break;
+    }
+  }
+}
+
+await orchestrate(
+  "プロジェクト関連のファイルを検索し、DBのアクティブなプロジェクトと照合し、結果をSlackの#project-updatesに通知して"
+);<button class="cb" onclick="copyP('p_s9step6')">コピー</button></div>
+
+<h4>Step 7: マルチエージェントワークフローの結合(10min)</h4>
+<p>Step 6のオーケストレーターを実行し、3つのMCPサーバーが連携して動作することを確認してください。</p>
+
+<h4>Step 8: エラーハンドリング追加(5min)</h4>
+<p>Sec08で学んだタイムアウトとリトライをオーケストレーターに組み込んでください。</p>
+
+<h4>Step 9: テスト(5min)</h4>
+<p>以下の5シナリオでテストしてください:</p>
+<ol>
+<li>ファイル検索のみ: 「README.mdを検索して内容を教えて」</li>
+<li>DB検索のみ: 「アクティブなプロジェクト一覧を見せて」</li>
+<li>Slack通知のみ: 「#generalに"テスト通知"を送って」</li>
+<li>複合(検索+通知): 「設定ファイルを検索し、結果をSlackに投稿して」</li>
+<li>複合(全サーバー): 「プロジェクト情報をDBとファイルから集め、サマリーをSlackに通知して」</li>
+</ol>
+
+<h4>Step 10: ドキュメント整備(5min)</h4>
+<p>以下の内容をREADME.mdにまとめてください:</p>
+<ul>
+<li>各MCPサーバーの概要と起動方法</li>
+<li>.mcp.json の設定方法</li>
+<li>環境変数の一覧(ANTHROPIC_API_KEY, SLACK_WEBHOOK_URL)</li>
+<li>テスト手順</li>
+</ul>
+
+<ul class="checklist">
+<li>MCPサーバー1(ファイル検索)が動作する</li>
+<li>MCPサーバー2(DBクエリ)が動作する</li>
+<li>MCPサーバー3(Slack通知)が動作する</li>
+<li>.mcp.jsonで3サーバーを接続した</li>
+<li>オーケストレーターが3サーバーを連携して動作する</li>
+<li>エラーハンドリングを追加した</li>
+<li>5シナリオのテストを完了した</li>
+<li>README.mdを作成した</li>
+</ul>
+</div>
+
+<a href="#" class="dl" onclick="downloadRequirements();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>requirements.txt / package.json をダウンロード</a>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C13 MCP/A2A AIエージェント開発<br>
+  全9セクション + 復習2回 = 600分(10時間)<br>
+  前提コース: C01 生成AI完全入門 / C02 Claude基礎
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadMcpServerTemplate(){const t=`// MCP Server Template (TypeScript)
+// @modelcontextprotocol/sdk を使用したMCPサーバーの雛形
+//
+// セットアップ:
+//   npm install @modelcontextprotocol/sdk zod
+//   npm install -D typescript @types/node
+//
+// ビルド・実行:
+//   npx tsc && node dist/index.js
+//
+// テスト:
+//   npx @modelcontextprotocol/inspector node dist/index.js
+
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({
+  name: "my-server",
+  version: "1.0.0",
+});
+
+// ツール定義の例
+server.tool(
+  "my_tool",
+  "このツールの説明をLLMが理解できるように具体的に記述してください",
+  {
+    param1: z.string().describe("パラメータ1の説明"),
+    param2: z.number().optional().describe("パラメータ2の説明(省略可)"),
+  },
+  async ({ param1, param2 }) => {
+    // ここにツールのロジックを実装
+    const result = { param1, param2, message: "処理完了" };
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify(result, null, 2),
+      }],
+    };
+  }
+);
+
+// リソース定義の例(オプション)
+// server.resource("my-resource", "resource://my-data", async () => ({
+//   contents: [{ uri: "resource://my-data", text: "リソースの内容" }],
+// }));
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+console.error("MCP Server running on stdio");
+`;const b=new Blob([t],{type:'text/typescript'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='mcp-server-template.ts';a.click();URL.revokeObjectURL(u);}
+
+function downloadAgentCardTemplate(){const t=JSON.stringify({
+  "name": "my-agent",
+  "description": "このエージェントの説明を記述してください",
+  "url": "https://my-agent.example.com",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "skill-1",
+      "name": "スキル名",
+      "description": "このスキルの詳細な説明",
+      "tags": ["tag1", "tag2"],
+      "examples": [
+        "このスキルへのリクエスト例1",
+        "このスキルへのリクエスト例2"
+      ]
+    }
+  ],
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"]
+}, null, 2);const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='agent-card-template.json';a.click();URL.revokeObjectURL(u);}
+
+function downloadMultiAgentSheet(){const t=`# マルチエージェント設計シート
+
+## 1. システム概要
+- プロジェクト名:
+- 目的:
+- 協調パターン: オーケストレーター / ピアツーピア / パイプライン
+
+## 2. エージェント定義
+
+### エージェント1
+- 名前:
+- 役割:
+- 使用モデル: Claude Sonnet / Claude Haiku / GPT-4o
+- ツール(MCP):
+- 入力:
+- 出力:
+
+### エージェント2
+- 名前:
+- 役割:
+- 使用モデル:
+- ツール(MCP):
+- 入力:
+- 出力:
+
+### エージェント3
+- 名前:
+- 役割:
+- 使用モデル:
+- ツール(MCP):
+- 入力:
+- 出力:
+
+## 3. ワークフロー
+1. [エージェント名] が [アクション] を実行
+2. [エージェント名] が [アクション] を実行
+3. ...
+
+## 4. エラーハンドリング
+- タイムアウト: ___秒
+- 最大ループ回数: ___回
+- フォールバック:
+
+## 5. コスト見積もり
+- 1タスクあたりの想定トークン数:
+- 1タスクあたりの想定コスト:
+- 月間タスク数:
+- 月間コスト見積もり:
+
+## 6. セキュリティ
+- 認証方式:
+- 最小権限の設定:
+- 入力バリデーション:
+
+---
+作成日:
+作成者:
+`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='マルチエージェント設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadAuthTemplate(){const t=JSON.stringify({
+  "_comment": "MCP認証設定テンプレート",
+  "auth": {
+    "type": "bearer",
+    "token_env": "MCP_AUTH_TOKEN",
+    "description": "環境変数 MCP_AUTH_TOKEN にトークンを設定してください"
+  },
+  "security": {
+    "allowed_origins": ["https://your-domain.com"],
+    "rate_limit": {
+      "requests_per_minute": 60,
+      "requests_per_hour": 1000
+    },
+    "input_validation": {
+      "max_string_length": 10000,
+      "max_array_length": 100,
+      "allowed_tables": ["products", "orders", "categories"],
+      "blocked_patterns": ["DROP", "DELETE", "UPDATE", "INSERT", "ALTER"]
+    }
+  },
+  "error_handling": {
+    "timeout_ms": 30000,
+    "max_retries": 3,
+    "retry_base_delay_ms": 1000,
+    "circuit_breaker": {
+      "failure_threshold": 5,
+      "recovery_timeout_ms": 30000
+    }
+  },
+  "monitoring": {
+    "log_level": "info",
+    "token_budget_per_task": 100000,
+    "max_loop_iterations": 10
+  }
+}, null, 2);const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='mcp-auth-config-template.json';a.click();URL.revokeObjectURL(u);}
+
+function downloadRequirements(){const t=`# Python requirements.txt (Claude Agent SDK用)
+claude-agent-sdk>=0.1.0
+anthropic>=0.42.0
+httpx>=0.27.0
+
+# Node.js package.json の dependencies:
+# {
+#   "@modelcontextprotocol/sdk": "^1.12.0",
+#   "@anthropic-ai/sdk": "^0.40.0",
+#   "zod": "^3.24.0",
+#   "better-sqlite3": "^11.0.0",
+#   "express": "^4.21.0"
+# }
+#
+# devDependencies:
+# {
+#   "typescript": "^5.7.0",
+#   "@types/node": "^22.0.0",
+#   "@types/better-sqlite3": "^7.6.0",
+#   "@types/express": "^5.0.0"
+# }
+`;const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='requirements.txt';a.click();URL.revokeObjectURL(u);}
+</script>
+</body></html>

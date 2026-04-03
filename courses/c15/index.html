@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C15 Gemini & Google Workspace AI活用マスター - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 概要</a><a href="#s2">02 NotebookLM</a><a href="#s3">03 Docs</a><a href="#rA">Review A</a><a href="#s4">04 Sheets</a><a href="#s5">05 Slides</a><a href="#rB">Review B</a><a href="#s6">06 Gem/Canvas</a><a href="#s7">07 Imagen</a><a href="#s8">08 総合</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 15 / Layer 3 -- 統合マスター</div>
+  <h1><span>Gemini &amp; Google Workspace</span> AI活用マスター</h1>
+  <p class="lead">Google Workspaceの各ツール(Docs, Sheets, Slides, Gmail)にGeminiを統合し、日常業務を加速します。NotebookLMによる社内資料分析、Gem/Canvas/Deep Researchによる高度調査、Imagen 3による画像生成まで。データ分析レポートを一気通貫で作成する総合ハンズオン付きです。</p>
+  <div class="meta"><span class="tag">初級-中級</span><span class="tag">約8時間(480分)</span><span class="tag">8 Sections + 2 Review</span><span class="tag">ハンズオン比率 69%</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">Gemini for Workspace概要 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s2">NotebookLM -- 社内資料AI分析 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s3">Docs x Gemini -- 文書作成の自動化 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li class="review-item"><a href="#rA">復習A -- NotebookLM + Docsの連携 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s4">Sheets x Gemini -- データ分析と可視化 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s5">Slides x Gemini -- プレゼン自動生成 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li class="review-item"><a href="#rB">復習B -- Sheets分析結果からプレゼン作成 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s6">Gem / Canvas / Deep Research -- 高度な調査と分析 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s7">Imagen 3 -- 画像生成と資料ビジュアル <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s8">総合ハンズオン: データ分析レポートを一気通貫で作成 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">80min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: Gemini for Workspace概要 (45min: 講義25 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 45min(講義25 + ハンズオン20)</div><h2>Gemini for Workspace概要</h2>
+<img src="assets/workspace-ai.png" alt="Google Workspace AI統合の全体像" class="sec-hero-img">
+
+<h3>Geminiとは</h3>
+<p>GeminiはGoogleが開発した大規模言語モデルファミリーです。ChatGPTやClaudeと同じカテゴリに属しますが、Google独自の強みがあります。Google検索との深い統合、YouTube動画の内容理解、Google Workspaceとのネイティブ連携。この3点が他のAIツールとの差別化ポイントになります。</p>
+<p>単体チャットとしてのGeminiは <a href="https://gemini.google.com/" target="_blank" rel="noopener">gemini.google.com</a> からアクセスできます。ただしこのコースの主眼は、Geminiの能力をWorkspaceの各ツール上で直接呼び出す「統合型」の使い方にあります。</p>
+
+<h3>プランと機能の違い</h3>
+<table class="ct"><thead><tr><th>プラン</th><th>月額</th><th>主な機能</th><th>想定利用者</th></tr></thead><tbody>
+<tr><td>Gemini(無料版)</td><td>$0</td><td>チャット、基本的な生成、画像分析</td><td>個人利用、お試し</td></tr>
+<tr><td>Gemini Advanced</td><td>$20</td><td>Gemini 2.5 Pro、Deep Research、Canvas、Gem、100万トークン</td><td>個人のパワーユーザー</td></tr>
+<tr><td>Gemini Business</td><td>$24/ユーザー</td><td>Workspace統合、管理者コントロール、データ保護</td><td>中小企業チーム</td></tr>
+<tr><td>Gemini Enterprise</td><td>$36/ユーザー</td><td>全Business機能 + NotebookLM Plus、高度なセキュリティ</td><td>大規模組織</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: Business/Enterprise が必要な場面</div>個人学習であれば無料版かAdvancedで十分です。業務で使う場合はBusiness以上を選んでください。Workspace統合(Docs/Sheets/Slides上でのGemini呼び出し)はBusiness/Enterpriseプランでのみ利用できます。無料版のGeminiチャットとWorkspace統合は別物です。</div>
+
+<h3>Workspace統合の全体像</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TB
+  G["Gemini AI Engine"]
+  D["Google Docs<br/>文書作成・校正"]
+  SH["Google Sheets<br/>データ分析・可視化"]
+  SL["Google Slides<br/>プレゼン自動生成"]
+  GM["Gmail<br/>返信文・要約"]
+  MT["Google Meet<br/>文字起こし・議事録"]
+  G --- D
+  G --- SH
+  G --- SL
+  G --- GM
+  G --- MT
+</pre><div class="caption">Geminiが各Workspaceツールに横断的にAI支援を提供する構造</div></div>
+
+<h3>各ツールでできること一覧</h3>
+<table class="ct"><thead><tr><th>ツール</th><th>Gemini機能</th><th>典型的な用途</th></tr></thead><tbody>
+<tr><td>Docs</td><td>Help me write / Help me refine</td><td>下書き生成、校正、トーン変更、翻訳</td></tr>
+<tr><td>Sheets</td><td>Help me organize / Help me analyze</td><td>データ整理、数式生成、グラフ作成、傾向分析</td></tr>
+<tr><td>Slides</td><td>Help me create / Image generation</td><td>プレゼン一括生成、スライド追加、画像生成</td></tr>
+<tr><td>Gmail</td><td>Help me write / Summarize</td><td>返信文生成、長文メールの要約</td></tr>
+<tr><td>Meet</td><td>Take notes / Summarize</td><td>リアルタイム文字起こし、会議要約</td></tr>
+</tbody></table>
+
+<h3>管理者による有効化</h3>
+<p>Workspace管理者が Google Admin Console から Gemini を有効化する手順は以下の通りです。</p>
+<ol>
+<li><a href="https://admin.google.com/" target="_blank" rel="noopener">admin.google.com</a> にログインする</li>
+<li>「アプリ」 から 「Googleサービス」 を開く</li>
+<li>「Gemini for Google Workspace」を選択し、利用するOU(組織部門)を指定する</li>
+<li>サービスのステータスを「オン」に変更する</li>
+</ol>
+<p>個人のGoogleアカウントでAdvancedプランに加入している場合は管理者設定は不要です。</p>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. Google Docs上で直接GeminiのAI支援を使うには、最低どのプランが必要ですか?</p>
+<label><input type="radio" name="q1" value="a">Gemini 無料版</label>
+<label><input type="radio" name="q1" value="b">Gemini Advanced</label>
+<label><input type="radio" name="q1" value="c">Gemini Business</label>
+<label><input type="radio" name="q1" value="d">Gemini Enterprise</label>
+<div class="ans" id="a1">正解: C。Workspace統合(Docs/Sheets/Slides上での直接呼び出し)はBusiness以上が必要です。Advanced はGeminiチャット単体の上位プランです。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 01 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Geminiの起動確認 <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: Geminiチャットにログインし、各Workspaceツールでの起動方法を確認する</div>
+
+<h4>パート1: Geminiチャットの基本操作(10min)</h4>
+<ol>
+<li><a href="https://gemini.google.com/" target="_blank" rel="noopener">gemini.google.com</a> にGoogleアカウントでログインしてください</li>
+<li>以下のプロンプトを送信して、Geminiの応答を確認してください</li>
+</ol>
+<div class="prompt" id="p_s1h1">私はGoogle Workspaceを業務で使っています。GeminiをWorkspaceと連携して使うメリットを、ツール別に3つずつ箇条書きで教えてください。<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+<ol start="3">
+<li>回答の中で特に業務に活かせそうな機能を1つメモしてください</li>
+</ol>
+
+<h4>パート2: Workspaceツールでの起動確認(10min)</h4>
+<ol>
+<li>Google Docsを新規作成してください</li>
+<li>文書内で「Help me write」のボタン、またはサイドパネルのGeminiアイコンを探してください</li>
+<li>Google Sheetsも新規作成し、同様にGeminiの呼び出し方を確認してください</li>
+<li>Slides も同様に確認してください</li>
+</ol>
+
+<div class="box tip"><div class="bt">Tips</div>Workspace統合が利用できない環境(無料版やAdvanced)では、Geminiチャット(gemini.google.com)に文書やデータを貼り付けて処理する方法で代替できます。このコースのハンズオンも、その方法で実施可能です。</div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a> -- Googleの生成AIチャット</li>
+<li><a href="https://workspace.google.com/solutions/ai/" target="_blank" rel="noopener">Google Workspace AI</a> -- Workspace統合の公式ページ</li>
+<li><a href="https://support.google.com/a/answer/13623588" target="_blank" rel="noopener">Gemini for Workspace 管理者ガイド</a> -- 有効化の手順</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: NotebookLM (55min: 講義20 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 55min(講義20 + ハンズオン35)</div><h2>NotebookLM -- 社内資料AI分析</h2>
+
+<h3>NotebookLMとは</h3>
+<p><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> はGoogleが提供するAIノートブックサービスです。複数のソースをアップロードすると、AIがそれらの内容を横断的に分析し、質問への回答や要約を行います。ChatGPTやClaudeにファイルを添付するのと似ていますが、決定的な違いがあります。NotebookLMはアップロードされたソースの範囲内だけで回答するため、ハルシネーションが起きにくい設計になっています。</p>
+
+<h3>対応ソースの種類</h3>
+<table class="ct"><thead><tr><th>ソース種別</th><th>形式</th><th>留意点</th></tr></thead><tbody>
+<tr><td>PDF</td><td>.pdf</td><td>スキャン画像PDFはOCR精度に依存</td></tr>
+<tr><td>Google Docs</td><td>Googleドライブから選択</td><td>共有権限が必要</td></tr>
+<tr><td>テキスト</td><td>コピー&ペースト</td><td>文字数上限あり(約50万文字/ソース)</td></tr>
+<tr><td>Webページ</td><td>URL貼り付け</td><td>動的に生成されるページは取得できない場合あり</td></tr>
+<tr><td>YouTube動画</td><td>URL貼り付け</td><td>字幕が存在する動画のみ</td></tr>
+</tbody></table>
+
+<h3>主な機能</h3>
+<div class="cols">
+<div class="col-card"><h4>要約</h4><p>アップロードした全ソースの概要を自動生成。数百ページの資料を数行に圧縮して把握できます。</p></div>
+<div class="col-card"><h4>FAQ自動生成</h4><p>ソースの内容から「よく聞かれそうな質問と回答」を自動作成。社内ナレッジベースの下書きに有用です。</p></div>
+<div class="col-card"><h4>質疑応答</h4><p>ソースの内容に基づいて質問に回答。出典箇所へのリンクが付くため、根拠を即座に確認できます。</p></div>
+<div class="col-card"><h4>Audio Overview</h4><p>ソースの内容を音声で要約してくれる機能。ポッドキャスト風の対話形式で内容を把握できます。通勤中の資料確認に向いています。</p></div>
+</div>
+
+<h3>活用シーン</h3>
+<ul>
+<li><strong>研究論文のレビュー</strong> -- 複数論文をアップロードし、共通する知見や矛盾点を抽出する</li>
+<li><strong>会議資料の事前把握</strong> -- 議事録や関連資料を投入し、論点を整理する</li>
+<li><strong>競合分析</strong> -- 各社のプレスリリースやIR資料から比較情報を引き出す</li>
+<li><strong>新人教育</strong> -- 社内マニュアル群を投入し、QA対応可能なナレッジボットとして使う</li>
+</ul>
+
+<img src="assets/notebooklm-ui.png" alt="NotebookLMのメイン画面。左側にソース一覧、右側にチャットエリア、上部にノートブックガイドが配置されている" class="sec-hero-img" style="max-width:640px;">
+<div class="caption">NotebookLMのメイン画面。ソースをアップロードすると左パネルに一覧表示され、右側のチャットで質問できる</div>
+
+<div class="box tip"><div class="bt">Tips: Audio Overviewの仕組みと活用パターン</div>Audio Overviewは、アップロードしたソースの内容をAIが分析し、二人の話者によるポッドキャスト風の音声対話に変換する機能です。単なる読み上げではなく、内容を噛み砕いて説明する構成になっている点が特徴的です。活用パターンとしては、会議前の予習(30分の資料を10分の音声で把握する)、論文の音声要約(通勤中に新着論文のエッセンスを耳から吸収する)、研修資料の復習(ハンズオン後にAudio Overviewで要点を再確認する)の3つが実務で効きます。生成には数分かかるため、朝一番に生成ボタンを押しておき、移動中に聴くという運用が自然です。</div>
+
+<div class="box warn"><div class="bt">注意: 機密情報の取り扱い</div>NotebookLMにアップロードしたデータは、Googleのサーバー上で処理されます。社内の機密情報を扱う場合は、自社のデータ取り扱いポリシーを確認してください。Enterprise プランではデータ保護のポリシーが強化されています。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 02</h4>
+<div class="q"><p>Q2. NotebookLMがChatGPTやClaudeと比べてハルシネーションが起きにくいのはなぜですか?</p>
+<label><input type="radio" name="q2" value="a">Googleのモデルが他社より高性能だから</label>
+<label><input type="radio" name="q2" value="b">アップロードされたソースの範囲内のみで回答する設計だから</label>
+<label><input type="radio" name="q2" value="c">インターネット検索を併用しているから</label>
+<label><input type="radio" name="q2" value="d">回答前に人間のレビューが入るから</label>
+<div class="ans" id="a2">正解: B。NotebookLMはソース(アップロードされた資料)をグラウンドとして回答するため、ソースに含まれない情報を「でっち上げる」リスクが低くなっています。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 02 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: NotebookLMで資料分析 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: ノートブックを作成し、ソースのアップロード、FAQ生成、Audio Overviewまでを体験する</div>
+
+<h4>演習1: ノートブック作成とソースアップロード(10min)</h4>
+<ol>
+<li><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">notebooklm.google.com</a> にアクセスし、新しいノートブックを作成してください</li>
+<li>以下のいずれかをソースとしてアップロードしてください
+  <ul>
+  <li>自社の公開プレスリリースや製品資料(PDF)</li>
+  <li>業務に関連するWebページのURL(2-3本)</li>
+  <li>練習用: <a href="https://www.soumu.go.jp/johotsusintokei/whitepaper/" target="_blank" rel="noopener">総務省 情報通信白書</a> のPDF</li>
+  </ul>
+</li>
+<li>ソースの読み込みが完了したら、自動生成された要約を確認してください</li>
+</ol>
+
+<h4>演習2: FAQ自動生成(10min)</h4>
+<ol>
+<li>NotebookLMの「ノートブックガイド」パネルを開いてください</li>
+<li>「よくある質問」の生成ボタンを押してください</li>
+<li>生成されたFAQの内容を確認し、ソースのどの部分を根拠としているかをクリックして確認してください</li>
+<li>追加で自分の質問を入力してみてください</li>
+</ol>
+<div class="prompt" id="p_s2h1">このソースの中で、最も重要な3つのポイントを根拠付きで教えてください。<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>演習3: Audio Overview生成(15min)</h4>
+<ol>
+<li>ノートブックガイドの「Audio Overview」セクションを開いてください</li>
+<li>「生成」ボタンを押して、音声要約の作成を開始してください(生成に数分かかります)</li>
+<li>生成された音声を再生し、内容が正しくまとめられているか確認してください</li>
+<li>音声の長さ、話し方のスタイル、カバーされている論点を記録してください</li>
+</ol>
+
+<details><summary>Audio Overviewが生成できない場合</summary><div class="inner">
+<p>Audio Overviewは一部のアカウントや地域で利用制限がある場合があります。生成できない場合は、チャット欄で以下のプロンプトを使い、テキストベースの要約で代替してください。</p>
+<p>「アップロードした資料の内容を、ポッドキャストの台本形式(二人の対話形式)で要約してください。」</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> -- GoogleのAIノートブック</li>
+<li><a href="https://blog.google/technology/ai/notebooklm-audio-overviews/" target="_blank" rel="noopener">NotebookLM Audio Overviews</a> -- 音声要約機能の公式解説</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: Docs x Gemini (50min: 講義15 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 50min(講義15 + ハンズオン35)</div><h2>Docs x Gemini -- 文書作成の自動化</h2>
+
+<h3>Help me write</h3>
+<p>Google Docs上でGeminiに文書の下書きを依頼する機能です。メニューバーの「Help me write」ボタン、またはドキュメント内で直接呼び出せます。ゼロから文章を書き始めるのが苦手な人にとって、最初の一歩を大幅に加速してくれます。</p>
+<p>ただし出力はあくまで下書きです。業務文書として使うなら、事実確認とトーン調整は必須になります。</p>
+
+<h3>Help me refine</h3>
+<p>既に書かれた文章を選択して改善を依頼する機能です。具体的には以下の操作が可能です。</p>
+<ul>
+<li><strong>Shorten(短縮)</strong> -- 冗長な文章を簡潔にする</li>
+<li><strong>Elaborate(拡張)</strong> -- 簡潔すぎる内容を詳しく書き直す</li>
+<li><strong>Rephrase(言い換え)</strong> -- 表現を変えて読みやすくする</li>
+<li><strong>Formalize(フォーマル化)</strong> -- カジュアルな文体をビジネス調に</li>
+<li><strong>Summarize(要約)</strong> -- 長文を要約する</li>
+</ul>
+
+<h3>翻訳と校正</h3>
+<p>文書全体または選択範囲の翻訳も可能です。Google翻訳とは異なり、文脈を考慮した自然な翻訳が得られます。校正機能では文法やスペルだけでなく、論理構造の改善提案も行います。</p>
+
+<h3>Help me writeの実践プロンプト例</h3>
+<p>Help me writeの出力品質はプロンプトの具体性に比例します。「提案書を書いて」では一般的な文章が出てくるだけですが、読者・目的・構成・トーンを明示すると実用に耐える下書きが得られます。以下の3パターンを参考にしてください。</p>
+
+<p>提案書の作成</p>
+<div class="prompt" id="p_s3_ex1">以下の条件でDX推進の社内提案書を作成してください。
+
+対象読者: 経営会議メンバー(非エンジニア)
+背景: 紙ベースの稟議プロセスに月40時間/部門のコストが発生
+提案内容: ワークフローツールの導入(kintone想定)
+構成: 課題→提案→費用対効果→導入スケジュール
+トーン: データで説得するスタイル、感情的な表現は避ける
+分量: A4 1.5ページ<button class="cb" onclick="copyP('p_s3_ex1')">コピー</button></div>
+
+<p>議事録の構造化</p>
+<div class="prompt" id="p_s3_ex2">以下の会議メモを構造化された議事録に変換してください。
+
+出力フォーマット:
+- 会議概要(日時、参加者、目的)
+- 決定事項(箇条書き)
+- 未決事項(担当者と期限つき)
+- 次回アクションアイテム
+
+メモにない情報は推測せず「記載なし」としてください。
+
+---
+(ここに会議メモを貼り付け)<button class="cb" onclick="copyP('p_s3_ex2')">コピー</button></div>
+
+<p>社内通知の作成</p>
+<div class="prompt" id="p_s3_ex3">以下の条件で社内通知文を作成してください。
+
+件名: オフィス移転のお知らせ
+発信元: 総務部
+対象: 全社員
+内容: 7月1日付で本社を現在地から新オフィス(同市内)に移転
+盛り込む情報: 新住所、移転日、引越し作業日(業務停止期間)、各自の準備事項、問い合わせ先
+トーン: 丁寧かつ簡潔、箇条書き多め<button class="cb" onclick="copyP('p_s3_ex3')">コピー</button></div>
+
+<div class="box tip"><div class="bt">Tips: Geminiチャットでの代替方法</div>Workspace統合が使えない環境でも、Geminiチャットに文書内容をコピー&ペーストして「この文章をフォーマルなビジネス調に修正してください」と指示すれば同等の結果が得られます。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 03</h4>
+<div class="q"><p>Q3. Google DocsのGeminiで「Elaborate」を選択するとどうなりますか?</p>
+<label><input type="radio" name="q3" value="a">文章が短く要約される</label>
+<label><input type="radio" name="q3" value="b">文章が詳しく拡張される</label>
+<label><input type="radio" name="q3" value="c">文体がカジュアルになる</label>
+<label><input type="radio" name="q3" value="d">別の言語に翻訳される</label>
+<div class="ans" id="a3">正解: B。Elaborateは簡潔な文章をより詳細に書き直す機能です。逆に短縮したい場合はShortenを使います。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 03 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Docsでの文書作成と改善 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: 提案書の下書き生成、既存文書の改善、議事録整理、校正+翻訳を体験する</div>
+
+<h4>演習1: 提案書の下書き生成(10min)</h4>
+<ol>
+<li>Google Docsを新規作成してください</li>
+<li>Gemini(またはGeminiチャット)に以下のプロンプトを送信してください</li>
+</ol>
+<div class="prompt" id="p_s3h1">以下の条件で社内提案書の下書きを作成してください。
+
+テーマ: 社内会議のオンラインハイブリッド化
+対象読者: 部門長クラス
+構成: 背景、現状の課題、提案内容、期待効果、スケジュール
+トーン: ビジネスフォーマル、簡潔
+分量: A4 1ページ程度<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+<ol start="3">
+<li>生成された下書きをDocs上に貼り付けてください</li>
+<li>内容を読み、事実関係や自社の状況に合わない部分を修正してください</li>
+</ol>
+
+<h4>演習2: 既存文書の改善(10min)</h4>
+<ol>
+<li>演習1で作成した提案書の「背景」セクションを選択してください</li>
+<li>以下の改善を順番に試してください
+  <ul>
+  <li>Elaborate(拡張): より詳しい背景説明に</li>
+  <li>Formalize(フォーマル化): よりフォーマルなトーンに</li>
+  <li>Shorten(短縮): 3行以内に圧縮</li>
+  </ul>
+</li>
+<li>各結果を比較し、最も適切なバージョンを採用してください</li>
+</ol>
+
+<h4>演習3: 議事録の整理(10min)</h4>
+<ol>
+<li>以下のような雑多なメモをDocsに貼り付けてください(実際の会議メモがあればそれを使ってください)</li>
+</ol>
+<div class="prompt" id="p_s3h2">以下の会議メモを構造化された議事録に整理してください。決定事項、未決事項、次回までのアクションアイテム(担当者+期限)を明確に分けてください。
+
+---
+4/1 定例ミーティング
+田中:来週までに報告書まとめる
+予算の件→鈴木さんが経理に確認中、来週回答もらえるらしい
+新システム導入は5月目標で進める方向
+佐藤:テスト環境の準備は4/10までにやる
+マニュアル作成は外注する?→社内でやる方向で
+次回4/8 同じ時間で<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+
+<h4>演習4: 校正と翻訳(5min)</h4>
+<ol>
+<li>演習3で整理した議事録の一部を選択し、Geminiに英語への翻訳を依頼してください</li>
+<li>翻訳結果が自然な英語になっているか確認してください</li>
+</ol>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://support.google.com/docs/answer/13447100" target="_blank" rel="noopener">Google Docs で Gemini を使用する</a> -- 公式ヘルプ</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Review A: NotebookLM + Docs (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review A -- 25min</div><h2>復習A: NotebookLM + Docs 連携ハンズオン</h2>
+<p>Section 02で学んだNotebookLMと、Section 03で学んだDocs x Geminiを組み合わせます。資料分析から文書作成までの流れを通して体験してください。</p>
+
+<div class="handson">
+<div class="hs-title">復習ハンズオン: 資料分析からレポート作成 <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: NotebookLMで資料を分析し、その結果をDocsでレポートにまとめる</div>
+
+<ol>
+<li>NotebookLMで先ほど作成したノートブック(またはWebページのURLを2-3本追加したもの)を開いてください(3min)</li>
+<li>以下のプロンプトでソースの分析結果を得てください(5min)</li>
+</ol>
+<div class="prompt" id="p_rA1">このソースの内容を以下の観点で分析してください。
+1. 主要な論点(3-5個)
+2. 各論点の根拠となる具体的なデータや事実
+3. 見落とされている視点や不足している情報<button class="cb" onclick="copyP('p_rA1')">コピー</button></div>
+<ol start="3">
+<li>NotebookLMの回答をコピーし、Google Docsに貼り付けてください(2min)</li>
+<li>Gemini(DocsまたはGeminiチャット)を使って、分析結果をビジネスレポート形式に変換してください(10min)</li>
+</ol>
+<div class="prompt" id="p_rA2">以下の分析結果を、上司向けの1ページレポートに再構成してください。
+構成: エグゼクティブサマリ(3行)→主要発見事項→推奨アクション
+トーン: 簡潔で結論先行型
+
+---
+(NotebookLMの分析結果をここに貼り付け)<button class="cb" onclick="copyP('p_rA2')">コピー</button></div>
+<ol start="5">
+<li>生成されたレポートを読み直し、自分の言葉で修正を加えてください(5min)</li>
+</ol>
+
+<ul class="checklist">
+<li>NotebookLMでソースを分析し、根拠付きの回答を得られた</li>
+<li>分析結果をDocsに転記し、レポート形式に変換できた</li>
+<li>AI生成文を自分の視点で修正・加筆できた</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: Sheets x Gemini (55min: 講義20 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 55min(講義20 + ハンズオン35)</div><h2>Sheets x Gemini -- データ分析と可視化</h2>
+
+<h3>Help me organize</h3>
+<p>Google Sheets上でGeminiにデータの整理方法を提案してもらう機能です。列の追加・分割、データのクリーニング、書式設定などを自然言語で指示できます。手作業で1時間かかるデータ整形が、一言の指示で完了する場面は少なくありません。</p>
+
+<h3>Help me analyze</h3>
+<p>データの傾向分析やグラフ生成を自然言語で依頼できます。「売上の月次推移をグラフにして」「前年比を計算して」といった指示に対して、適切なグラフ種類の選択から作成までを一括で行います。</p>
+
+<h3>数式生成</h3>
+<p>Sheetsの関数をすべて暗記している人は少数派でしょう。GeminiはVLOOKUP、SUMIFS、ARRAYFORMULA、IFSなどの複雑な関数を、自然言語の説明から自動生成します。</p>
+<div class="prompt" id="p_s4_ex">A列に日付、B列に売上額が入っています。月別の合計をD列に出す数式を作ってください。<button class="cb" onclick="copyP('p_s4_ex')">コピー</button></div>
+<p>このような曖昧な指示でも、Geminiは =SUMIFS(B:B, MONTH(A:A), MONTH(D2)) のような関数を提案します。</p>
+
+<h3>ピボットテーブルの自動提案</h3>
+<p>データの集計に適したピボットテーブルの構成を提案してくれます。行・列・値に何を配置すればよいかをAIが判断するため、ピボットテーブルに不慣れな人でも分析結果を素早く得られます。</p>
+
+<h3>Geminiが生成できる関数の種類</h3>
+<p>Gemini in Sheetsは単純なSUMやAVERAGEだけでなく、実務で頻出する中〜上級関数も生成します。自然言語でやりたいことを伝えれば、適切な関数が返ってきます。</p>
+
+<table class="ct"><thead><tr><th>関数</th><th>用途</th><th>難易度</th></tr></thead><tbody>
+<tr><td>VLOOKUP / XLOOKUP</td><td>別テーブルからのデータ参照</td><td>中</td></tr>
+<tr><td>SUMIFS / COUNTIFS</td><td>複数条件での集計</td><td>中</td></tr>
+<tr><td>ARRAYFORMULA</td><td>配列数式(一括適用)</td><td>上</td></tr>
+<tr><td>QUERY</td><td>SQL風のデータ抽出・集計</td><td>上</td></tr>
+<tr><td>IMPORTRANGE</td><td>他スプレッドシートからデータ取得</td><td>中</td></tr>
+<tr><td>IFS / SWITCH</td><td>多分岐条件</td><td>中</td></tr>
+<tr><td>UNIQUE + SORT</td><td>重複排除とソート</td><td>低</td></tr>
+<tr><td>FILTER</td><td>条件に合うデータの動的抽出</td><td>中</td></tr>
+</tbody></table>
+
+<h4>自然言語 → 関数の対応例</h4>
+<table class="ct"><thead><tr><th>自然言語での指示</th><th>生成される関数(例)</th></tr></thead><tbody>
+<tr><td>「B列の売上をC列の部門ごとに合計して」</td><td>=SUMIFS(B:B, C:C, "営業部")</td></tr>
+<tr><td>「A列の商品コードをもとにD列の価格テーブルから単価を引っ張って」</td><td>=VLOOKUP(A2, D:E, 2, FALSE)</td></tr>
+<tr><td>「A列からE列のデータで、C列が"完了"のものだけ抜き出して」</td><td>=FILTER(A:E, C:C="完了")</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: 大量データ時の注意点</div>Sheetsの行数上限は約1,000万セルです。大規模データの分析にはBigQueryやPythonを使う方が適切で、Gemini in SheetsはExcelレベルの日常分析が得意分野になります。</div>
+
+<p>以下のサンプルデータをダウンロードして演習で使用してください。</p>
+<a class="dl" onclick="downloadSalesCSV()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプル売上データ.csv</a>
+
+<div class="quiz"><h4>理解度チェック: Section 04</h4>
+<div class="q"><p>Q4. Gemini in Sheetsで数式を生成する際、最も効果的な指示方法はどれですか?</p>
+<label><input type="radio" name="q4" value="a">「いい感じの数式を作って」と指示する</label>
+<label><input type="radio" name="q4" value="b">対象の列名と計算したい内容を具体的に説明する</label>
+<label><input type="radio" name="q4" value="c">数式を自分で書いてAIに確認させる</label>
+<label><input type="radio" name="q4" value="d">スクリーンショットを送る</label>
+<div class="ans" id="a4">正解: B。「A列の日付とB列の売上から、月別合計を算出する数式」のように、列名・データ内容・やりたいことを具体的に伝えると精度が上がります。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 04 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Sheetsでデータ分析 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: サンプルデータの整形、数式生成、グラフ作成、傾向分析を体験する</div>
+
+<h4>演習1: データ整形(10min)</h4>
+<ol>
+<li>ダウンロードしたサンプル売上データ.csvをGoogle Sheetsにインポートしてください</li>
+<li>Gemini(またはGeminiチャットにデータを貼り付けて)に以下の整形を依頼してください</li>
+</ol>
+<div class="prompt" id="p_s4h1">このスプレッドシートのデータを見やすく整形してください。
+- ヘッダー行を太字にして背景色を付ける
+- 売上額の列に通貨書式(円)を適用
+- 月ごとに小計行を追加<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+
+<h4>演習2: 数式生成(10min)</h4>
+<ol>
+<li>以下の計算を自然言語でGeminiに依頼してください</li>
+</ol>
+<div class="prompt" id="p_s4h2">以下の数式を作成してください。
+1. 製品カテゴリごとの売上合計(SUMIFS関数)
+2. 前月比成長率(パーセント表示)
+3. 全期間の売上平均と標準偏差<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+<ol start="2">
+<li>Geminiが生成した数式をセルに貼り付けて動作確認してください</li>
+<li>数式が正しく動かない場合は、エラーメッセージをGeminiに伝えて修正を依頼してください</li>
+</ol>
+
+<h4>演習3: グラフ作成(10min)</h4>
+<ol>
+<li>Geminiに以下の指示でグラフを作成してください</li>
+</ol>
+<div class="prompt" id="p_s4h3">このデータから以下のグラフを作成してください。
+1. 月別の売上推移(折れ線グラフ、製品カテゴリ別に色分け)
+2. 製品カテゴリ別の売上構成比(円グラフ)<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+<ol start="2">
+<li>生成されたグラフのタイトル、凡例、軸ラベルが適切か確認してください</li>
+</ol>
+
+<h4>演習4: 傾向分析レポート(5min)</h4>
+<ol>
+<li>Geminiチャットにデータ全体を貼り付け、以下のプロンプトで分析レポートを依頼してください</li>
+</ol>
+<div class="prompt" id="p_s4h4">このデータの傾向を分析し、以下を含むレポートを作成してください。
+- 売上が最も伸びているカテゴリとその要因の仮説
+- 解約数の傾向と懸念点
+- 来月の売上予測(簡易な推定でOK)<button class="cb" onclick="copyP('p_s4h4')">コピー</button></div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://support.google.com/docs/answer/13447163" target="_blank" rel="noopener">Google Sheets で Gemini を使用する</a> -- 公式ヘルプ</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: Slides x Gemini (45min: 講義15 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 45min(講義15 + ハンズオン30)</div><h2>Slides x Gemini -- プレゼン自動生成</h2>
+
+<h3>プレゼン一括生成</h3>
+<p>テーマを指定するだけで、表紙からまとめスライドまでを一括生成してくれます。「AI活用の社内提案プレゼンを10枚で」といった指示でスライド一式が出てきます。レイアウト、配色、画像配置もAIが判断します。</p>
+<p>生成品質は「たたき台としては十分、そのまま本番投影するには不十分」という水準です。構成の骨格を手に入れて、そこから自社のデザインテンプレートや具体数値を差し込んでいく使い方が現実的でしょう。</p>
+
+<h3>スライド個別追加</h3>
+<p>既存のプレゼンに対して「この内容のスライドを1枚追加して」と指示することも可能です。途中に説明スライドを差し込みたい、Q&Aスライドを追加したいといった場面で役立ちます。</p>
+
+<h3>スピーカーノート生成</h3>
+<p>スライド内容に基づいて、発表用のスピーカーノート(台本)を自動生成します。プレゼンの練習用としても、本番のカンペとしても使えます。</p>
+
+<h3>画像生成(Imagen統合)</h3>
+<p>Slides上から直接Imagen(Googleの画像生成AI)を呼び出し、プレゼンに挿入する画像を生成できます。ストックフォトを探す手間が省けます。Imagenの詳細はSection 07で扱います。</p>
+
+<div class="box warn"><div class="bt">注意: 自動生成プレゼンの品質</div>AIが生成するスライドは「情報の羅列」になりやすい傾向があります。「1スライド1メッセージ」の原則は人間が意識的に適用してください。文字が小さすぎるスライドや、要点が不明確なスライドはAIにとって苦手分野です。</div>
+
+<!-- Section 05 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Slidesでプレゼン作成 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: テーマからスライド一式を生成し、個別追加とスピーカーノート生成を体験する</div>
+
+<h4>演習1: テーマからスライド一式を生成(10min)</h4>
+<ol>
+<li>Google Slidesを新規作成してください</li>
+<li>Gemini(SlidesまたはGeminiチャット)に以下のプロンプトで依頼してください</li>
+</ol>
+<div class="prompt" id="p_s5h1">「社内のAI活用推進計画」というテーマで、8枚のプレゼンスライドを作成してください。
+
+構成:
+1. 表紙
+2. 背景と目的
+3. 現在のAI活用状況
+4. 3つの重点施策
+5. 施策1の詳細
+6. 施策2の詳細
+7. 施策3の詳細
+8. スケジュールとまとめ
+
+デザイン: シンプル、ビジネス向け、青系の配色<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>演習2: 個別スライド追加とレイアウト調整(10min)</h4>
+<ol>
+<li>生成されたプレゼンの「施策1の詳細」スライドの後に、補足スライドを1枚追加してください</li>
+</ol>
+<div class="prompt" id="p_s5h2">施策1に関するROI試算のスライドを1枚追加してください。
+導入コスト、期待削減時間、投資回収期間の3つをわかりやすく表現してください。<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+<ol start="2">
+<li>追加されたスライドのレイアウトや文字サイズを手動で調整してください</li>
+</ol>
+
+<h4>演習3: スピーカーノート生成(10min)</h4>
+<ol>
+<li>各スライドのスピーカーノート欄に、Geminiで発表用の台本を生成してください</li>
+</ol>
+<div class="prompt" id="p_s5h3">以下のスライド内容に対して、2分間の発表用スピーカーノートを書いてください。
+聴衆は部門長クラスで、AIに詳しくない人が多い想定です。専門用語は避け、具体例を交えてください。
+
+(スライドの内容をここに貼り付け)<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://support.google.com/docs/answer/13447195" target="_blank" rel="noopener">Google Slides で Gemini を使用する</a> -- 公式ヘルプ</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Review B: Sheets→Slides (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review B -- 25min</div><h2>復習B: Sheets分析結果からプレゼン作成</h2>
+<p>Section 04のデータ分析結果を、Section 05のSlidesプレゼン生成に接続します。分析とプレゼンの一連の流れを体験してください。</p>
+
+<div class="handson">
+<div class="hs-title">復習ハンズオン: データ分析プレゼン <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: Sheetsで分析した売上データをもとに、5枚のプレゼンスライドを作成する</div>
+
+<ol>
+<li>Section 04で作成したグラフと分析レポートを手元に用意してください(2min)</li>
+<li>Geminiに以下のプロンプトでプレゼンの下書きを依頼してください(8min)</li>
+</ol>
+<div class="prompt" id="p_rB1">以下のデータ分析結果をもとに、5枚のプレゼンスライドを作成してください。
+
+構成:
+1. 表紙(四半期売上レポート)
+2. 売上推移のハイライト(折れ線グラフの説明)
+3. カテゴリ別パフォーマンス(比較)
+4. 課題と懸念点(解約数の傾向)
+5. 来期に向けた提案
+
+---
+(Sheets分析結果やGeminiの分析レポートをここに貼り付け)<button class="cb" onclick="copyP('p_rB1')">コピー</button></div>
+<ol start="3">
+<li>生成されたスライドにSheetsのグラフを画像として挿入してください(5min)</li>
+<li>スピーカーノートを追加してください(5min)</li>
+<li>全体を見直し、不要なスライドの削除や内容修正を行ってください(5min)</li>
+</ol>
+
+<ul class="checklist">
+<li>Sheetsの分析結果をプレゼンのストーリーに変換できた</li>
+<li>グラフをスライドに挿入できた</li>
+<li>スピーカーノートを生成し、発表できる状態にした</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: Gem/Canvas/Deep Research (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 55min(講義25 + ハンズオン30)</div><h2>Gem / Canvas / Deep Research -- 高度な調査と分析</h2>
+
+<h3>Gem(カスタムGemini)</h3>
+<p>GemはGemini Advanced/Business/Enterpriseで利用できるカスタマイズ機能です。特定の役割、指示、知識を事前に設定した「パーソナルAI」を作れます。ChatGPTのGPTs、ClaudeのProjectsに相当する機能と考えてください。</p>
+<p>例えば「社内FAQボット」というGemを作り、回答のトーンや参照する情報範囲を事前に指定しておくと、毎回同じ指示を入力する手間がなくなります。</p>
+
+<h4>Gemの構成要素</h4>
+<ul>
+<li><strong>名前</strong> -- Gemの用途がわかる名前(例: 「営業メールアシスタント」)</li>
+<li><strong>カスタム指示</strong> -- Gemの振る舞いを定義するプロンプト</li>
+<li><strong>知識ファイル</strong> -- 参照すべき資料をアップロード(任意)</li>
+</ul>
+
+<h3>Canvas(対話型ワークスペース)</h3>
+<p>CanvasはGemini上のドキュメント/コード編集ワークスペースです。チャットの右側にエディタが表示され、コードや文書をリアルタイムで編集しながらAIと対話できます。ChatGPTのCanvasやClaudeのArtifactsと同等の位置付けです。</p>
+<p>コード生成の場合、Canvasは部分的な修正指示に対応します。「3行目のfor文をmap関数に変えて」「エラーハンドリングを追加して」といった細かい修正を、全体を再生成せずに適用できるのが利点です。</p>
+
+<h3>Deep Research</h3>
+<p>Deep ResearchはGemini Advancedの目玉機能です。指定したテーマについて、複数のWebソースを自動で巡回し、情報を収集、構造化されたリサーチレポートを生成します。人間が3-4時間かけて行うWeb調査を、数分で完了させます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["調査テーマ入力"] --> B["検索計画の<br/>自動策定"]
+  B --> C["複数Webソース<br/>の巡回・収集"]
+  C --> D["情報の<br/>構造化・分析"]
+  D --> E["レポート生成<br/>(出典付き)"]
+</pre><div class="caption">Deep Researchの処理フロー。テーマを入力するだけで出典付きレポートが生成される</div></div>
+
+<div class="box tip"><div class="bt">Tips: Deep Researchの効果的な使い方</div>曖昧なテーマ(例: 「AIについて調べて」)では散漫なレポートになります。「2025年の日本国内RPA市場規模とAI統合の動向を、IDC/ガートナー/矢野経済研究所の調査データを中心に調査してください」のように、範囲・ソース・観点を絞ると精度が上がります。</div>
+
+<div class="box tip"><div class="bt">Tips: Deep Researchの出力品質を上げるコツ</div>3つのテクニックが効きます。1つ目は調査テーマの具体化。「生成AIの導入状況」ではなく「従業員1,000人以上の製造業における生成AI導入率と主な用途」まで絞ると、焦点の合ったレポートが出ます。2つ目は対象期間の指定。「2024年1月〜2025年12月のデータに限定してください」と明記すれば、古い情報が混入しにくくなります。3つ目は出典の信頼性フィルター。「政府機関、大手調査会社(IDC、ガートナー、矢野経済研究所)、上場企業のIR資料を優先し、個人ブログは除外してください」と指定することで、レポート全体の信頼性が底上げされます。</div>
+
+<h4>Deep Researchの制限事項</h4>
+<ul>
+<li>1日の利用回数に上限があります(Advancedプランで1日あたり数回程度。上限はGoogleが随時調整しており、明確な公開数値はありません)</li>
+<li>出力の長さに制限があり、テーマが広すぎると表面的な記述になります。調査観点を3-5個に絞ることで、各項目の深さを確保してください</li>
+<li>リアルタイム性には限界があります。直近数時間以内のニュースは反映されない場合があり、速報性が求められる調査には不向きです</li>
+<li>日本語ソースの網羅性は英語ソースに比べて劣る傾向があります。日本市場の調査では「日本語の情報源を優先してください」と明示的に指定するのが有効です</li>
+</ul>
+
+<div class="quiz"><h4>理解度チェック: Section 06</h4>
+<div class="q"><p>Q5. GeminiのDeep Research機能の特長として正しいのはどれですか?</p>
+<label><input type="radio" name="q5" value="a">社内文書のみを検索対象とする</label>
+<label><input type="radio" name="q5" value="b">複数のWebソースを自動巡回し、出典付きの構造化レポートを生成する</label>
+<label><input type="radio" name="q5" value="c">1つのWebサイトを深く分析する</label>
+<label><input type="radio" name="q5" value="d">ユーザーがソースURLを手動で指定する必要がある</label>
+<div class="ans" id="a5">正解: B。Deep Researchは検索計画の策定から複数ソースの巡回、情報の構造化まで自動で行います。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 06 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Gem/Canvas/Deep Research <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 業務特化Gemの作成、Canvasでのコード生成、Deep Researchでの市場調査を体験する</div>
+
+<h4>演習1: 業務特化Gemを作成(10min)</h4>
+<ol>
+<li><a href="https://gemini.google.com/" target="_blank" rel="noopener">gemini.google.com</a> で「Gem」メニューを開いてください(Advanced以上が必要)</li>
+<li>以下のテンプレートを参考に、業務用Gemを1つ作成してください</li>
+</ol>
+<div class="prompt" id="p_s6h1">名前: 営業メールアシスタント
+
+カスタム指示:
+あなたは営業チームのメール作成アシスタントです。
+以下のルールに従ってください:
+- 丁寧語を使用し、フォーマルなビジネスメールのトーンを維持する
+- メールの目的(初回アプローチ/フォローアップ/提案/お礼)を確認してから作成する
+- 件名は20文字以内で具体的に
+- 本文は300文字以内を目安に簡潔に
+- 必ず次のアクション(打合せ日程の提案など)を含める<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+<ol start="3">
+<li>作成したGemに「新規顧客へのフォローアップメールを書いて。先週の展示会で名刺交換した相手。」と指示し、出力を確認してください</li>
+</ol>
+<a class="dl" onclick="downloadGemTemplate()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Gem設計テンプレート.md</a>
+
+<h4>演習2: Canvasでコード生成(10min)</h4>
+<ol>
+<li>Geminiチャットで以下のプロンプトを送信してください</li>
+</ol>
+<div class="prompt" id="p_s6h2">PythonでCSVファイルを読み込み、月別の売上集計とグラフ表示を行うスクリプトを書いてください。
+ライブラリはpandasとmatplotlibを使用。
+日本語フォント対応も含めてください。<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+<ol start="2">
+<li>Canvas上に表示されたコードを確認してください</li>
+<li>「エラーハンドリングを追加して」「コメントを日本語で入れて」など、部分的な修正指示を試してください</li>
+</ol>
+
+<h4>演習3: Deep Researchで市場調査(10min)</h4>
+<ol>
+<li>Geminiチャットの入力欄で「Deep Research」モードを選択してください</li>
+<li>以下のプロンプトで調査を開始してください</li>
+</ol>
+<div class="prompt" id="p_s6h3">日本国内の生成AI導入状況について調査してください。
+
+調査観点:
+- 企業のAI導入率(業種別の差)
+- 主な利用用途ランキング
+- 導入における課題とボトルネック
+- 今後1-2年の市場予測
+
+信頼性の高い調査機関(総務省、IPA、矢野経済研究所等)のデータを優先してください。<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+<ol start="3">
+<li>生成されたレポートの構成、出典の確認、データの鮮度を評価してください</li>
+</ol>
+<a class="dl" onclick="downloadResearchSheet()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Deep Research調査シート.md</a>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://blog.google/products/gemini/google-gemini-deep-research/" target="_blank" rel="noopener">Gemini Deep Research</a> -- 公式ブログ</li>
+<li><a href="https://support.google.com/gemini/answer/15523856" target="_blank" rel="noopener">Gems を作成・使用する</a> -- 公式ヘルプ</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: Imagen 3 (45min: 講義20 + ハンズオン25) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 45min(講義20 + ハンズオン25)</div><h2>Imagen 3 -- 画像生成と資料ビジュアル</h2>
+
+<h3>Imagen 3とは</h3>
+<p>Imagen 3はGoogleが開発した最新の画像生成モデルです。テキストの指示(プロンプト)から高品質な画像を生成します。GeminiチャットやGoogle Slides上から呼び出すことができ、プレゼン用のビジュアル素材やコンセプトイメージの作成に使えます。</p>
+<p>DALL-E(OpenAI)やMidjourney と比較して、テキストの忠実な描画(看板や説明テキストの含まれる画像)に強みがあるとされています。</p>
+
+<h3>プロンプト設計のコツ</h3>
+<table class="ct"><thead><tr><th>要素</th><th>説明</th><th>例</th></tr></thead><tbody>
+<tr><td>主題</td><td>何を描くか</td><td>「ビジネスチームがオフィスで会議をしている」</td></tr>
+<tr><td>スタイル</td><td>画風・テイスト</td><td>「フラットイラスト風」「写真のようにリアルに」</td></tr>
+<tr><td>構図</td><td>アングル・配置</td><td>「俯瞰で」「中央に人物を配置」</td></tr>
+<tr><td>色調</td><td>カラーパレット</td><td>「青と白を基調に」「暖色系で」</td></tr>
+<tr><td>ネガティブ条件</td><td>除外したいもの</td><td>「テキストなし」「ロゴなし」</td></tr>
+</tbody></table>
+
+<h3>プロンプトの書き方テンプレート</h3>
+<p>Imagenのプロンプトは5つの要素を順番に並べると安定した結果が出ます。すべての要素を毎回書く必要はありませんが、主題とスタイルは必須です。</p>
+
+<div class="prompt" id="p_s7_template">[主題] + [スタイル] + [構図] + [色調] + [ネガティブ条件]
+
+--- 記述例 ---
+主題: オフィスでノートPCを使って作業する3人のビジネスパーソン
+スタイル: フラットデザインのベクターイラスト、ミニマルな線画
+構図: 横長16:9、3人を中央に等間隔で配置、背景にオフィス什器をシルエットで
+色調: 白背景、アクセントにネイビーブルー(#1E3A5F)とライトグレー
+ネガティブ条件: テキストなし、ロゴなし、写実的な表現なし、3D効果なし
+
+--- 実際のプロンプト(1文にまとめる場合) ---
+Flat vector illustration of three business professionals working on laptops in a modern office, minimal line art style, 16:9 horizontal composition with figures centered, navy blue and light gray color palette on white background, no text, no logos, no photorealistic elements.<button class="cb" onclick="copyP('p_s7_template')">コピー</button></div>
+
+<div class="box tip"><div class="bt">Tips: ビジネス資料向けの画像生成</div>プレゼンに挿入する画像は「フラットイラスト風、シンプル、ビジネスカジュアル、白背景」と指定すると統一感のある素材が得られます。写実的な画像は「不気味の谷」を越えられないケースが多いため、イラスト系がおすすめです。</div>
+
+<h3>制限事項</h3>
+<ul>
+<li><strong>人物の顔写真</strong> -- リアルな人物写真の生成は制限されています(安全性のため)</li>
+<li><strong>ブランドロゴ</strong> -- 既存の企業ロゴの生成はできません</li>
+<li><strong>著作権のあるキャラクター</strong> -- 既存のIP(知的財産)を再現する指示は拒否されます</li>
+<li><strong>SynthID</strong> -- 生成画像には不可視の電子透かし(SynthID)が埋め込まれます</li>
+</ul>
+
+<div class="box warn"><div class="bt">注意: AI生成画像の利用規約</div>生成画像を商用利用する場合は、Googleの利用規約を必ず確認してください。特に、生成画像を「実在の写真」として扱うことは規約違反になる場合があります。社外への資料で使う場合は「AI Generated」の注釈を入れることをおすすめします。</div>
+
+<h3>生成画像の商用利用に関する注意点</h3>
+<p>Gemini/Imagenで生成した画像の商用利用については、Google利用規約(Gemini Terms of Service)の「Generated Output」セクションに準拠します。2025年時点での主要ポイントは以下の通りです。</p>
+<ul>
+<li>Gemini Business/Enterpriseプランで生成した画像は、Google利用規約の範囲内で商用利用可能です。無料版やAdvancedでの商用利用は規約をよく確認してください</li>
+<li>生成画像にはSynthID(不可視の電子透かし)が自動埋め込みされます。これを意図的に除去する行為は規約違反の対象です</li>
+<li>実在の人物に似せた画像の生成はそもそもフィルターで制限されていますが、万が一似た結果が出た場合、肖像権・パブリシティ権の問題は利用者側の責任になります</li>
+<li>社外向けの資料やWebサイトでAI生成画像を使用する場合、「AI Generated Image」などの注釈を添えておくことを推奨します。法的義務ではなく信頼性の問題として、透明性が評価される場面が増えています</li>
+<li>生成画像の著作権については各国の法整備が進行中で、確定した判例は限られています。生成画像をそのまま商標登録するのは現時点でリスクが高いと考えてください</li>
+</ul>
+
+<!-- Section 07 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Imagen 3で画像生成 <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: プレゼン用のイメージ画像を3枚生成し、Slidesに挿入する</div>
+
+<ol>
+<li><a href="https://gemini.google.com/" target="_blank" rel="noopener">Geminiチャット</a> で以下の3つのプロンプトを順番に送信し、画像を生成してください(15min)</li>
+</ol>
+
+<p>画像1: ヒーローイメージ</p>
+<div class="prompt" id="p_s7h1">以下の条件で画像を生成してください。
+
+主題: AIテクノロジーとチームワークを象徴するフラットイラスト
+スタイル: ミニマルなフラットデザイン、ベクターイラスト風
+色調: 青と白を基調、アクセントにオレンジ
+構図: 中央にPCを囲むチーム、周囲にAI関連のアイコン(歯車、グラフ、クラウド)
+条件: テキストなし、背景はグラデーション<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+
+<p>画像2: データ分析のイメージ</p>
+<div class="prompt" id="p_s7h2">以下の条件で画像を生成してください。
+
+主題: データダッシュボードとグラフが表示されたモニター
+スタイル: アイソメトリック(等角投影)イラスト
+色調: ダークブルーの背景に明るいアクセント
+構図: 大きなモニターを中心に、小さなグラフやチャートが周囲に浮かぶ
+条件: テキストなし、人物なし<button class="cb" onclick="copyP('p_s7h2')">コピー</button></div>
+
+<p>画像3: コラボレーションのイメージ</p>
+<div class="prompt" id="p_s7h3">以下の条件で画像を生成してください。
+
+主題: ドキュメントやスプレッドシートが空中に浮かび、光の線でつながっている
+スタイル: クリーンでモダンなフラットイラスト
+色調: 白背景、Google Workspaceのブランドカラー(青、赤、黄、緑)をアクセントに
+構図: 中央に大きなドキュメントアイコン、周囲にシート、スライド、メールのアイコン
+条件: テキストなし<button class="cb" onclick="copyP('p_s7h3')">コピー</button></div>
+
+<ol start="2">
+<li>生成された画像をダウンロードしてください(3min)</li>
+<li>Section 05で作成したプレゼン(またはReview Bのプレゼン)を開き、適切なスライドに画像を挿入してください(7min)</li>
+</ol>
+
+<details><summary>画像生成がうまくいかない場合</summary><div class="inner">
+<p>Imagenが利用できない場合や、安全フィルターにより生成が拒否された場合は以下を試してください。</p>
+<ul>
+<li>プロンプトをより具体的に修正する(曖昧な指示は拒否されやすい)</li>
+<li>人物の描写を避け、抽象的なコンセプト図にする</li>
+<li>代替として <a href="https://www.canva.com/" target="_blank" rel="noopener">Canva</a> の無料素材を使用する</li>
+</ul>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://deepmind.google/technologies/imagen-3/" target="_blank" rel="noopener">Imagen 3</a> -- Google DeepMindの公式ページ</li>
+<li><a href="https://cloud.google.com/vertex-ai/generative-ai/docs/image/generate-images" target="_blank" rel="noopener">Vertex AI 画像生成ドキュメント</a> -- API利用時の技術仕様</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: 総合ハンズオン (80min: 講義10 + ハンズオン70) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 80min(講義10 + ハンズオン70)</div><h2>総合ハンズオン: データ分析レポートを一気通貫で作成</h2>
+
+<h3>ゴール</h3>
+<p>このコースで学んだ全ツールを組み合わせて、「四半期売上レポート」を一気通貫で作成します。NotebookLMでの資料分析から、Sheets分析、Docsレポート、Slidesプレゼン、Imagen画像生成までを一つのワークフローとして体験してください。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  S1["Step1<br/>NotebookLM<br/>資料分析"] --> S2["Step2<br/>Sheets<br/>データ分析"]
+  S2 --> S3["Step3<br/>Docs<br/>レポート作成"]
+  S3 --> S4["Step4<br/>Deep Research<br/>市場調査"]
+  S4 --> S5["Step5<br/>Slides<br/>プレゼン生成"]
+  S5 --> S6["Step6<br/>Imagen<br/>画像生成"]
+  S6 --> S7["Step7<br/>レビュー<br/>修正"]
+  S7 --> S8["Step8<br/>共有<br/>PDF出力"]
+</pre><div class="caption">8ステップで四半期レポートを完成させるワークフロー</div></div>
+
+<div class="handson">
+<div class="hs-title">総合ハンズオン: 四半期売上レポート <span class="hs-time">70min</span></div>
+<div class="hs-goal">目標: 8つのステップで、NotebookLMからPDF出力まで一貫したレポートを完成させる</div>
+
+<h4>Step 1: NotebookLMで既存資料を分析(10min)</h4>
+<ol>
+<li>NotebookLMで新しいノートブックを作成してください</li>
+<li>以下のソースをアップロードしてください
+  <ul>
+  <li>自社の前期レポート(PDF)、または練習用に公開されているIR資料のURL</li>
+  <li>業界ニュースのWebページURL(2-3本)</li>
+  </ul>
+</li>
+<li>以下のプロンプトで分析を実行してください</li>
+</ol>
+<div class="prompt" id="p_s8h1">これらの資料から、四半期レポートに使えるデータポイントを抽出してください。
+- 市場全体の動向
+- 自社(またはこの組織)のポジション
+- 注目すべきリスクや機会<button class="cb" onclick="copyP('p_s8h1')">コピー</button></div>
+
+<h4>Step 2: Sheetsでサンプル売上データを分析(10min)</h4>
+<ol>
+<li>Section 04でダウンロードしたサンプル売上データ.csv(または自社データ)をSheetsで開いてください</li>
+<li>Geminiに月別・カテゴリ別の集計と折れ線グラフの作成を依頼してください</li>
+<li>前月比成長率を計算する数式を生成してください</li>
+</ol>
+
+<h4>Step 3: Docsで分析レポートの本文を生成(10min)</h4>
+<ol>
+<li>Google Docsを新規作成し、Geminiに以下の構成でレポートの下書きを依頼してください</li>
+</ol>
+<div class="prompt" id="p_s8h2">以下の情報をもとに、四半期売上レポートの本文を作成してください。
+
+構成:
+1. エグゼクティブサマリ(3-5行)
+2. 売上実績(月別・カテゴリ別のハイライト)
+3. 主要指標の分析(成長率、解約率)
+4. 市場環境(NotebookLM分析結果を反映)
+5. 課題と次四半期の施策
+
+---
+(Sheetsの分析結果とNotebookLMの抽出データをここに貼り付け)<button class="cb" onclick="copyP('p_s8h2')">コピー</button></div>
+
+<h4>Step 4: Deep Researchで市場動向の補足調査(10min)</h4>
+<ol>
+<li>GeminiのDeep Researchモードで、レポートの補足となる市場調査を実行してください</li>
+<li>得られた情報のうち、レポートに引用できるデータをDocsに追記してください</li>
+</ol>
+
+<h4>Step 5: Slidesでプレゼン資料を自動生成(10min)</h4>
+<ol>
+<li>Docsのレポート内容をもとに、8-10枚のプレゼンを生成してください</li>
+<li>各スライドが「1スライド1メッセージ」になっているか確認してください</li>
+</ol>
+
+<h4>Step 6: Imagen 3でビジュアル素材を生成+挿入(10min)</h4>
+<ol>
+<li>表紙用のヒーローイメージと、各セクションの装飾画像を1-2枚生成してください</li>
+<li>生成画像をSlidesに挿入し、レイアウトを調整してください</li>
+</ol>
+
+<h4>Step 7: 全体レビュー+修正(10min)</h4>
+<ol>
+<li>Docsレポートを通しで読み、論理の飛躍や事実誤認がないか確認してください</li>
+<li>Slidesプレゼンを先頭から順に確認し、ストーリーの一貫性を検証してください</li>
+<li>Geminiに以下のレビューを依頼してください</li>
+</ol>
+<div class="prompt" id="p_s8h3">以下のレポート/プレゼンの内容をレビューしてください。
+確認観点:
+- 論理的な矛盾や飛躍がないか
+- 数値データの整合性
+- 結論と提案の根拠が明確か
+- 読者(経営層)にとって理解しやすい構成か
+
+---
+(レポートまたはスライド内容をここに貼り付け)<button class="cb" onclick="copyP('p_s8h3')">コピー</button></div>
+
+<h4>Step 8: 共有設定+PDF出力(10min)</h4>
+<ol>
+<li>Docsの「共有」からレポートの共有設定を行ってください(閲覧権限/編集権限)</li>
+<li>「ファイル」から「ダウンロード」で PDF形式を選択し、レポートをPDF出力してください</li>
+<li>Slidesも同様にPDF出力してください</li>
+<li>両方のPDFを確認し、印刷・配布に適したフォーマットになっているか最終確認してください</li>
+</ol>
+
+<div class="box tip"><div class="bt">Tips: 成果物のポイント</div>この演習の主目的は「完璧なレポートを作ること」ではなく、Workspace横断でAIを活用する一連の流れを体験することにあります。80点の成果物を高速で作り、残り20点を人間の判断で仕上げるのがAI時代の働き方です。</div>
+
+<ul class="checklist">
+<li>NotebookLMで外部資料を分析し、データポイントを抽出できた</li>
+<li>Sheetsでデータの集計・可視化ができた</li>
+<li>Docsで構造化されたレポート本文を作成できた</li>
+<li>Deep Researchで市場調査の補足情報を取得できた</li>
+<li>Slidesでプレゼン資料を生成し、グラフや画像を挿入できた</li>
+<li>Imagen 3でビジュアル素材を生成できた</li>
+<li>全体レビューで論理の一貫性を確認できた</li>
+<li>PDF出力と共有設定を完了できた</li>
+</ul>
+</div>
+
+<a class="dl" onclick="downloadChecklist()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Gemini活用チェックリスト.md</a>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a> -- チャットとDeep Research</li>
+<li><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> -- AIノートブック</li>
+<li><a href="https://workspace.google.com/solutions/ai/" target="_blank" rel="noopener">Google Workspace AI</a> -- Docs/Sheets/Slides統合</li>
+<li><a href="https://cloud.google.com/vertex-ai/generative-ai/docs/image/generate-images" target="_blank" rel="noopener">Imagen 3 ドキュメント</a> -- 画像生成API</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C15 Gemini &amp; Google Workspace AI活用マスター<br>
+  全8セクション + 復習2回 = 480分(8時間)<br>
+  前提コース: C01 生成AI完全入門
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadSalesCSV(){const t=`月,製品カテゴリ,売上(万円),新規顧客数,既存顧客売上比率(%),解約数\n2026-01,SaaS A,520,45,68,12\n2026-01,SaaS B,180,22,72,5\n2026-01,コンサルティング,300,8,85,1\n2026-02,SaaS A,490,38,70,15\n2026-02,SaaS B,195,25,69,4\n2026-02,コンサルティング,280,6,88,2\n2026-03,SaaS A,610,55,65,8\n2026-03,SaaS B,210,30,71,3\n2026-03,コンサルティング,350,12,82,0\n2026-04,SaaS A,580,48,67,10\n2026-04,SaaS B,175,20,74,7\n2026-04,コンサルティング,320,9,86,1\n`;const b=new Blob([t],{type:'text/csv'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプル売上データ.csv';a.click();URL.revokeObjectURL(u);}
+
+function downloadChecklist(){const t=`# Gemini活用チェックリスト\n\n## Geminiチャット\n- [ ] テキスト生成(文章作成、要約、翻訳)\n- [ ] 画像分析(スクリーンショット、資料の読み取り)\n- [ ] Gem(カスタムAI)の作成と利用\n- [ ] Canvas(対話型コード/文書編集)\n- [ ] Deep Research(複数ソース横断調査)\n- [ ] Imagen 3(画像生成)\n\n## NotebookLM\n- [ ] ノートブック作成とソースアップロード\n- [ ] 要約の自動生成\n- [ ] FAQ自動生成\n- [ ] 質疑応答(出典付き)\n- [ ] Audio Overview(音声まとめ)\n\n## Google Docs x Gemini\n- [ ] Help me write(文書の下書き生成)\n- [ ] Help me refine -- Shorten(短縮)\n- [ ] Help me refine -- Elaborate(拡張)\n- [ ] Help me refine -- Rephrase(言い換え)\n- [ ] Help me refine -- Formalize(フォーマル化)\n- [ ] 翻訳\n- [ ] 校正と構成提案\n\n## Google Sheets x Gemini\n- [ ] Help me organize(データ整理)\n- [ ] Help me analyze(傾向分析)\n- [ ] 数式生成(自然言語 → 関数)\n- [ ] グラフ作成\n- [ ] ピボットテーブル提案\n\n## Google Slides x Gemini\n- [ ] プレゼン一括生成(テーマ指定)\n- [ ] スライド個別追加\n- [ ] スピーカーノート生成\n- [ ] 画像生成と挿入(Imagen統合)\n\n## Gmail x Gemini\n- [ ] Help me write(返信文生成)\n- [ ] メール要約\n\n## Google Meet x Gemini\n- [ ] リアルタイム文字起こし\n- [ ] 会議要約\n\n---\n作成日:\n確認者:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Gemini活用チェックリスト.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadGemTemplate(){const t=`# Gem設計テンプレート\n\n## 基本情報\n- Gem名:\n- 作成者:\n- 作成日:\n- 用途:\n\n## カスタム指示\n\nあなたは[役割]です。\n以下のルールに従ってください:\n\n### 基本ルール\n- [トーン/文体の指定]\n- [回答の長さ/形式]\n- [使用する言語]\n\n### 入力の確認事項\nユーザーからの入力を受けたら、以下を確認してください:\n1. [確認事項1]\n2. [確認事項2]\n3. [確認事項3]\n\n### 出力フォーマット\n回答は以下の構成で出力してください:\n- [セクション1]\n- [セクション2]\n- [セクション3]\n\n### 禁止事項\n- [やってはいけないこと1]\n- [やってはいけないこと2]\n\n## 知識ファイル一覧\n\n| # | ファイル名 | 内容 | 機密度 |\n|---|----------|------|--------|\n| 1 | | | 低/中/高 |\n| 2 | | | 低/中/高 |\n| 3 | | | 低/中/高 |\n\n## テスト結果\n\n| # | テスト質問 | 回答品質(5段階) | 問題点 | 改善案 |\n|---|----------|---------------|--------|--------|\n| 1 | | /5 | | |\n| 2 | | /5 | | |\n| 3 | | /5 | | |\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Gem設計テンプレート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadResearchSheet(){const t=`# Deep Research 調査シート\n\n## 調査概要\n- 調査テーマ:\n- 調査日:\n- 調査者:\n\n## 調査設計\n\n### 調査目的\n(この調査で明らかにしたいこと)\n\n### 調査観点\n1. \n2. \n3. \n4. \n\n### 期待するアウトプット\n- [ ] 市場規模データ(年次推移)\n- [ ] 主要プレーヤーの比較\n- [ ] 技術トレンド\n- [ ] 規制・政策の動向\n- [ ] 専門家の見解・予測\n\n### 優先ソース\n- [ ] 政府機関(総務省、経産省、IPA等)\n- [ ] 調査会社(IDC、ガートナー、矢野経済研究所等)\n- [ ] 学術論文\n- [ ] 業界団体のレポート\n- [ ] 企業のIR資料・プレスリリース\n\n## Deep Research プロンプト\n\n(以下をGemini Deep Researchに入力してください)\n\n---\n[テーマ]について調査してください。\n\n調査観点:\n- [観点1]\n- [観点2]\n- [観点3]\n\n[優先ソース]のデータを中心に、2024-2026年の動向に焦点を当ててください。\n数値データには必ず出典を明記してください。\n---\n\n## 調査結果の評価\n\n| 項目 | 評価(5段階) | コメント |\n|------|------------|--------|\n| 情報の網羅性 | /5 | |\n| データの鮮度 | /5 | |\n| 出典の信頼性 | /5 | |\n| 構造の明確さ | /5 | |\n| 実用性 | /5 | |\n\n## 追加調査が必要な項目\n1. \n2. \n3. \n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Deep Research調査シート.md';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

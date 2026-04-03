@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C04 Claude Code基礎 ターミナルAI開発入門 - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 概要</a><a href="#s2">02 基本操作</a><a href="#s3">03 CLAUDE.md</a><a href="#rA">Review A</a><a href="#s4">04 コマンド</a><a href="#s5">05 権限</a><a href="#rB">Review B</a><a href="#s6">06 MCP</a><a href="#s7">07 ワークフロー</a><a href="#s8">08 トレンド</a><a href="#s9">09 総合</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 04 / Layer 1 -- ツール基礎</div>
+  <h1><span>Claude Code基礎</span> ターミナルAI開発入門</h1>
+  <p class="lead">Claude Codeは、ターミナルから直接AIと対話しながらソフトウェア開発を進めるCLIツールです。GUIでは到達できない生産性の高みへ。インストールからCLAUDE.md設計、カスタムコマンド、MCP連携まで、日本語で体系的に学べる唯一のコースです。</p>
+  <div class="meta"><span class="tag">初級-中級</span><span class="tag">約8時間(480分)</span><span class="tag">9 Sections + 2 Review</span><span class="tag">ハンズオン比率 59%</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">Claude Codeとは -- CLIベースAI開発の全体像 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s2">基本操作マスター -- ファイル操作、コード生成、検索 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s3">CLAUDE.mdの設計 -- AIの行動をルールで制御する <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li class="review-item"><a href="#rA">復習ハンズオン A -- Node.jsプロジェクトをゼロから作る <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s4">コマンドとスキル -- カスタマイズで生産性を上げる <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s5">権限とセキュリティ -- 安全に使うための設定 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li class="review-item"><a href="#rB">復習ハンズオン B -- 安全な開発ワークフロー構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s6">MCP連携入門 -- 外部ツールとの統合 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s7">実践ワークフロー -- 日常開発での使い方パターン <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s8">トレンド -- Claude Code進化とIDE統合、Agent SDK <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">20min</span></a></li>
+  <li><a href="#s9">総合ハンズオン: CLAUDE.md+コマンド+MCPで開発環境構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: Claude Codeとは (45min: 講義30 + ハンズオン15) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 45min(講義30 + ハンズオン15)</div><h2>Claude Codeとは -- CLIベースAI開発の全体像</h2>
+<img src="assets/cli-concept.png" alt="Claude Code CLIコンセプト" class="sec-hero-img">
+
+<h3>GUIチャットとの根本的な違い</h3>
+<p>claude.aiのチャット画面にコードを貼り付けて回答をコピーする。その往復が開発の全体像だとすれば、Claude Codeはその枠を壊します。ファイルシステムへの直接アクセス、Bashコマンドの実行、Git操作、プロジェクト全体の文脈把握。ブラウザでは不可能だった操作をターミナルから一気に処理できるのがCLIベースのAI開発です。</p>
+<p>「AIにコードを書いてもらう」段階から「AIと一緒に開発する」段階へ。言葉は似ていますが、体験はまったく別物になります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["ユーザー入力<br/>(自然言語)"] --> B["Claude Code CLI"]
+  B --> C["Anthropic API<br/>(Claude)"]
+  C --> D["ツール実行"]
+  D --> E["Read / Edit / Write"]
+  D --> F["Bash / Grep / Glob"]
+  D --> G["Git / MCP"]
+  E --> H["結果表示"]
+  F --> H
+  G --> H
+  H -.->|継続対話| B
+</pre><div class="caption">Claude Codeのアーキテクチャ。自然言語の指示がツール実行に変換され、結果がフィードバックされる</div></div>
+
+<h3>何ができるのか</h3>
+<ul>
+  <li><strong>ファイル操作</strong> -- プロジェクト内のファイルを読み、編集し、新規作成する</li>
+  <li><strong>シェルコマンド実行</strong> -- npm install、テスト実行、ビルドなどをCLI上から直接</li>
+  <li><strong>コードベース全体の検索</strong> -- 特定の関数やパターンをGrep/Globで横断検索</li>
+  <li><strong>Git操作</strong> -- コミット、ブランチ操作、差分確認をAIに委任</li>
+  <li><strong>MCP連携</strong> -- 外部ツール(GitHub、DB、Slack等)と標準プロトコルで接続</li>
+</ul>
+
+<h3>動作環境と料金</h3>
+<table class="ct"><thead><tr><th>項目</th><th>内容</th></tr></thead><tbody>
+<tr><td>対応OS</td><td>macOS / Windows(WSL) / Linux</td></tr>
+<tr><td>必要ソフト</td><td>Node.js 18以上</td></tr>
+<tr><td>インストール</td><td>npm install -g @anthropic-ai/claude-code</td></tr>
+<tr><td>料金体系1</td><td>API従量課金(Anthropic Console経由)</td></tr>
+<tr><td>料金体系2</td><td>Max plan($100/月 or $200/月)でも利用可</td></tr>
+</tbody></table>
+
+<h3>claude.ai vs Claude Code vs Claude API -- 使い分け</h3>
+<table class="ct"><thead><tr><th>項目</th><th>claude.ai</th><th>Claude Code</th><th>Claude API</th></tr></thead><tbody>
+<tr><td>操作方法</td><td>ブラウザのチャット画面</td><td>ターミナルのCLI</td><td>HTTPリクエスト</td></tr>
+<tr><td>主な用途</td><td>質問応答、文章作成、分析</td><td>ソフトウェア開発全般</td><td>アプリへの組み込み</td></tr>
+<tr><td>ファイル操作</td><td>アップロードのみ</td><td>直接読み書き可能</td><td>コードで実装が必要</td></tr>
+<tr><td>Git操作</td><td>不可</td><td>組み込み対応</td><td>コードで実装が必要</td></tr>
+<tr><td>MCP連携</td><td>限定的</td><td>フル対応</td><td>SDK経由で対応</td></tr>
+<tr><td>対象者</td><td>全ユーザー</td><td>開発者</td><td>エンジニア</td></tr>
+</tbody></table>
+
+<h3>インストール確認</h3>
+<p>インストールが完了したら、バージョン確認で動作を確認できます。</p>
+<div class="prompt" id="p_s1ver">$ claude --version
+1.0.33 (Claude Code)<button class="cb" onclick="copyP('p_s1ver')">コピー</button></div>
+<p>バージョン番号は更新されるため、数字が異なっていても問題ありません。コマンドが認識されていれば正常です。</p>
+
+<h3>料金プランの比較: Max plan vs API従量課金</h3>
+<table class="ct"><thead><tr><th>項目</th><th>Max plan ($100/月)</th><th>Max plan ($200/月)</th><th>API従量課金</th></tr></thead><tbody>
+<tr><td>月額</td><td>$100 固定</td><td>$200 固定</td><td>使った分だけ</td></tr>
+<tr><td>対象モデル</td><td>Claude Sonnet 4</td><td>Claude Sonnet 4 + Opus 4</td><td>全モデル選択可</td></tr>
+<tr><td>使用量制限</td><td>1日あたりの利用上限あり(公式未明示、体感5-8時間分)</td><td>$100プランの5倍</td><td>制限なし(残高次第)</td></tr>
+<tr><td>コスト予測</td><td>予測しやすい</td><td>予測しやすい</td><td>変動が大きい</td></tr>
+<tr><td>向いている人</td><td>日常的にClaude Codeを使う開発者</td><td>Opusで高品質な出力が必要な場合</td><td>利用頻度が低い or 大規模処理で細かくコスト管理したい場合</td></tr>
+<tr><td>認証方法</td><td>ブラウザ認証(初回のみ)</td><td>ブラウザ認証(初回のみ)</td><td>ANTHROPIC_API_KEY 環境変数</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: どこから始めるか</div>claude.aiでAIとの対話に慣れている方が、次のステップとしてClaude Codeに進むのが自然な流れです。既にVSCodeやターミナルを日常的に使っているなら、Claude Codeへの移行は1時間もあれば完了します。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. Claude Codeがclaude.aiのチャットと根本的に異なる点はどれですか?</p>
+<label><input type="radio" name="q1" value="a">使用するAIモデルが異なる</label>
+<label><input type="radio" name="q1" value="b">ファイルシステムに直接アクセスしてコードの読み書きやBash実行ができる</label>
+<label><input type="radio" name="q1" value="c">日本語に対応していない</label>
+<label><input type="radio" name="q1" value="d">無料で使える</label>
+<div class="ans" id="a1">正解: B。Claude Codeはプロジェクトのファイルを直接操作し、シェルコマンドを実行できます。GUIチャットではこの操作は不可能です。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. Claude Codeの実行に必要な環境として正しいものはどれですか?</p>
+<label><input type="radio" name="q2" value="a">Python 3.10以上</label>
+<label><input type="radio" name="q2" value="b">Docker Desktop</label>
+<label><input type="radio" name="q2" value="c">Node.js 18以上</label>
+<label><input type="radio" name="q2" value="d">Java Runtime Environment</label>
+<div class="ans" id="a2">正解: C。Claude CodeはNode.jsベースのCLIツールで、npmからインストールします。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 01 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: インストールと初回起動 <span class="hs-time">15min</span></div>
+<div class="hs-goal">目標: Claude Codeをインストールし、最初の指示でファイル生成を体験する</div>
+
+<h4>Step 1: インストール(3min)</h4>
+<div class="prompt" id="p_s1h1">npm install -g @anthropic-ai/claude-code<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+<p>Node.jsがインストールされていない場合は、<a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> から LTS版をダウンロードしてください。</p>
+
+<h4>Step 2: APIキー設定 or Max planログイン(2min)</h4>
+<p>API従量課金の場合は環境変数にキーを設定します。</p>
+<div class="prompt" id="p_s1h2">export ANTHROPIC_API_KEY=sk-ant-xxxxx<button class="cb" onclick="copyP('p_s1h2')">コピー</button></div>
+<p>Max planの場合は初回起動時にブラウザ認証が表示されます。画面の指示に従ってログインしてください。</p>
+
+<h4>Step 3: 起動(2min)</h4>
+<p>任意のフォルダに移動して claude コマンドを実行します。</p>
+<div class="prompt" id="p_s1h3">mkdir ~/my-first-project && cd ~/my-first-project
+claude<button class="cb" onclick="copyP('p_s1h3')">コピー</button></div>
+
+<h4>Step 4: 最初の指示(3min)</h4>
+<div class="prompt" id="p_s1h4">このフォルダの構成を教えて<button class="cb" onclick="copyP('p_s1h4')">コピー</button></div>
+<p>Claude Codeがフォルダ内容を読み取って回答するのを確認してください。ツール呼び出し(Read, Bash等)が実行される様子が表示されます。</p>
+
+<h4>Step 5: ファイル生成を体験(5min)</h4>
+<div class="prompt" id="p_s1h5">README.mdを作成して。このプロジェクトは「Claude Codeの学習用プロジェクト」として、概要と使い方を含めてください。<button class="cb" onclick="copyP('p_s1h5')">コピー</button></div>
+<p>Writeツールが呼び出され、README.mdが生成されます。ファイルが実際に作成されたことを ls コマンドやエディタで確認してください。</p>
+
+<details><summary>うまく動かないときは</summary><div class="inner">
+<p>「command not found: claude」が出る場合は、npm のグローバルパスが通っていない可能性があります。以下を試してください。</p>
+<ul>
+<li>npx @anthropic-ai/claude-code で直接実行</li>
+<li>npm config get prefix でインストール先を確認し、PATHに追加</li>
+</ul>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">Claude Code Overview</a> -- 公式ドキュメント(英語)</li>
+<li><a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> -- 実行環境のダウンロード</li>
+<li><a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> -- APIキーの取得</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: 基本操作マスター (55min: 講義20 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 55min(講義20 + ハンズオン35)</div><h2>基本操作マスター -- ファイル操作、コード生成、検索</h2>
+
+<h3>Claude Codeが持つツール一覧</h3>
+<p>Claude Codeは内部で複数のツールを持っています。どのツールを使うかはClaude Codeが自動判断するため、ユーザーはツール名を意識する必要はありません。ただし、ツールの存在と役割を知っておくと、指示の精度が上がります。</p>
+
+<table class="ct"><thead><tr><th>ツール</th><th>役割</th><th>使われる場面</th></tr></thead><tbody>
+<tr><td>Read</td><td>ファイルの内容を読む</td><td>「このファイルの中身を見せて」</td></tr>
+<tr><td>Edit</td><td>既存ファイルの部分編集</td><td>「10行目のconsole.logを削除して」</td></tr>
+<tr><td>Write</td><td>新規ファイル作成 / 全体書き換え</td><td>「helper.jsを新規作成して」</td></tr>
+<tr><td>Bash</td><td>シェルコマンドの実行</td><td>「npm testを実行して」</td></tr>
+<tr><td>Grep</td><td>ファイル内容を正規表現で検索</td><td>「fetchを使っている箇所を探して」</td></tr>
+<tr><td>Glob</td><td>ファイル名パターンで検索</td><td>「*.test.jsファイルを一覧にして」</td></tr>
+<tr><td>Agent</td><td>サブエージェントを起動</td><td>複雑なタスクの並列処理(C07応用で詳しく)</td></tr>
+</tbody></table>
+
+<h3>効果的な指示の出し方</h3>
+<p>Claude Codeへの指示は、具体的であるほど精度が高くなります。「コードを直して」ではなく「src/index.jsの23行目にあるfetchのエラーハンドリングを追加して」のように、対象ファイル、対象箇所、操作内容を明示するのが鍵です。</p>
+
+<div class="cols">
+<div class="col-card"><h4>曖昧な指示(避ける)</h4>
+<ul>
+<li>「バグを直して」</li>
+<li>「テストを書いて」</li>
+<li>「コードをきれいにして」</li>
+</ul>
+</div>
+<div class="col-card"><h4>具体的な指示(推奨)</h4>
+<ul>
+<li>「src/api.jsのfetchUser関数でエラー時にnullが返る問題を修正して」</li>
+<li>「utils/format.tsのformatDate関数にJestテストを追加して」</li>
+<li>「src/components/以下の未使用importを全て削除して」</li>
+</ul>
+</div>
+</div>
+
+<h3>ツール使い分け判断表</h3>
+<p>Claude Codeはどのツールを使うか自動判断しますが、内部ロジックを知っておくと「なぜこのツールが選ばれたのか」が理解でき、指示の精度も上がります。</p>
+<table class="ct"><thead><tr><th>やりたいこと</th><th>選ばれるツール</th><th>理由</th></tr></thead><tbody>
+<tr><td>ファイルの内容を確認したい</td><td>Read</td><td>ファイルを開くだけで変更しない。最も軽量な操作</td></tr>
+<tr><td>1行だけ修正したい</td><td>Edit</td><td>差分だけを適用。ファイル全体を書き換えるよりトークン効率が良い</td></tr>
+<tr><td>新しいファイルを作りたい</td><td>Write</td><td>ファイルが存在しない場合はWriteが選択される</td></tr>
+<tr><td>ファイルを全面書き換えしたい</td><td>Write</td><td>Editでは差分が大きすぎる場合、全体書き換えのほうが安全</td></tr>
+<tr><td>npm install や テスト実行</td><td>Bash</td><td>シェルコマンドの実行が必要な操作は全てBash経由</td></tr>
+<tr><td>特定の文字列をコード内から探す</td><td>Grep</td><td>ファイルの中身を正規表現で検索。「fetchを使っている場所」など</td></tr>
+<tr><td>ファイル名のパターンで探す</td><td>Glob</td><td>拡張子やディレクトリ構造でファイルを列挙。「*.test.jsを全部」など</td></tr>
+<tr><td>広い範囲を調べてから作業したい</td><td>Agent(サブエージェント)</td><td>複雑な調査を並列で処理。C07応用コースで詳しく扱う</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: ツール呼び出しの観察</div>Claude Codeが動作する際、どのツールが呼ばれたかがターミナルに表示されます。ReadやEditの実行過程を観察すると、AIがどうやってコードを理解し、修正しているかの解像度が上がります。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 02</h4>
+<div class="q"><p>Q3. 既存ファイルの特定箇所だけを修正したい場合、Claude Codeが使うツールはどれですか?</p>
+<label><input type="radio" name="q3" value="a">Write(全体書き換え)</label>
+<label><input type="radio" name="q3" value="b">Edit(部分編集)</label>
+<label><input type="radio" name="q3" value="c">Bash(シェル実行)</label>
+<label><input type="radio" name="q3" value="d">Grep(検索)</label>
+<div class="ans" id="a3">正解: B。Editツールは既存ファイルの特定箇所だけを差し替える部分編集用のツールです。Writeは新規作成や全体書き換えに使います。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 02 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 7つのツールを体験する <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: Read / Edit / Write / Bash / Grep / Glob の各ツールを実際に動かし、Claude Codeの操作感を掴む</div>
+
+<p>まず、ハンズオン用のサンプルプロジェクトを作ります。Claude Codeに以下を指示してください。</p>
+<div class="prompt" id="p_s2h0">以下の構成でNode.jsのサンプルプロジェクトを作成して:
+- package.json (name: "handson-project", scripts に test と start)
+- src/index.js (Express風のシンプルなサーバー。ポート3000。console.logで起動メッセージ)
+- src/utils/helper.js (formatDate関数とcalculateTax関数をexport)
+- src/utils/validator.js (isValidEmail関数をexport。fetchで外部APIを呼ぶ想定コメント付き)
+- tests/helper.test.js (helper.jsのテストスケルトン。assertモジュール使用)
+- .gitignore (node_modules)<button class="cb" onclick="copyP('p_s2h0')">コピー</button></div>
+
+<h4>演習 1: Read体験(5min)</h4>
+<div class="prompt" id="p_s2h1">src/index.jsを読んで内容を説明して<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>演習 2: Edit体験(5min)</h4>
+<div class="prompt" id="p_s2h2">src/index.jsのconsole.logの出力メッセージを「Server is running on port 3000」に変更して<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+
+<h4>演習 3: Write体験(5min)</h4>
+<div class="prompt" id="p_s2h3">src/utils/formatter.jsを新規作成して。数値を3桁カンマ区切りにするformatNumber関数と、文字列の先頭を大文字にするcapitalize関数をexportしてください。<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<h4>演習 4: Bash体験(5min)</h4>
+<div class="prompt" id="p_s2h4">npm init -y を実行して、その後 npm test を実行して結果を教えて<button class="cb" onclick="copyP('p_s2h4')">コピー</button></div>
+
+<h4>演習 5: Grep体験(5min)</h4>
+<div class="prompt" id="p_s2h5">このプロジェクトでfetchを使っている箇所(コメント含む)を全て見つけて<button class="cb" onclick="copyP('p_s2h5')">コピー</button></div>
+
+<h4>演習 6: Glob体験(5min)</h4>
+<div class="prompt" id="p_s2h6">*.jsファイルを全てリストアップして。テストファイルとソースファイルを分けて教えて。<button class="cb" onclick="copyP('p_s2h6')">コピー</button></div>
+
+<h4>演習 7: 総合操作(5min)</h4>
+<div class="prompt" id="p_s2h7">src/utils/helper.jsのcalculateTax関数にバグがないか確認して。もしあれば修正して、修正内容を説明して。<button class="cb" onclick="copyP('p_s2h7')">コピー</button></div>
+
+<details><summary>各演習で観察すべきポイント</summary><div class="inner">
+<ul>
+<li>演習1: Readツールが呼ばれ、ファイルの中身がClaude Codeに渡されている</li>
+<li>演習2: Editツールが差分だけを適用している(ファイル全体の書き換えではない)</li>
+<li>演習3: Writeツールが新規ファイルを作成。ディレクトリが存在しない場合は自動作成される</li>
+<li>演習4: Bashツールでnpmコマンドが実行され、出力結果がフィードバックされている</li>
+<li>演習5: Grepが正規表現でファイル内容を検索し、ファイル名と行番号を返している</li>
+<li>演習6: Globがファイル名パターンで一致するファイルを列挙している</li>
+<li>演習7: Read → 分析 → Edit の複数ツールが連鎖的に実行されている</li>
+</ul>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/cli-usage" target="_blank" rel="noopener">Claude Code CLI Usage</a> -- CLIの操作リファレンス</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: CLAUDE.mdの設計 (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 55min(講義25 + ハンズオン30)</div><h2>CLAUDE.mdの設計 -- AIの行動をルールで制御する</h2>
+
+<h3>CLAUDE.mdとは何か</h3>
+<p>プロジェクトルートに置く「AIへの永続的な指示書」です。通常のチャットでは、毎回プロジェクトのルールやコーディング規約を伝え直す必要があります。CLAUDE.mdがあれば、Claude Codeは起動時にこのファイルを自動で読み込み、そのルールに従って動作します。</p>
+<p>人間の新メンバーにオンボーディング資料を渡すのと同じ発想です。プロジェクトの前提知識をドキュメントとして渡しておけば、AIは毎回ゼロから説明を受ける必要がなくなります。</p>
+
+<h3>推奨テンプレート構成</h3>
+<table class="ct"><thead><tr><th>セクション</th><th>記載内容</th><th>記載例</th></tr></thead><tbody>
+<tr><td>プロジェクト概要</td><td>何を作っているのか</td><td>「Node.js + ExpressのREST API。ユーザー管理システム」</td></tr>
+<tr><td>技術スタック</td><td>言語、FW、主要ライブラリ</td><td>「TypeScript 5.x / Express 4 / Prisma / PostgreSQL」</td></tr>
+<tr><td>コーディング規約</td><td>命名規則、スタイル、パターン</td><td>「関数名はcamelCase。constを優先。any禁止」</td></tr>
+<tr><td>ディレクトリ構造</td><td>主要ディレクトリの役割</td><td>「src/routes/ = APIエンドポイント、src/services/ = ビジネスロジック」</td></tr>
+<tr><td>テスト実行方法</td><td>テストランナーとコマンド</td><td>「npm test でJest実行。カバレッジ80%以上を維持」</td></tr>
+<tr><td>セキュリティルール</td><td>触ってはいけないファイル、入力禁止情報</td><td>「.envは読み取り禁止。APIキーをコードに直接書かない」</td></tr>
+<tr><td>禁止事項</td><td>実行してはいけない操作</td><td>「git push --force禁止。rm -rf禁止」</td></tr>
+</tbody></table>
+
+<h3>CLAUDE.md vs .claude/settings.json</h3>
+<p>両者は補完関係にあります。CLAUDE.mdは人間も読める自然言語のルール。settings.jsonはツール許可やMCP設定などの構造化されたマシン設定です。</p>
+<div class="cols">
+<div class="col-card"><h4>CLAUDE.md(自然言語ルール)</h4>
+<ul>
+<li>コーディング規約</li>
+<li>プロジェクトの背景情報</li>
+<li>やってほしいこと/やらないでほしいこと</li>
+<li>チームの合意事項</li>
+</ul>
+</div>
+<div class="col-card"><h4>settings.json(マシン設定)</h4>
+<ul>
+<li>allowedTools / disallowedTools</li>
+<li>MCP接続設定</li>
+<li>環境変数の制御</li>
+<li>フック(自動実行ルール)</li>
+</ul>
+</div>
+</div>
+
+<h3>階層構造</h3>
+<p>CLAUDE.mdは3つのレベルで配置でき、より具体的なレベルが優先されます。</p>
+<table class="ct"><thead><tr><th>レベル</th><th>パス</th><th>適用範囲</th></tr></thead><tbody>
+<tr><td>グローバル</td><td>~/.claude/CLAUDE.md</td><td>全プロジェクト共通(個人設定)</td></tr>
+<tr><td>プロジェクト</td><td>プロジェクトルート/CLAUDE.md</td><td>そのプロジェクト全体</td></tr>
+<tr><td>ディレクトリ</td><td>サブディレクトリ/CLAUDE.md</td><td>特定ディレクトリとその配下</td></tr>
+</tbody></table>
+
+<details><summary>良いCLAUDE.mdの例</summary><div class="inner">
+<div class="prompt" id="p_s3good"># プロジェクト概要
+ECサイトのバックエンドAPI。TypeScript + Express + Prisma + PostgreSQL。
+
+# 技術スタック
+- Node.js 20 LTS
+- TypeScript 5.4 (strict mode)
+- Express 4.x
+- Prisma 5.x (ORM)
+- Jest + Supertest (テスト)
+
+# コーディング規約
+- 変数名・関数名は camelCase
+- 型は明示的に書く (any, unknown 禁止)
+- 非同期関数は async/await を使用 (.then チェーン禁止)
+- エラーは try-catch で処理し、適切なHTTPステータスを返す
+
+# ディレクトリ構造
+- src/routes/ -- APIエンドポイント定義
+- src/services/ -- ビジネスロジック
+- src/middleware/ -- 認証、バリデーション等
+- prisma/ -- スキーマとマイグレーション
+
+# テスト
+npm test で Jest 実行。新しい関数には必ずテストを追加すること。
+
+# セキュリティ
+- .env ファイルは絶対に読み取らない
+- APIキー、パスワードをソースコードに直書きしない
+- git push --force 禁止
+- rm -rf / は実行しない<button class="cb" onclick="copyP('p_s3good')">コピー</button></div>
+</div></details>
+
+<details><summary>悪い例1: 曖昧すぎるCLAUDE.md</summary><div class="inner">
+<div class="prompt" id="p_s3bad">よろしくお願いします。
+TypeScriptで書いてください。
+きれいなコードを書いてください。
+バグのないコードを書いてください。<button class="cb" onclick="copyP('p_s3bad')">コピー</button></div>
+<p>問題点: 「きれい」「バグのない」は曖昧で解釈の幅が広すぎます。具体的な規約(camelCase、strict mode、anyの禁止など)がないと、AIの出力にばらつきが出ます。プロジェクト概要やディレクトリ構造がないため、コンテキストも不足しています。</p>
+</div></details>
+
+<details><summary>悪い例2: 長すぎるCLAUDE.md</summary><div class="inner">
+<div class="prompt" id="p_s3bad2"># プロジェクト概要
+(省略: ここに500行以上の詳細な説明が記載されている想定)
+# コーディング規約
+- 変数名はcamelCaseにしてください
+- ただし定数はSNAKE_CASEにしてください
+- ただしReactコンポーネントはPascalCaseにしてください
+- ただしCSSクラス名はkebab-caseにしてください
+- ただしデータベースカラム名はsnake_caseにしてください
+... (同様の規約が200行以上続く)<button class="cb" onclick="copyP('p_s3bad2')">コピー</button></div>
+<p>問題点: CLAUDE.mdが長すぎると、毎回のAPI呼び出しでトークンを大量消費します。500行を超える場合はCLAUDE.mdに概要だけ書き、詳細は.claude/skills/に分離するのが適切です。本当に「毎回参照が必要」な情報だけをCLAUDE.mdに残してください。</p>
+</div></details>
+
+<details><summary>悪い例3: 矛盾があるCLAUDE.md</summary><div class="inner">
+<div class="prompt" id="p_s3bad3"># コーディング規約
+- constを優先し、letは極力使わない
+- 再代入が必要な変数はletで宣言する
+
+# テスト
+- テストは必ず書くこと
+- テストはCI/CDで自動実行される
+
+# セキュリティ
+- .envファイルは読み取り禁止
+- テスト実行時に.envから環境変数を読み込むこと<button class="cb" onclick="copyP('p_s3bad3')">コピー</button></div>
+<p>問題点: セキュリティセクションで「.envは読み取り禁止」と書きながら、テストセクションで「.envから読み込め」と矛盾している。AIはどちらに従うべきか判断できず、挙動が不安定になります。矛盾がある場合、後に書かれたほうが優先される傾向がありますが、これに依存するのは危険です。記載後にClaude Codeに「このCLAUDE.mdに矛盾がないか確認して」とレビューさせるのが有効です。</p>
+</div></details>
+
+<div class="quiz"><h4>理解度チェック: Section 03</h4>
+<div class="q"><p>Q4. CLAUDE.mdの階層で、最も優先度が高いのはどれですか?</p>
+<label><input type="radio" name="q4" value="a">グローバル(~/.claude/CLAUDE.md)</label>
+<label><input type="radio" name="q4" value="b">プロジェクトルートのCLAUDE.md</label>
+<label><input type="radio" name="q4" value="c">サブディレクトリのCLAUDE.md</label>
+<label><input type="radio" name="q4" value="d">全て同じ優先度</label>
+<div class="ans" id="a4">正解: C。より具体的な(深い階層の)CLAUDE.mdが優先されます。サブディレクトリのルールがプロジェクトルートのルールを上書きします。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 03 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: CLAUDE.mdを作成して改善する <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 自分のプロジェクト(またはサンプル)用のCLAUDE.mdを作成し、Claude Codeにレビューさせる</div>
+
+<h4>Step 1: テンプレートをダウンロード(5min)</h4>
+<p>以下のボタンからテンプレートを取得するか、Claude Codeで直接作成してください。</p>
+<button class="dl" onclick="downloadClaudeMd()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>CLAUDE.mdテンプレート.md</button>
+
+<h4>Step 2: CLAUDE.mdを作成(15min)</h4>
+<p>テンプレートを元に、自分のプロジェクトの情報を埋めてください。プロジェクトがない場合は、Section 02で作成したサンプルプロジェクトを対象にします。</p>
+<div class="prompt" id="p_s3h1">このプロジェクトの構成を分析して、CLAUDE.mdの初版を作成して。
+以下の項目を含めて:
+- プロジェクト概要
+- 技術スタック
+- コーディング規約(具体的なルール5つ以上)
+- ディレクトリ構造の説明
+- テストの実行方法
+- セキュリティルール
+- 禁止事項<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+
+<h4>Step 3: Claude Codeにレビューさせる(10min)</h4>
+<div class="prompt" id="p_s3h2">CLAUDE.mdの内容を確認して、改善提案をして。
+以下の観点でチェックして:
+1. 曖昧な表現がないか
+2. 足りない項目はないか
+3. 矛盾するルールがないか
+4. セキュリティの観点で漏れがないか<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+
+<ul class="checklist">
+<li>CLAUDE.mdテンプレートを確認した</li>
+<li>自プロジェクト用のCLAUDE.mdを作成した</li>
+<li>Claude Codeにレビューさせて改善した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/memory" target="_blank" rel="noopener">Claude Code Memory</a> -- CLAUDE.mdの公式ドキュメント</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン A (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review Hands-on A -- 25min</div><h2>復習ハンズオン A: Node.jsプロジェクトをゼロから作る</h2>
+<p>Section 01-03で学んだインストール、基本操作、CLAUDE.md設計を組み合わせて、小さなプロジェクトを一から構築します。</p>
+
+<div class="handson">
+<div class="hs-title">課題: TODOアプリのCLIツールを作る <span class="hs-time">25min</span></div>
+<div class="hs-goal">成果物: CLAUDE.md付きのNode.jsプロジェクト(TODOアプリCLI + テスト + README)</div>
+
+<h4>手順</h4>
+<ol>
+<li>新しいフォルダを作成(2min)</li>
+</ol>
+<div class="prompt" id="p_rA1">mkdir ~/todo-cli && cd ~/todo-cli && claude<button class="cb" onclick="copyP('p_rA1')">コピー</button></div>
+
+<ol start="2">
+<li>CLAUDE.mdを最初に作成(3min)</li>
+</ol>
+<div class="prompt" id="p_rA2">CLAUDE.mdを作成して。このプロジェクトはNode.jsのCLI TODOアプリ。
+技術スタック: Node.js、標準ライブラリのみ(外部パッケージ不要)。
+コーディング規約: ES Modules、const優先、関数名はcamelCase。
+セキュリティ: .envは読まない。rm -rf禁止。<button class="cb" onclick="copyP('p_rA2')">コピー</button></div>
+
+<ol start="3">
+<li>TODOアプリの生成(8min)</li>
+</ol>
+<div class="prompt" id="p_rA3">TODOアプリのCLIツールを作って。
+機能:
+- todo add "タスク名" -- タスクを追加
+- todo list -- タスク一覧を表示
+- todo done 番号 -- タスクを完了にする
+- todo delete 番号 -- タスクを削除
+
+データはJSONファイル(todos.json)に保存。
+エントリポイントは src/index.js。<button class="cb" onclick="copyP('p_rA3')">コピー</button></div>
+
+<ol start="4">
+<li>コードの確認と修正(4min)</li>
+</ol>
+<div class="prompt" id="p_rA4">生成したコードを確認して、CLAUDE.mdのルールに沿っているか検証して。問題があれば修正して。<button class="cb" onclick="copyP('p_rA4')">コピー</button></div>
+
+<ol start="5">
+<li>テスト追加(4min)</li>
+</ol>
+<div class="prompt" id="p_rA5">src/index.jsに対するテストをtests/index.test.jsに作成して。
+add、list、done、deleteの各機能をテストすること。
+Node.js組み込みのnode:testとnode:assertを使って。<button class="cb" onclick="copyP('p_rA5')">コピー</button></div>
+
+<ol start="6">
+<li>README更新(4min)</li>
+</ol>
+<div class="prompt" id="p_rA6">READMEを作成して。インストール方法、使い方(各コマンドの例)、テスト実行方法を含めて。<button class="cb" onclick="copyP('p_rA6')">コピー</button></div>
+
+<ul class="checklist">
+<li>CLAUDE.mdを最初に作成してからプロジェクトを開始した</li>
+<li>TODOアプリが動作する(add, list, done, deleteが使える)</li>
+<li>テストが存在し、実行できる</li>
+<li>READMEにインストール方法と使い方が記載されている</li>
+<li>CLAUDE.mdのルールに沿ったコードになっている</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: コマンドとスキル (50min: 講義20 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 50min(講義20 + ハンズオン30)</div><h2>コマンドとスキル -- カスタマイズで生産性を上げる</h2>
+
+<h3>組み込みスラッシュコマンド</h3>
+<p>Claude Codeには最初から使えるコマンドが用意されています。対話中に / を入力すると候補が表示されます。</p>
+<table class="ct"><thead><tr><th>コマンド</th><th>機能</th><th>使いどころ</th></tr></thead><tbody>
+<tr><td>/help</td><td>ヘルプ表示</td><td>使えるコマンドの一覧を確認</td></tr>
+<tr><td>/clear</td><td>会話履歴をクリア</td><td>新しいタスクを開始するとき</td></tr>
+<tr><td>/compact</td><td>コンテキストを圧縮</td><td>会話が長くなってトークンを節約したいとき</td></tr>
+<tr><td>/cost</td><td>トークン消費量を表示</td><td>料金の目安を確認</td></tr>
+<tr><td>/init</td><td>CLAUDE.mdを自動生成</td><td>プロジェクト初期設定</td></tr>
+<tr><td>/review</td><td>コードレビュー</td><td>変更内容のレビューを依頼</td></tr>
+<tr><td>/memory</td><td>メモリの確認・編集</td><td>永続的に記憶させたい情報の管理</td></tr>
+</tbody></table>
+
+<h3>/init -- CLAUDE.mdの自動生成</h3>
+<p>/init コマンドは、プロジェクトの構成を自動分析し、CLAUDE.mdの初版を生成します。新しいプロジェクトでClaude Codeを使い始めるときに最初に実行すべきコマンドです。</p>
+<div class="prompt" id="p_s4init">$ claude
+> /init
+
+Claude Code がプロジェクト構造を分析中...
+- package.json を検出 (Node.js プロジェクト)
+- TypeScript設定を検出 (tsconfig.json)
+- テストフレームワークを検出 (Jest)
+- 7つのソースファイルを分析
+
+CLAUDE.md を作成しました。内容を確認して、必要に応じて調整してください。<button class="cb" onclick="copyP('p_s4init')">コピー</button></div>
+<p>/init が生成するCLAUDE.mdは出発点であり、そのまま使うものではありません。自動生成された後に、プロジェクト固有のルール(社内コーディング規約、セキュリティ方針、禁止事項など)を手動で追記・修正してください。</p>
+
+<h3>/review -- コードレビュー</h3>
+<p>/review はgit diffの結果を読み取り、変更内容に対するレビューコメントを返します。PRを出す前のセルフチェックに適しています。</p>
+<div class="prompt" id="p_s4review">$ claude
+> /review
+
+変更ファイル: 3件 (src/api.ts, src/utils/format.ts, tests/api.test.ts)
+
+src/api.ts:
+  [中] L23: fetchUser関数のcatch節でerrorをログに出力せずに握りつぶしている。
+       少なくともconsole.errorでエラー内容を記録すべき。
+  [低] L45: 未使用のimport (lodash) が残っている。
+
+src/utils/format.ts:
+  [高] L12: formatCurrency関数で通貨コードのバリデーションがない。
+       不正な値が渡された場合にNaNが返る。
+
+tests/api.test.ts:
+  問題なし。テストカバレッジも適切。<button class="cb" onclick="copyP('p_s4review')">コピー</button></div>
+
+<h3>カスタムコマンドの作り方</h3>
+<p>プロジェクト内に .claude/commands/ フォルダを作り、Markdownファイルを置くだけです。ファイル名がコマンド名になります。</p>
+
+<div class="prompt" id="p_s4cmd"># .claude/commands/review-code.md の例
+
+コードレビューを実行してください。
+
+以下の観点でチェック:
+1. バグの可能性がある箇所
+2. パフォーマンスの問題
+3. セキュリティの懸念
+4. 命名規則の違反
+5. テストの不足
+
+問題を発見したら、重要度(高/中/低)を付けて報告してください。
+修正案も提示してください。<button class="cb" onclick="copyP('p_s4cmd')">コピー</button></div>
+
+<p>$ARGUMENTS 変数を使えば、コマンド実行時に引数を受け取れます。</p>
+<div class="prompt" id="p_s4arg"># .claude/commands/explain.md の例
+
+$ARGUMENTS のコードについて解説してください。
+
+解説のルール:
+- 何をしているか(概要)
+- なぜそう書いているか(意図)
+- 改善できる箇所があれば提案<button class="cb" onclick="copyP('p_s4arg')">コピー</button></div>
+<p>実行例: <code>/explain src/utils/helper.js</code></p>
+
+<h3>スキル</h3>
+<p>.claude/skills/ フォルダに配置するのがスキルです。コマンドが「短い指示テンプレート」なら、スキルは「複雑な手順書」の位置づけになります。特定の技術やワークフローに関する詳細なガイドラインを記述できます。</p>
+
+<div class="box tip"><div class="bt">Tips: コマンドとスキルの使い分け</div>
+<ul>
+<li>コマンド -- 「レビューして」「テストして」のような短い指示を定型化</li>
+<li>スキル -- 「このプロジェクトのReactコンポーネントはこの設計パターンで」のような複雑な知識を格納</li>
+</ul>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 04</h4>
+<div class="q"><p>Q5. カスタムコマンドを作成するために必要なのはどれですか?</p>
+<label><input type="radio" name="q5" value="a">settings.jsonに登録する</label>
+<label><input type="radio" name="q5" value="b">.claude/commands/ にMarkdownファイルを置く</label>
+<label><input type="radio" name="q5" value="c">npmパッケージをインストールする</label>
+<label><input type="radio" name="q5" value="d">Anthropic Consoleで設定する</label>
+<div class="ans" id="a5">正解: B。.claude/commands/ フォルダにMarkdownファイルを置くだけでカスタムコマンドが使えるようになります。ファイル名がコマンド名です。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 04 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: カスタムコマンドを3つ作る <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 実用的なカスタムコマンドを3つ作成し、実際に使ってみる</div>
+
+<h4>Step 1: /helpで組み込みコマンドを確認(5min)</h4>
+<p>Claude Codeの対話中に /help と入力して、使えるコマンドの一覧を確認してください。</p>
+
+<h4>Step 2: /review-code コマンドを作成(10min)</h4>
+<div class="prompt" id="p_s4h1">.claude/commands/review-code.md を作成して。
+内容:
+- バグ、パフォーマンス、セキュリティ、命名規則、テスト不足の5観点でレビュー
+- 問題には重要度(高/中/低)を付与
+- 修正案を提示
+- $ARGUMENTS で対象ファイルやディレクトリを指定可能にする<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+<p>作成後、/review-code src/ を実行して動作を確認してください。</p>
+
+<h4>Step 3: /generate-tests コマンドを作成(10min)</h4>
+<div class="prompt" id="p_s4h2">.claude/commands/generate-tests.md を作成して。
+内容:
+- $ARGUMENTS で指定されたファイルのテストを生成
+- テストフレームワークはpackage.jsonのdevDependenciesから自動判定
+- 正常系、異常系、エッジケースを網羅
+- テストファイルの出力先は対象ファイルと同じ階層の __tests__/ フォルダ<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<h4>Step 4: /summarize-changes コマンドを作成(5min)</h4>
+<div class="prompt" id="p_s4h3">.claude/commands/summarize-changes.md を作成して。
+内容:
+- git diffの結果を分析して変更内容を日本語で要約
+- ファイルごとの変更概要
+- 影響範囲の推定
+- コミットメッセージの候補を3つ提案<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+
+<ul class="checklist">
+<li>/helpで組み込みコマンド一覧を確認した</li>
+<li>/review-code コマンドを作成し、動作確認した</li>
+<li>/generate-tests コマンドを作成した</li>
+<li>/summarize-changes コマンドを作成した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/tutorials" target="_blank" rel="noopener">Claude Code Tutorials</a> -- カスタムコマンドの公式チュートリアル</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: 権限とセキュリティ (45min: 講義25 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 45min(講義25 + ハンズオン20)</div><h2>権限とセキュリティ -- 安全に使うための設定</h2>
+
+<h3>権限モデルの仕組み</h3>
+<p>Claude Codeはツールを実行する前に、そのツールが「自動許可」されているか「確認が必要」かを判断します。settings.jsonでこの挙動を制御できます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TD
+  A["ツール実行リクエスト"] --> B{"allowedTools<br/>に含まれる?"}
+  B -->|Yes| C["自動実行"]
+  B -->|No| D{"disallowedTools<br/>に含まれる?"}
+  D -->|Yes| E["実行拒否"]
+  D -->|No| F["ユーザーに確認"]
+  F --> G{"許可する?"}
+  G -->|Yes| C
+  G -->|No| E
+</pre><div class="caption">ツール実行の権限判定フロー</div></div>
+
+<h3>settings.jsonの構造</h3>
+<div class="prompt" id="p_s5json">{
+  "permissions": {
+    "allowedTools": [
+      "Read",
+      "Glob",
+      "Grep",
+      "mcp__filesystem__read_file"
+    ],
+    "disallowedTools": [
+      "Bash(rm -rf*)",
+      "Bash(sudo*)",
+      "Bash(git push --force*)"
+    ]
+  }
+}<button class="cb" onclick="copyP('p_s5json')">コピー</button></div>
+
+<p>allowedToolsに入れたツールはユーザー確認なしに自動実行されます。Read、Grep、Globのような「読むだけ」の操作は自動許可にしておくと快適です。一方、ファイル削除やforce pushのような破壊的操作はdisallowedToolsで完全にブロックできます。</p>
+
+<h3>機密ファイルの保護</h3>
+<p>CLAUDE.mdにセキュリティルールを書くことで、AIが触るべきでないファイルを指定できます。</p>
+<div class="prompt" id="p_s5sec"># セキュリティルール
+
+## 絶対に読み取らないファイル
+- .env
+- .env.local
+- .env.production
+- credentials.json
+- **/secret*
+- **/*.pem
+
+## コードに含めてはいけない情報
+- APIキー、シークレットキー
+- パスワード、認証トークン
+- 個人情報(氏名、メールアドレス、住所)
+
+## 実行禁止コマンド
+- git push --force
+- git reset --hard
+- rm -rf
+- sudo を含むコマンド<button class="cb" onclick="copyP('p_s5sec')">コピー</button></div>
+
+<h3>チーム開発での運用</h3>
+<table class="ct"><thead><tr><th>ファイル</th><th>Git管理</th><th>理由</th></tr></thead><tbody>
+<tr><td>CLAUDE.md</td><td>する</td><td>チーム共有のルール。全員が同じ規約で開発する</td></tr>
+<tr><td>.claude/commands/</td><td>する</td><td>チーム共有のカスタムコマンド</td></tr>
+<tr><td>.claude/settings.json</td><td>する</td><td>プロジェクトレベルの権限設定</td></tr>
+<tr><td>.claude/settings.local.json</td><td>しない</td><td>個人のローカル設定。.gitignoreに追加</td></tr>
+</tbody></table>
+
+<div class="box warn"><div class="bt">注意: settings.jsonにAPIキーを書かない</div>settings.jsonはGit管理対象です。APIキーや認証情報は環境変数で管理してください。settings.jsonに直接書くと、リポジトリにプッシュした瞬間に漏洩します。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 05</h4>
+<div class="q"><p>Q6. settings.jsonのdisallowedToolsに登録されたツールはどうなりますか?</p>
+<label><input type="radio" name="q6" value="a">ユーザーに確認を求めてから実行する</label>
+<label><input type="radio" name="q6" value="b">実行が完全にブロックされる</label>
+<label><input type="radio" name="q6" value="c">警告を表示して自動実行する</label>
+<label><input type="radio" name="q6" value="d">ログに記録されるだけで実行される</label>
+<div class="ans" id="a6">正解: B。disallowedToolsに登録されたツールは、確認を求めることすらなく実行が完全にブロックされます。</div>
+<button class="rb" onclick="document.getElementById('a6').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 05 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 権限設定と安全性確認 <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: settings.jsonを作成し、機密ファイルの保護が動作することを確認する</div>
+
+<h4>Step 1: settings.jsonを確認/作成(5min)</h4>
+<div class="prompt" id="p_s5h1">.claude/settings.json を確認して。なければ以下の内容で作成して:
+- allowedTools: Read, Glob, Grep を自動許可
+- disallowedTools: rm -rf と git push --force をブロック<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>Step 2: 特定ツールの自動許可を設定(5min)</h4>
+<p>設定後、Claude Codeを再起動してください。Readツールが確認なしで実行されることを確認します。</p>
+<div class="prompt" id="p_s5h2">src/index.jsの中身を教えて<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+<p>確認ダイアログが出ずに直接内容が表示されれば、自動許可が効いています。</p>
+
+<h4>Step 3: CLAUDE.mdにセキュリティルール追加(5min)</h4>
+<div class="prompt" id="p_s5h3">CLAUDE.mdにセキュリティルールを追記して。
+.envファイルの読み取り禁止、APIキーのソースコード直書き禁止、rm -rf禁止を含めて。<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+
+<h4>Step 4: 保護の動作確認(5min)</h4>
+<p>テスト用の.envファイルを作成して、Claude Codeが適切に拒否するか確認します。</p>
+<div class="prompt" id="p_s5h4">.envファイルの中身を読んで教えて<button class="cb" onclick="copyP('p_s5h4')">コピー</button></div>
+<p>CLAUDE.mdのルールに従ってClaude Codeが拒否するか、警告を出すことを確認してください。</p>
+
+<ul class="checklist">
+<li>settings.jsonを確認/作成した</li>
+<li>Read, Grep, Globの自動許可を設定した</li>
+<li>CLAUDE.mdにセキュリティルールを追記した</li>
+<li>.envの読み取り拒否を確認した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/settings" target="_blank" rel="noopener">Claude Code Settings</a> -- settings.jsonの全設定項目</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン B (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review Hands-on B -- 25min</div><h2>復習ハンズオン B: 安全な開発ワークフロー構築</h2>
+<p>Section 04-05で学んだカスタムコマンドと権限設定を組み合わせて、実務で使えるワークフローを作ります。</p>
+
+<div class="handson">
+<div class="hs-title">課題: レビュー → テスト → コミットの一連フローを実行 <span class="hs-time">25min</span></div>
+<div class="hs-goal">成果物: settings.json + CLAUDE.md(セキュリティルール付き) + カスタムコマンド3つ が揃ったプロジェクト</div>
+
+<h4>手順</h4>
+<ol>
+<li>プロジェクトにsettings.jsonを配置(既存プロジェクトを使用)(3min)</li>
+</ol>
+<div class="prompt" id="p_rB1">.claude/settings.jsonを確認して。allowedToolsにRead, Grep, Globが入っていること、disallowedToolsにrm -rfとgit push --forceが入っていることを確認して。<button class="cb" onclick="copyP('p_rB1')">コピー</button></div>
+
+<ol start="2">
+<li>CLAUDE.mdにセキュリティルールが含まれていることを確認(2min)</li>
+</ol>
+
+<ol start="3">
+<li>コードに意図的な変更を加える(3min)</li>
+</ol>
+<div class="prompt" id="p_rB2">src/index.jsに以下の変更を加えて:
+- ヘルスチェック用の /health エンドポイントを追加
+- レスポンスに { status: "ok", timestamp: Date.now() } を返す<button class="cb" onclick="copyP('p_rB2')">コピー</button></div>
+
+<ol start="4">
+<li>作成したカスタムコマンドで一連のフローを実行(12min)</li>
+</ol>
+<p>以下の順番で実行してください。</p>
+<div class="prompt" id="p_rB3">/review-code src/<button class="cb" onclick="copyP('p_rB3')">コピー</button></div>
+<div class="prompt" id="p_rB4">/generate-tests src/index.js<button class="cb" onclick="copyP('p_rB4')">コピー</button></div>
+<div class="prompt" id="p_rB5">/summarize-changes<button class="cb" onclick="copyP('p_rB5')">コピー</button></div>
+
+<ol start="5">
+<li>フローの結果を振り返る(5min)</li>
+</ol>
+<p>3つのコマンドがそれぞれ適切に動作したか確認してください。コマンドの内容を調整したい場合は、.claude/commands/ 内のMarkdownファイルを編集します。</p>
+
+<ul class="checklist">
+<li>settings.jsonが適切に設定されている</li>
+<li>CLAUDE.mdにセキュリティルールが記載されている</li>
+<li>/review-code でレビューを実行した</li>
+<li>/generate-tests でテストを生成した</li>
+<li>/summarize-changes で変更要約を取得した</li>
+<li>一連のフローがスムーズに動いた</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: MCP連携入門 (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 55min(講義25 + ハンズオン30)</div><h2>MCP連携入門 -- 外部ツールとの統合</h2>
+<img src="assets/mcp-concept.png" alt="MCP連携コンセプト" class="sec-hero-img">
+
+<h3>MCP(Model Context Protocol)とは</h3>
+<p>AIが外部ツールと通信するための標準プロトコルです。USBがどのメーカーの周辺機器でも接続できるように、MCPはどのAIツールからでも外部リソースに統一的にアクセスできる仕組みを提供します。</p>
+<p>MCPがない世界では、GitHub連携、Slack連携、DB連携をそれぞれ個別に実装する必要がありました。MCPがあれば、1つのプロトコルで全てに対応できます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["Claude Code"] --> B["MCP Protocol"]
+  B --> C["filesystem<br/>MCPサーバー"]
+  B --> D["GitHub<br/>MCPサーバー"]
+  B --> E["PostgreSQL<br/>MCPサーバー"]
+  B --> F["Slack<br/>MCPサーバー"]
+  C --> G["ローカルファイル"]
+  D --> H["リポジトリ/PR/Issue"]
+  E --> I["データベース"]
+  F --> J["チャンネル/メッセージ"]
+</pre><div class="caption">MCPは標準プロトコルとして、Claude Codeと多様な外部リソースを接続する</div></div>
+
+<h3>MCPサーバーの種類</h3>
+<table class="ct"><thead><tr><th>MCPサーバー</th><th>機能</th><th>用途の例</th></tr></thead><tbody>
+<tr><td>filesystem</td><td>ファイル読み書き(許可ディレクトリ制限)</td><td>特定フォルダのファイルにアクセス</td></tr>
+<tr><td>github</td><td>Issue、PR、リポジトリ操作</td><td>PRのレビュー、Issue作成</td></tr>
+<tr><td>postgres / sqlite</td><td>データベースクエリ</td><td>データ分析、スキーマ確認</td></tr>
+<tr><td>slack</td><td>メッセージ送信、チャンネル操作</td><td>開発チームへの通知</td></tr>
+<tr><td>playwright</td><td>ブラウザ操作</td><td>E2Eテスト、スクレイピング</td></tr>
+</tbody></table>
+
+<h3>設定方法</h3>
+<p>MCPサーバーの設定は .mcp.json ファイルに記述します。プロジェクトルートに置くか、settings.jsonのmcpServersセクションに書くかの2つの方法があります。</p>
+
+<div class="prompt" id="p_s6mcp">{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/yourname/allowed-directory"
+      ]
+    }
+  }
+}<button class="cb" onclick="copyP('p_s6mcp')">コピー</button></div>
+
+<h3>複数サーバー接続の設定例</h3>
+<p>実際のプロジェクトでは、複数のMCPサーバーを同時に接続するケースが一般的です。</p>
+<div class="prompt" id="p_s6mcpfull">{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/yourname/projects/my-app/data"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxxxxxx"
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://user:password@localhost:5432/mydb"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-server-playwright"]
+    }
+  }
+}<button class="cb" onclick="copyP('p_s6mcpfull')">コピー</button></div>
+<p>各サーバーの command にはnpxを指定するのが最も簡単な方法です。初回実行時にパッケージが自動ダウンロードされます。env でサーバー固有の環境変数(APIトークン等)を渡せます。</p>
+
+<div class="box warn"><div class="bt">注意: MCPサーバーへの権限は最小限に</div>filesystem MCPサーバーにプロジェクトルート全体を渡すのは避けてください。アクセスを許可するディレクトリを限定することで、意図しないファイル操作のリスクを減らせます。</div>
+
+<div class="box tip"><div class="bt">Tips: MCPサーバーの探し方</div>公式リポジトリ <a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">github.com/modelcontextprotocol/servers</a> に、Anthropicや各社が開発したMCPサーバーの一覧があります。npm で直接インストールできるものが多いです。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 06</h4>
+<div class="q"><p>Q7. MCPの役割として正しいものはどれですか?</p>
+<label><input type="radio" name="q7" value="a">AIモデルの学習データを管理するプロトコル</label>
+<label><input type="radio" name="q7" value="b">AIが外部ツール(GitHub、DB、Slack等)と標準化された方法で通信するプロトコル</label>
+<label><input type="radio" name="q7" value="c">AIの料金を管理するプロトコル</label>
+<label><input type="radio" name="q7" value="d">AIの安全性を検証するプロトコル</label>
+<div class="ans" id="a7">正解: B。MCPはAIと外部ツール間の通信を標準化するプロトコルです。個別のAPI連携を実装する必要がなくなります。</div>
+<button class="rb" onclick="document.getElementById('a7').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 06 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: MCPサーバーを接続する <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: filesystem MCPサーバーを設定・接続し、MCPツールを使った操作を体験する</div>
+
+<h4>Step 1: filesystem MCPサーバーの設定(10min)</h4>
+<div class="prompt" id="p_s6h1">.mcp.json ファイルを作成して。
+filesystem MCPサーバーを設定して、このプロジェクトのディレクトリへのアクセスを許可する内容にして。<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+<p>設定後、Claude Codeを再起動してください(一度exitして再度claudeを起動)。</p>
+
+<h4>Step 2: 接続確認(5min)</h4>
+<div class="prompt" id="p_s6h2">MCPで接続されているツールを一覧表示して<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+<p>filesystem関連のツール(read_file, write_file, list_directory等)が表示されれば接続成功です。</p>
+
+<h4>Step 3: MCPツールを使った操作(10min)</h4>
+<div class="prompt" id="p_s6h3">MCPのfilesystemツールを使って、このプロジェクトのファイル一覧を取得して。
+その後、README.mdの内容をMCPのread_fileツールで読んで教えて。<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+
+<h4>Step 4: .mcp.jsonの確認(5min)</h4>
+<div class="prompt" id="p_s6h4">.mcp.json の内容を読んで、各設定項目が何を意味するか説明して<button class="cb" onclick="copyP('p_s6h4')">コピー</button></div>
+
+<details><summary>MCPが接続できない場合</summary><div class="inner">
+<ul>
+<li>npxが使えるか確認(npm -v でバージョンが出ること)</li>
+<li>.mcp.jsonのJSON構文が正しいか確認</li>
+<li>許可ディレクトリのパスが正しいか確認(絶対パスを使用)</li>
+<li>Claude Codeを完全に終了してから再起動しているか確認</li>
+</ul>
+</div></details>
+
+<ul class="checklist">
+<li>.mcp.jsonを作成した</li>
+<li>Claude Code再起動後にMCPツール一覧が表示された</li>
+<li>MCPツールでファイル操作を実行した</li>
+<li>.mcp.jsonの各設定項目の意味を理解した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a> -- MCP公式サイト</li>
+<li><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">MCP Servers</a> -- MCPサーバー一覧</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: 実践ワークフロー (45min: 講義20 + ハンズオン25) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 45min(講義20 + ハンズオン25)</div><h2>実践ワークフロー -- 日常開発での使い方パターン</h2>
+
+<h3>ワークフロー1: バグ修正フロー</h3>
+<p>エラー報告を受けてから修正完了までを、Claude Codeで一気通貫に処理するパターンです。</p>
+<table class="ct"><thead><tr><th>ステップ</th><th>操作</th><th>使用ツール</th></tr></thead><tbody>
+<tr><td>1. 原因調査</td><td>エラーメッセージから該当箇所を特定</td><td>Grep, Read</td></tr>
+<tr><td>2. コード分析</td><td>該当関数の動作を確認</td><td>Read, Agent</td></tr>
+<tr><td>3. 修正</td><td>バグを修正</td><td>Edit</td></tr>
+<tr><td>4. テスト</td><td>テストを実行して修正を検証</td><td>Bash</td></tr>
+<tr><td>5. コミット</td><td>変更内容をまとめてコミット</td><td>Bash(git)</td></tr>
+</tbody></table>
+
+<h3>ワークフロー2: 新機能開発フロー</h3>
+<p>仕様を自然言語で記述し、実装からテストまでをClaude Codeに委任するパターンです。</p>
+<table class="ct"><thead><tr><th>ステップ</th><th>操作</th><th>ポイント</th></tr></thead><tbody>
+<tr><td>1. 仕様記述</td><td>何を作るかを明確に指示</td><td>入出力、エラー処理、制約を具体的に</td></tr>
+<tr><td>2. 計画確認</td><td>「まず計画を立てて」パターン</td><td>実装前に方針を確認する</td></tr>
+<tr><td>3. 実装</td><td>コード生成</td><td>一度に全てではなく段階的に</td></tr>
+<tr><td>4. テスト</td><td>テスト作成と実行</td><td>正常系、異常系、エッジケース</td></tr>
+<tr><td>5. レビュー</td><td>/review-code で自己レビュー</td><td>カスタムコマンドを活用</td></tr>
+</tbody></table>
+
+<h3>ワークフロー3: ドキュメント整備フロー</h3>
+<p>既存コードを読解してドキュメントを自動生成するパターンです。READMEの更新、APIドキュメント生成、コメント追加に向きます。</p>
+
+<h3>効率的な使い方のコツ</h3>
+<div class="cols">
+<div class="col-card"><h4>/compact でコンテキスト圧縮</h4><p>会話が長くなるとトークンを大量消費します。タスクの区切りで /compact を実行して圧縮してください。</p></div>
+<div class="col-card"><h4>/cost でトークン監視</h4><p>API従量課金の場合、/cost でリアルタイムの消費量を確認できます。想定外の消費を防ぐ習慣をつけてください。</p></div>
+<div class="col-card"><h4>大きなタスクは分割</h4><p>「アプリ全体を作って」は品質が落ちます。「まずデータモデルを設計して」「次にCRUDエンドポイントを実装して」と段階的に指示するのが効果的です。</p></div>
+<div class="col-card"><h4>「計画を立てて」パターン</h4><p>「まず計画を立てて、実行前に確認させて」と指示すると、AIが方針を提示してから実装に入ります。大きな修正が無駄にならない安全弁として機能します。</p></div>
+</div>
+
+<!-- Section 07 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: ワークフローを実践する <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: 3つのワークフローから1つ選んで、開始から完了まで体験する</div>
+
+<p>以下の3つから1つ選んで実行してください。</p>
+
+<details><summary>選択肢A: バグ修正フロー(25min)</summary><div class="inner">
+<div class="prompt" id="p_s7a">以下のバグを修正して。
+
+現象: src/utils/helper.jsのformatDate関数が、月を1ヶ月少なく表示する。
+例: 2026年4月2日を渡すと "2026-03-02" が返る。
+
+手順:
+1. まず該当コードを確認
+2. バグの原因を特定して報告
+3. 修正を実施
+4. テストを実行して検証
+5. 修正内容をgit commitで記録<button class="cb" onclick="copyP('p_s7a')">コピー</button></div>
+<p>JavaScriptのDateオブジェクトはgetMonth()が0始まりです。この典型的なバグをClaude Codeが発見・修正する過程を観察してください。</p>
+</div></details>
+
+<details><summary>選択肢B: 新機能開発フロー(25min)</summary><div class="inner">
+<div class="prompt" id="p_s7b">新機能を追加して。
+
+仕様:
+- src/utils/logger.js を新規作成
+- log(level, message) 関数をexport
+- level は "info", "warn", "error" の3種類
+- 出力フォーマット: "[2026-04-02 14:30:00] [INFO] メッセージ"
+- error レベルの場合はスタックトレースも出力
+
+手順:
+1. まず実装計画を立てて、確認させてください
+2. 承認後に実装を開始
+3. テストも作成
+4. 既存コード(src/index.js)にlogger を組み込む<button class="cb" onclick="copyP('p_s7b')">コピー</button></div>
+</div></details>
+
+<details><summary>選択肢C: ドキュメント整備フロー(25min)</summary><div class="inner">
+<div class="prompt" id="p_s7c">このプロジェクトのドキュメントを整備して。
+
+以下の3つを生成:
+1. README.md -- プロジェクト概要、セットアップ手順、使い方、ディレクトリ構造
+2. 各関数へのJSDocコメント追加 -- src/utils/ 以下の全関数
+3. CHANGELOG.md -- 現在のgit logから変更履歴を生成
+
+まず全ソースファイルを読んで内容を把握してから着手してください。<button class="cb" onclick="copyP('p_s7c')">コピー</button></div>
+</div></details>
+
+<ul class="checklist">
+<li>3つのワークフローから1つを選択した</li>
+<li>開始から完了までの全ステップを実行した</li>
+<li>各ステップでどのツールが使われたか観察した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/best-practices" target="_blank" rel="noopener">Claude Code Best Practices</a> -- 効果的な使い方の公式ガイド</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: トレンド (20min: 講義のみ) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 20min(講義のみ)</div><h2>トレンド -- Claude Code進化とIDE統合、Agent SDK</h2>
+
+<h3>IDE統合の広がり</h3>
+<p>Claude Codeはターミナル専用のCLIとして始まりましたが、VS CodeやJetBrains IDEへの統合が進んでいます。ターミナルを離れずに開発するスタイルと、IDEの補完やデバッグ機能を組み合わせるスタイルの両方が選べるようになっています。</p>
+
+<h3>Agent SDK</h3>
+<p>Claude CodeをプログラムのCLIとしてではなく、SDKとして組み込む手段が提供されています。これによりClaude Codeの能力をCI/CDパイプラインや自動化スクリプトに統合できます。</p>
+
+<div class="prompt" id="p_s8sdk">import { claude } from "@anthropic-ai/claude-code";
+
+// Claude Code SDKをプログラムから呼び出す例
+const result = await claude({
+  prompt: "src/以下のコードをレビューして",
+  options: {
+    cwd: "/path/to/project",
+    allowedTools: ["Read", "Grep", "Glob"]
+  }
+});
+
+console.log(result.output);<button class="cb" onclick="copyP('p_s8sdk')">コピー</button></div>
+
+<h3>サブエージェント(Agent tool)</h3>
+<p>Claude Code内でサブエージェントを起動し、タスクを並列実行する機能です。大きなリファクタリングを複数のエージェントで分担させたり、worktreeで分離して安全にテストするといった使い方が可能になります。詳細はC07応用コースで扱います。</p>
+
+<h3>フック/プラグイン</h3>
+<p>ツール実行の前後に自動処理を挟む「フック」や、Claude Codeの機能を拡張する「プラグイン」の仕組みが整備されつつあります。例えば、Writeツール実行後に自動でPrettierを走らせる、コミット前にLintを実行する、といった自動化が可能です。</p>
+
+<h3>自律開発エージェントへの道</h3>
+<p>現在のClaude Codeは人間がプロンプトを入力し、AIが応答する対話型です。今後は、Issueの内容を読んで自動的にブランチを切り、実装し、テストし、PRを作成する「自律型」の方向に進化が見込まれます。Claude Codeの --headless オプションや cron トリガーはその布石です。</p>
+
+<div class="box tip"><div class="bt">Tips: C07応用コースへ</div>サブエージェント、フック、worktree分離、自律実行モードなど、ここで触れた発展的なトピックはC07 Claude Code応用で体系的に扱います。本コースで基礎を固めた上で進んでください。</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/sdk" target="_blank" rel="noopener">Claude Code SDK</a> -- プログラムからの利用方法</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 09: 総合ハンズオン (60min: 講義10 + 実践50) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 60min(講義10 + 実践50)</div><h2>総合ハンズオン: CLAUDE.md + コマンド + MCPで開発環境構築</h2>
+
+<h3>ゴール</h3>
+<p>このセクションでは、コース全体で学んだ内容を統合し、実務で使える完全な.claude/ディレクトリ構成を完成させます。既存の自分のプロジェクトを使っても、新規プロジェクトで始めても構いません。</p>
+
+<h3>完成形のディレクトリ構成</h3>
+<div class="prompt" id="p_s9struct">your-project/
+  CLAUDE.md                    # プロジェクトルール
+  .mcp.json                    # MCP接続設定
+  .claude/
+    settings.json              # 権限設定
+    commands/
+      review-code.md           # コードレビュー
+      generate-tests.md        # テスト生成
+      commit.md                # コミット支援
+    skills/                    # (オプション)複雑な知識<button class="cb" onclick="copyP('p_s9struct')">コピー</button></div>
+
+<!-- Section 09 ハンズオン -->
+<div class="handson">
+<div class="hs-title">実践: 5ステップで開発環境を構築 <span class="hs-time">50min</span></div>
+<div class="hs-goal">成果物: CLAUDE.md + カスタムコマンド3つ + MCP接続 + settings.json を含む完全な開発環境</div>
+
+<h4>Step 1: プロジェクト選定(5min)</h4>
+<p>既存のプロジェクトを使う場合はそのディレクトリに移動してください。新規の場合は以下で作成します。</p>
+<div class="prompt" id="p_s9h1">Node.jsのWebアプリプロジェクトを作成して。
+- Express + TypeScript構成
+- src/routes/, src/services/, src/middleware/ のディレクトリ構造
+- package.json (scripts: dev, build, test, start)
+- tsconfig.json
+- .gitignore<button class="cb" onclick="copyP('p_s9h1')">コピー</button></div>
+
+<h4>Step 2: CLAUDE.md作成(10min)</h4>
+<div class="prompt" id="p_s9h2">このプロジェクトのCLAUDE.mdを作成して。以下を全て含めること:
+1. プロジェクト概要
+2. 技術スタック(バージョン含む)
+3. コーディング規約(最低5つのルール)
+4. ディレクトリ構造の説明
+5. テスト実行方法
+6. セキュリティルール(.env読取禁止、APIキー直書き禁止)
+7. 禁止事項(force push、rm -rf、sudo)<button class="cb" onclick="copyP('p_s9h2')">コピー</button></div>
+
+<h4>Step 3: カスタムコマンド3つ作成(15min)</h4>
+<div class="prompt" id="p_s9h3">.claude/commands/ に以下の3つのカスタムコマンドを作成して:
+
+1. review-code.md
+   - バグ、パフォーマンス、セキュリティ、命名、テスト不足の5観点
+   - $ARGUMENTS で対象を指定可能
+   - 重要度(高/中/低)付きの報告
+
+2. generate-tests.md
+   - $ARGUMENTS で指定ファイルのテスト生成
+   - 正常系、異常系、エッジケース
+   - テストフレームワーク自動判定
+
+3. commit.md
+   - git diffの分析
+   - 変更内容の日本語要約
+   - conventional commits形式のメッセージ候補3つ
+   - ユーザー確認後にコミット実行<button class="cb" onclick="copyP('p_s9h3')">コピー</button></div>
+
+<h4>Step 4: MCP接続設定(10min)</h4>
+<div class="prompt" id="p_s9h4">.mcp.json を作成して、filesystem MCPサーバーを設定して。
+このプロジェクトのディレクトリのみアクセスを許可する構成にして。
+
+設定後、接続確認のためにMCPツール一覧を表示して。<button class="cb" onclick="copyP('p_s9h4')">コピー</button></div>
+
+<h4>Step 5: ワークフローテスト(10min)</h4>
+<p>構築した環境で一連のワークフローを実行してテストします。</p>
+<div class="prompt" id="p_s9h5">以下の一連のワークフローを実行して:
+1. src/routes/ にサンプルのGETエンドポイントを1つ作成
+2. /review-code src/routes/ でレビュー実行
+3. /generate-tests で対象ファイルのテスト生成
+4. npm test でテスト実行
+5. /commit で変更をコミット
+
+各ステップの結果を報告してください。<button class="cb" onclick="copyP('p_s9h5')">コピー</button></div>
+
+<ul class="checklist">
+<li>プロジェクトのディレクトリ構成ができている</li>
+<li>CLAUDE.mdが作成されている(7項目含む)</li>
+<li>カスタムコマンドが3つ(.claude/commands/に配置)</li>
+<li>.mcp.jsonが作成されMCPが接続できる</li>
+<li>.claude/settings.jsonが適切に設定されている</li>
+<li>ワークフローテストが完了した</li>
+</ul>
+</div>
+
+<h3>ダウンロードテンプレート</h3>
+<p>各ファイルのテンプレートをダウンロードできます。</p>
+<button class="dl" onclick="downloadClaudeMd()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>CLAUDE.mdテンプレート</button>
+<button class="dl" onclick="downloadCommands()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>カスタムコマンドサンプル集</button>
+<button class="dl" onclick="downloadSettingsJson()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>settings.jsonテンプレート</button>
+<button class="dl" onclick="downloadMcpJson()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>.mcp.jsonテンプレート</button>
+<button class="dl" onclick="downloadDesignSheet()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Claude Code環境設計シート</button>
+<button class="dl" onclick="downloadSamplePackageJson()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルpackage.json</button>
+
+<div class="quiz"><h4>最終チェック: Section 09</h4>
+<div class="q"><p>Q8. CLAUDE.md、settings.json、カスタムコマンド、MCPの4つを組み合わせて得られる最大のメリットはどれですか?</p>
+<label><input type="radio" name="q8" value="a">AIの回答速度が上がる</label>
+<label><input type="radio" name="q8" value="b">API料金が安くなる</label>
+<label><input type="radio" name="q8" value="c">プロジェクトのルールに沿った安全で一貫性のある開発がAIとの協働で実現できる</label>
+<label><input type="radio" name="q8" value="d">インターネット接続が不要になる</label>
+<div class="ans" id="a8">正解: C。CLAUDE.mdでルールを定義し、settings.jsonで安全性を担保し、コマンドでワークフローを標準化し、MCPで外部連携を統合する。この4つが揃って初めて、実務レベルのAI協働開発が成立します。</div>
+<button class="rb" onclick="document.getElementById('a8').style.display='block'">答えを見る</button></div></div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">Claude Code Overview</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/memory" target="_blank" rel="noopener">Claude Code Memory (CLAUDE.md)</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/settings" target="_blank" rel="noopener">Claude Code Settings</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/tutorials" target="_blank" rel="noopener">Claude Code Tutorials</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/best-practices" target="_blank" rel="noopener">Claude Code Best Practices</a></li>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C04 Claude Code基礎 ターミナルAI開発入門<br>
+  全9セクション + 復習2回 = 480分(8時間)<br>
+  次の推奨コース: C07 Claude Code応用
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadClaudeMd(){const t=`# プロジェクト概要\n（プロジェクトの説明を記入）\n\n# 技術スタック\n- 言語:\n- フレームワーク:\n- DB:\n- テスト:\n\n# コーディング規約\n- 変数名・関数名は camelCase\n- 型は明示的に書く（any 禁止）\n- 非同期は async/await を使用\n- エラーは try-catch で処理\n- const を優先（let は必要な場合のみ）\n\n# ディレクトリ構造\n- src/routes/ -- APIエンドポイント\n- src/services/ -- ビジネスロジック\n- src/middleware/ -- ミドルウェア\n- tests/ -- テスト\n\n# テスト実行\nnpm test\n\n# セキュリティルール\n- .env ファイルは絶対に読み取らない\n- APIキー、パスワードをソースコードに直書きしない\n- credentials, secret を含むファイルは読み取らない\n\n# 禁止事項\n- git push --force\n- git reset --hard\n- rm -rf\n- sudo を含むコマンド\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='CLAUDE.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadCommands(){const t=`# review-code.md\n\n$ARGUMENTS のコードレビューを実行してください。\n\n以下の5つの観点でチェック:\n1. バグの可能性がある箇所\n2. パフォーマンスの問題\n3. セキュリティの懸念\n4. 命名規則の違反\n5. テストの不足\n\n問題を発見したら重要度（高/中/低）を付けて報告してください。\n修正案も提示してください。\n\n---\n\n# generate-tests.md\n\n$ARGUMENTS のテストを生成してください。\n\nルール:\n- テストフレームワークは package.json の devDependencies から自動判定\n- 正常系、異常系、エッジケースを網羅\n- テストファイルは対象ファイルと同階層の __tests__/ に配置\n- 各テストケースに日本語でコメントを付ける\n\n---\n\n# commit.md\n\n以下の手順でコミットを作成してください。\n\n1. git diff で変更内容を確認\n2. 変更内容を日本語で要約\n3. Conventional Commits 形式のコミットメッセージ候補を3つ提案\n   - feat: / fix: / refactor: / docs: / test: から適切なものを選択\n4. ユーザーが選択を確認してからコミット実行\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='カスタムコマンドサンプル集.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadSettingsJson(){const t=`{\n  "permissions": {\n    "allowedTools": [\n      "Read",\n      "Glob",\n      "Grep"\n    ],\n    "disallowedTools": [\n      "Bash(rm -rf*)",\n      "Bash(sudo*)",\n      "Bash(git push --force*)"\n    ]\n  }\n}\n`;const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='settings.json';a.click();URL.revokeObjectURL(u);}
+
+function downloadMcpJson(){const t=`{\n  "mcpServers": {\n    "filesystem": {\n      "command": "npx",\n      "args": [\n        "-y",\n        "@modelcontextprotocol/server-filesystem",\n        "/path/to/your/project"\n      ]\n    }\n  }\n}\n`;const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='.mcp.json';a.click();URL.revokeObjectURL(u);}
+
+function downloadDesignSheet(){const t=`# Claude Code 環境設計シート\n\n## 基本情報\n- プロジェクト名:\n- 作成者:\n- 作成日:\n- リポジトリURL:\n\n## 1. CLAUDE.md 設計\n\n### プロジェクト概要\n（1〜2行で記述）\n\n### 技術スタック\n| カテゴリ | 技術 | バージョン |\n|---------|------|----------|\n| 言語 | | |\n| FW | | |\n| DB | | |\n| テスト | | |\n\n### コーディング規約（最低5つ）\n1.\n2.\n3.\n4.\n5.\n\n### セキュリティルール\n- 読取禁止ファイル:\n- コードに含めてはいけない情報:\n- 実行禁止コマンド:\n\n## 2. カスタムコマンド設計\n\n| コマンド名 | 目的 | 引数 |\n|-----------|------|------|\n| /review-code | | $ARGUMENTS |\n| / | | |\n| / | | |\n\n## 3. MCP接続設計\n\n| MCPサーバー | 用途 | 許可範囲 |\n|------------|------|----------|\n| filesystem | | |\n| | | |\n\n## 4. 権限設計\n\n### 自動許可ツール (allowedTools)\n-\n-\n\n### ブロックツール (disallowedTools)\n-\n-\n\n## 5. チーム共有ルール\n- Git管理するファイル:\n- .gitignoreに追加するファイル:\n- オンボーディング手順:\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Claude Code環境設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadSamplePackageJson(){const t=`{\n  "name": "handson-project",\n  "version": "1.0.0",\n  "description": "Claude Code ハンズオン用サンプルプロジェクト",\n  "main": "src/index.js",\n  "type": "module",\n  "scripts": {\n    "start": "node src/index.js",\n    "dev": "node --watch src/index.js",\n    "test": "node --test tests/**/*.test.js"\n  },\n  "keywords": [],\n  "author": "",\n  "license": "MIT"\n}\n`;const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='package.json';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

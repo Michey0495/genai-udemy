@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C12 RAG実践 LangChain/LangGraph完全ガイド - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 RAG</a><a href="#s2">02 LangChain</a><a href="#s3">03 VectorDB</a><a href="#rA">Review A</a><a href="#s4">04 Chunk</a><a href="#s5">05 Tuning</a><a href="#rB">Review B</a><a href="#s6">06 LangGraph</a><a href="#s7">07 LangSmith</a><a href="#s8">08 Advanced</a><a href="#s9">09 Total</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 12 / Layer 2 -- 技術特化</div>
+  <h1><span>RAG実践</span> LangChain / LangGraph 完全ガイド</h1>
+  <p class="lead">社内ドキュメントをAIが検索・回答するRAGシステムを構築します。LangChainの基礎からベクトルDB、チャンク戦略、検索精度チューニング、LangGraphによるマルチステップRAG、LangSmithでの監視まで。LangGraphまでカバーする日本語コースは他にありません。</p>
+  <div class="meta"><span class="tag">中級-上級</span><span class="tag">約12時間(720分)</span><span class="tag">9 Sections + 2 Review</span><span class="tag">ハンズオン比率 66%</span><span class="tag">前提: Python基礎</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">RAGアーキテクチャ -- 仕組みと設計パターン <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s2">LangChain基礎 -- Chain/Template/Parser <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s3">ベクトルDB -- Chroma/FAISS/Pinecone <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li class="review-item"><a href="#rA">復習A -- 基本RAGパイプライン構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s4">ドキュメントローダーとチャンク戦略 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s5">検索精度チューニング <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">65min</span></a></li>
+  <li class="review-item"><a href="#rB">復習B -- 高精度RAG構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s6">LangGraph入門 -- ステートマシンRAG <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">70min</span></a></li>
+  <li><a href="#s7">LangSmith -- デバッグ/評価/監視 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s8">高度なRAGパターン -- Self-RAG/Adaptive RAG <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s9">総合ハンズオン: 社内ドキュメント検索システム <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">140min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: RAGアーキテクチャ (50min: 講義30 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 50min(講義30 + ハンズオン20)</div><h2>RAGアーキテクチャ -- 仕組みと設計パターン</h2>
+<img src="assets/rag-pipeline.png" alt="RAGパイプラインの全体像" class="sec-hero-img">
+
+<h3>RAGとは何か</h3>
+<p>Retrieval-Augmented Generation(検索拡張生成)。LLM単体では学習データに含まれない社内文書や最新情報を参照できませんが、RAGは外部データソースから関連情報を検索し、その結果をプロンプトに挿入してからLLMに回答を生成させます。知識の鮮度と正確性を飛躍的に改善する手法です。</p>
+<p>仕組みを一言でまとめると「質問が来たら、まず関連文書を探し、見つけた文書を添えてLLMに渡す」だけ。シンプルですが、検索精度とチャンク戦略次第で回答品質が大きく変わります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  subgraph Indexing["Indexing Phase"]
+    A["ドキュメント読込"] --> B["チャンク分割"]
+    B --> C["Embedding<br/>(ベクトル変換)"]
+    C --> D["ベクトルDB<br/>に格納"]
+  end
+  subgraph Query["Query Phase"]
+    E["ユーザーの質問"] --> F["質問を<br/>Embedding"]
+    F --> G["類似検索<br/>(Top-K)"]
+    G --> H["関連チャンク<br/>を取得"]
+  end
+  subgraph Generation["Generation Phase"]
+    H --> I["プロンプト構築<br/>(質問+文脈)"]
+    I --> J["LLM回答生成"]
+  end
+</pre><div class="caption">RAGの3フェーズ: Indexing(事前準備) → Retrieval(検索) → Generation(回答生成)</div></div>
+
+<h3>RAGの3ステップを理解する</h3>
+<h4>1. Indexing -- ドキュメントの準備</h4>
+<p>PDF、CSV、Webページなどのドキュメントをチャンク(断片)に分割し、各チャンクをEmbeddingモデルでベクトル化してDBに格納します。この前処理の質がRAG全体の精度を左右するため、チャンクサイズやoverlap設定は慎重に決める必要があります。</p>
+
+<h4>2. Retrieval -- 類似検索</h4>
+<p>ユーザーの質問も同じEmbeddingモデルでベクトル化し、ベクトルDB内で類似度の高いチャンクをTop-K件取得します。コサイン類似度やユークリッド距離が代表的な類似度指標です。</p>
+
+<h4>3. Generation -- 回答生成</h4>
+<p>取得したチャンクを「参考情報」としてプロンプトに挿入し、LLMに回答を生成させます。プロンプトには「以下の情報のみを参照して回答してください」と制約を加えることで、ハルシネーションを抑制できます。</p>
+
+<h3>Naive RAG vs Advanced RAG vs Modular RAG</h3>
+<table class="ct"><thead><tr><th>手法</th><th>特徴</th><th>精度</th><th>実装難度</th></tr></thead><tbody>
+<tr><td>Naive RAG</td><td>単純な検索+生成。チャンク分割→ベクトル検索→LLM呼出し</td><td>中</td><td>低</td></tr>
+<tr><td>Advanced RAG</td><td>Re-ranking、Hybrid Search、Query Transform等で検索精度を改善</td><td>高</td><td>中</td></tr>
+<tr><td>Modular RAG</td><td>検索/生成/評価をモジュール化しグラフで制御。LangGraphと相性がよい</td><td>最高</td><td>高</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: RAGが有効な場面と不要な場面の判断基準</div>
+RAGを導入する前に「本当に検索が必要か」を判断する基準を持っておくと、不要なインフラコストを避けられます。
+<table class="ct" style="margin-top:12px;"><thead><tr><th>場面</th><th>RAGの要否</th><th>理由</th></tr></thead><tbody>
+<tr><td>社内データに基づく質問応答</td><td>有効</td><td>LLMの学習データに含まれない社内固有の情報を参照する必要がある</td></tr>
+<tr><td>最新ニュースに基づく回答</td><td>有効</td><td>LLMの知識カットオフ以降の情報が必要</td></tr>
+<tr><td>法令や規約の正確な引用</td><td>有効</td><td>一言一句正確に引用する必要があり、ハルシネーション防止に必須</td></tr>
+<tr><td>一般的なプログラミング質問</td><td>不要</td><td>LLMの学習データに十分含まれており、検索結果がノイズになる</td></tr>
+<tr><td>ブレインストーミング・創作</td><td>不要</td><td>正確な事実参照より自由な発想が求められる場面</td></tr>
+<tr><td>翻訳・要約(入力テキストが与えられる場合)</td><td>不要</td><td>処理対象のテキストが入力として渡されるため外部検索が不要</td></tr>
+</tbody></table>
+判断に迷ったら「LLMが学習時に見ていない情報か?」と自問する。Yesなら検索が要る。Noなら検索はノイズになります。
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. RAGの3つのフェーズを正しい順序で並べたものはどれですか?</p>
+<label><input type="radio" name="q1" value="a">Generation → Retrieval → Indexing</label>
+<label><input type="radio" name="q1" value="b">Indexing → Retrieval → Generation</label>
+<label><input type="radio" name="q1" value="c">Retrieval → Indexing → Generation</label>
+<label><input type="radio" name="q1" value="d">Indexing → Generation → Retrieval</label>
+<div class="ans" id="a1">正解: B。まずドキュメントを前処理(Indexing)し、質問に対して類似検索(Retrieval)を行い、取得した情報をもとにLLMが回答を生成(Generation)します。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. Advanced RAGがNaive RAGより精度が高い主な理由は?</p>
+<label><input type="radio" name="q2" value="a">より大きなLLMを使うから</label>
+<label><input type="radio" name="q2" value="b">検索結果をRe-rankingやHybrid Searchで精緻化するから</label>
+<label><input type="radio" name="q2" value="c">ドキュメント量が多いから</label>
+<label><input type="radio" name="q2" value="d">Embeddingモデルが不要だから</label>
+<div class="ans" id="a2">正解: B。検索フェーズにRe-ranking、Hybrid Search、Query Transformなどの改善手法を追加することで、LLMに渡す文脈の質が向上します。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 最小RAGパイプラインを動かす <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: OpenAI + Chromaで最小構成のRAGを体験し、検索と回答生成の流れを確認する</div>
+
+<h4>パート1: 環境構築(5min)</h4>
+<div class="prompt" id="p_s1h1">pip install langchain langchain-openai langchain-chroma chromadb<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+
+<h4>パート2: 最小RAG実装(15min)</h4>
+<div class="prompt" id="p_s1h2">import os
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+os.environ["OPENAI_API_KEY"] = "sk-..."  # ご自身のAPIキーを設定
+
+# --- 1. Indexing: ドキュメントをベクトルDBに格納 ---
+documents = [
+    Document(page_content="当社の有給休暇は入社6ヶ月後に10日付与されます。勤続年数に応じて最大20日まで増加します。"),
+    Document(page_content="リモートワークは週3日まで可能です。申請はHRシステムから行ってください。事前に上長の承認が必要です。"),
+    Document(page_content="出張経費の精算は出張後2週間以内に経費精算システムで申請してください。領収書の添付が必須です。"),
+    Document(page_content="社内研修は四半期ごとに開催されます。参加希望者はLMSから申し込んでください。受講費用は会社負担です。"),
+    Document(page_content="育児休業は子が1歳になるまで取得可能です。延長申請により最長2歳まで延長できます。"),
+]
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(documents, embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+
+# --- 2. Retrieval + Generation: 質問に回答 ---
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+prompt = ChatPromptTemplate.from_template("""
+以下の参考情報のみを使って質問に回答してください。
+参考情報に含まれない内容には「情報が見つかりませんでした」と回答してください。
+
+参考情報:
+{context}
+
+質問: {question}
+""")
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# --- 3. 実行 ---
+questions = [
+    "リモートワークは週何日まで可能ですか?",
+    "有給休暇は何日もらえますか?",
+    "社員食堂の営業時間は?",  # ドキュメントにない質問
+]
+
+for q in questions:
+    print(f"Q: {q}")
+    print(f"A: {chain.invoke(q)}")
+    print("-" * 40)<button class="cb" onclick="copyP('p_s1h2')">コピー</button></div>
+
+<details><summary>期待される出力</summary><div class="inner">
+<p>最初の2問はドキュメントから正確に回答されます。3問目の「社員食堂の営業時間」はドキュメントに情報がないため、「情報が見つかりませんでした」と返答されるのが理想的な動作です。プロンプトの制約指示がハルシネーション抑制に効いていることを確認してください。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://python.langchain.com/docs/concepts/rag/" target="_blank" rel="noopener">LangChain RAG Concepts</a> -- RAGの概念解説(公式)</li>
+<li><a href="https://arxiv.org/abs/2312.10997" target="_blank" rel="noopener">Retrieval-Augmented Generation for Large Language Models: A Survey</a> -- RAGサーベイ論文</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: LangChain基礎 (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 60min(講義25 + ハンズオン35)</div><h2>LangChain基礎 -- Chain/Template/Parser</h2>
+<p>LangChainはLLMアプリケーション構築のデファクトフレームワークです。v0.3では設計が大きく整理され、langchain-coreを軸にプロバイダー別パッケージへ分離されました。</p>
+
+<h3>LangChain v0.3 のパッケージ構成</h3>
+<table class="ct"><thead><tr><th>パッケージ</th><th>役割</th><th>インストール</th></tr></thead><tbody>
+<tr><td>langchain-core</td><td>基盤クラス: Runnable, PromptTemplate, OutputParser</td><td>pip install langchain-core</td></tr>
+<tr><td>langchain-openai</td><td>OpenAI統合: ChatOpenAI, OpenAIEmbeddings</td><td>pip install langchain-openai</td></tr>
+<tr><td>langchain-community</td><td>コミュニティ統合: 各種ローダー、ベクトルDB</td><td>pip install langchain-community</td></tr>
+<tr><td>langchain</td><td>高レベルChain(legacy含む)</td><td>pip install langchain</td></tr>
+<tr><td>langgraph</td><td>ステートマシン/グラフ実行(Sec06で詳説)</td><td>pip install langgraph</td></tr>
+</tbody></table>
+
+<h3>主要コンポーネント</h3>
+<div class="cols">
+<div class="col-card"><h4>ChatModel</h4><p>LLMとの対話を抽象化。ChatOpenAI、ChatAnthropic等のプロバイダー実装を差し替え可能。temperatureやmax_tokensを設定します。</p></div>
+<div class="col-card"><h4>PromptTemplate</h4><p>変数を埋め込めるテンプレート。ChatPromptTemplateはsystem/human/aiメッセージを組み立てます。再利用性が高く、プロンプト管理が容易に。</p></div>
+<div class="col-card"><h4>OutputParser</h4><p>LLMの出力を構造化データに変換。StrOutputParser(文字列)、JsonOutputParser(JSON)、PydanticOutputParser(型付きオブジェクト)。</p></div>
+<div class="col-card"><h4>LCEL (LangChain Expression Language)</h4><p>パイプ演算子(|)でコンポーネントを連結。prompt | llm | parserのように宣言的にChainを組みます。非同期、ストリーミング、バッチ処理を自動サポート。</p></div>
+</div>
+
+<h3>LCEL -- パイプ演算子でChainを組む</h3>
+<p>LCELはUnixパイプに似た考え方です。各コンポーネントはRunnableインタフェースを実装しており、前のコンポーネントの出力が次の入力になります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["PromptTemplate<br/>{topic}を埋める"] -->|"|"| B["ChatModel<br/>LLMに送信"]
+  B -->|"|"| C["OutputParser<br/>文字列に変換"]
+  style A fill:#1a1a1a,stroke:#00A5BF
+  style B fill:#1a1a1a,stroke:#00A5BF
+  style C fill:#1a1a1a,stroke:#00A5BF
+</pre><div class="caption">LCEL: パイプ演算子で3つのコンポーネントを連結</div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 3種のChainを構築する <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: SimpleChain、SequentialChain、RouterChainの3パターンをLCELで実装する</div>
+
+<h4>Chain 1: SimpleChain(10min)</h4>
+<p>最も基本的なパターン。テンプレートにトピックを埋めてLLMに送信し、文字列で受け取ります。</p>
+<div class="prompt" id="p_s2h1">from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+
+# SimpleChain: テンプレート → LLM → 文字列
+prompt = ChatPromptTemplate.from_template(
+    "{topic}について、3つのポイントで100文字以内に要約してください。"
+)
+
+chain = prompt | llm | StrOutputParser()
+
+result = chain.invoke({"topic": "RAGアーキテクチャ"})
+print(result)
+
+# バッチ実行も可能
+results = chain.batch([
+    {"topic": "ベクトルデータベース"},
+    {"topic": "プロンプトエンジニアリング"},
+])
+for r in results:
+    print(r)
+    print("-" * 40)<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>Chain 2: SequentialChain(12min)</h4>
+<p>前のChainの出力を次のChainの入力にする連鎖パターン。要約→翻訳のように段階処理に使います。</p>
+<div class="prompt" id="p_s2h2">from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+
+# Chain1: 技術用語を日本語で解説
+explain_prompt = ChatPromptTemplate.from_template(
+    "{term}を初心者向けに日本語で3行以内に解説してください。"
+)
+explain_chain = explain_prompt | llm | StrOutputParser()
+
+# Chain2: 解説文からクイズを作成
+quiz_prompt = ChatPromptTemplate.from_template(
+    "以下の解説文をもとに、4択クイズを1問作成してください。\n\n解説文:\n{explanation}"
+)
+quiz_chain = quiz_prompt | llm | StrOutputParser()
+
+# Sequential: explain → quiz
+sequential_chain = (
+    {"explanation": explain_chain, "term": RunnablePassthrough()}
+    | quiz_chain
+)
+
+result = sequential_chain.invoke({"term": "Embedding"})
+print(result)<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+
+<h4>Chain 3: RouterChain(13min)</h4>
+<p>質問の内容に応じて異なるChainにルーティングします。「技術質問」と「業務質問」で回答スタイルを切り替える例です。</p>
+<div class="prompt" id="p_s2h3">from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableLambda
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# 分類Chain: 質問のカテゴリを判定
+classify_prompt = ChatPromptTemplate.from_template(
+    "以下の質問を「technical」か「business」に分類してください。1単語のみ回答。\n\n質問: {question}"
+)
+classify_chain = classify_prompt | llm | StrOutputParser()
+
+# 技術質問用Chain
+tech_prompt = ChatPromptTemplate.from_template(
+    "あなたはシニアエンジニアです。技術的に正確に回答してください。\n\n質問: {question}"
+)
+tech_chain = tech_prompt | llm | StrOutputParser()
+
+# 業務質問用Chain
+biz_prompt = ChatPromptTemplate.from_template(
+    "あなたはビジネスコンサルタントです。実務的な視点で回答してください。\n\n質問: {question}"
+)
+biz_chain = biz_prompt | llm | StrOutputParser()
+
+# Router: 分類結果に応じてChainを切替
+def route(info):
+    category = info["category"].strip().lower()
+    if "technical" in category:
+        return tech_chain.invoke({"question": info["question"]})
+    return biz_chain.invoke({"question": info["question"]})
+
+router_chain = (
+    {"category": classify_chain, "question": lambda x: x["question"]}
+    | RunnableLambda(route)
+)
+
+# テスト
+questions = [
+    {"question": "LangChainのRunnableインタフェースの設計思想は?"},
+    {"question": "RAG導入でROIを最大化するには?"},
+]
+for q in questions:
+    print(f"Q: {q['question']}")
+    print(f"A: {router_chain.invoke(q)}")
+    print("-" * 40)<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<details><summary>補足: LCELの内部動作</summary><div class="inner">
+<p>パイプ演算子(|)はPythonの__or__メソッドをオーバーロードしています。chain = a | b | cと書くと、内部的にはRunnableSequence([a, b, c])が生成されます。各要素のinvoke/ainvoke/stream/batchが統一インタフェースで呼び出される仕組みです。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://python.langchain.com/docs/how_to/" target="_blank" rel="noopener">LangChain How-to Guides</a> -- 公式チュートリアル集</li>
+<li><a href="https://python.langchain.com/docs/concepts/lcel/" target="_blank" rel="noopener">LCEL Concepts</a> -- LCELの設計思想と詳細</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: ベクトルDB (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 60min(講義25 + ハンズオン35)</div><h2>ベクトルDB -- Chroma / FAISS / Pinecone</h2>
+<p>RAGの「検索」を支えるのがベクトルデータベースです。テキストを数百〜数千次元のベクトルに変換し、類似度で検索します。SQLのLIKE検索とは根本的に異なり、「意味的に近い」文書を見つけられるのが最大の強みです。</p>
+
+<h3>Embeddingの仕組み</h3>
+<p>Embeddingモデルはテキストを固定長のベクトル(数値の配列)に変換します。意味が近い文は近いベクトル空間上に配置される性質を持ちます。「犬」と「猫」のベクトルは近く、「犬」と「経済学」は遠くなります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["テキスト<br/>有給休暇は10日"] --> B["Embedding<br/>Model"]
+  B --> C["ベクトル<br/>[0.12, -0.34, 0.56, ...]<br/>1536次元"]
+  D["テキスト<br/>休みは何日?"] --> E["Embedding<br/>Model"]
+  E --> F["ベクトル<br/>[0.11, -0.31, 0.58, ...]<br/>1536次元"]
+  C --> G["コサイン類似度<br/>= 0.92(高い)"]
+  F --> G
+</pre><div class="caption">意味が近い文は近いベクトルに変換される</div></div>
+
+<h3>3つのベクトルDBを比較する</h3>
+<table class="ct"><thead><tr><th>項目</th><th>Chroma</th><th>FAISS</th><th>Pinecone</th></tr></thead><tbody>
+<tr><td>提供形態</td><td>OSS / ローカル</td><td>Meta製OSS / ローカル</td><td>クラウドマネージド</td></tr>
+<tr><td>セットアップ</td><td>pip install chromadb</td><td>pip install faiss-cpu</td><td>pip install pinecone-client</td></tr>
+<tr><td>スケーラビリティ</td><td>中(数万件向け)</td><td>高(数百万件対応)</td><td>最高(自動スケール)</td></tr>
+<tr><td>検索速度(100K件)</td><td>数十ms</td><td>数ms</td><td>数十ms(ネットワーク込み)</td></tr>
+<tr><td>永続化</td><td>ローカルファイル</td><td>ローカルファイル</td><td>クラウド(自動)</td></tr>
+<tr><td>適用場面</td><td>プロトタイプ、小規模RAG</td><td>大規模・高速検索</td><td>本番運用、チーム利用</td></tr>
+</tbody></table>
+
+<h3>Embeddingモデルの選び方</h3>
+<p>Embeddingモデルの選択はRAGの検索精度に直結します。コスト、精度、日本語対応の3軸で代表的なモデルを比較します。</p>
+<table class="ct"><thead><tr><th>モデル</th><th>提供元</th><th>次元数</th><th>日本語精度</th><th>コスト(100万トークン)</th><th>特徴</th></tr></thead><tbody>
+<tr><td>text-embedding-3-small</td><td>OpenAI</td><td>1536</td><td>良好</td><td>$0.02</td><td>コスパ最良。ほとんどのRAGでこれを選ぶのが正解</td></tr>
+<tr><td>text-embedding-3-large</td><td>OpenAI</td><td>3072</td><td>良好</td><td>$0.13</td><td>精度重視。ストレージ2倍・コスト6.5倍で精度向上は数%程度</td></tr>
+<tr><td>embed-multilingual-v3.0</td><td>Cohere</td><td>1024</td><td>優秀</td><td>$0.10</td><td>多言語対応が強み。日本語+英語の混在ドキュメントに最適</td></tr>
+<tr><td>BGE-M3</td><td>BAAI(OSS)</td><td>1024</td><td>優秀</td><td>無料(セルフホスト)</td><td>オープンソース。ローカルで動かせるため機密データ向き</td></tr>
+<tr><td>multilingual-e5-large</td><td>Microsoft(OSS)</td><td>1024</td><td>優秀</td><td>無料(セルフホスト)</td><td>HuggingFace上で利用可能。日本語ベンチマークで高スコア</td></tr>
+</tbody></table>
+<div class="box tip"><div class="bt">Tips: 選定の判断基準</div>API利用が許される環境ならtext-embedding-3-smallが安牌。機密データを扱う場合はBGE-M3やmultilingual-e5-largeをローカルで動かす選択肢が現実的です。一度選んだモデルを途中で変更すると、全ドキュメントのre-embeddingが必要になるため、最初の選定は慎重に。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 3つのDBに格納して検索精度を比較 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: 同じドキュメントをChroma、FAISS、(模擬)Pineconeに格納し、検索速度と結果の違いを比較する</div>
+
+<h4>パート1: 共通データの準備(5min)</h4>
+<div class="prompt" id="p_s3h1">import time
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.documents import Document
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+
+# 社内マニュアル風ドキュメント(10件)
+docs = [
+    Document(page_content="当社の勤務時間はフレックスタイム制で、コアタイムは10:00-15:00です。", metadata={"source": "就業規則"}),
+    Document(page_content="有給休暇は入社6ヶ月後に10日付与されます。勤続年数に応じて最大20日まで増加します。", metadata={"source": "就業規則"}),
+    Document(page_content="リモートワークは週3日まで可能です。利用には上長の事前承認が必要です。", metadata={"source": "勤怠ルール"}),
+    Document(page_content="出張経費は出張後2週間以内に経費精算システムで申請してください。", metadata={"source": "経費規程"}),
+    Document(page_content="社内研修は四半期ごとに開催されます。LMSから申し込んでください。", metadata={"source": "人材育成"}),
+    Document(page_content="育児休業は子が1歳になるまで取得可能です。延長申請で最長2歳まで。", metadata={"source": "育児支援"}),
+    Document(page_content="社内Slackの利用ガイドラインに従い、機密情報の投稿は禁止されています。", metadata={"source": "情報セキュリティ"}),
+    Document(page_content="PCの持ち出しには情報システム部への申請が必要です。VPN接続を必須とします。", metadata={"source": "情報セキュリティ"}),
+    Document(page_content="年末調整の書類は毎年11月中旬までに人事部へ提出してください。", metadata={"source": "税務"}),
+    Document(page_content="健康診断は年1回、会社指定の医療機関で受診してください。費用は会社負担です。", metadata={"source": "福利厚生"}),
+]
+
+query = "テレワークは何日までできますか?"<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+
+<h4>パート2: Chroma(10min)</h4>
+<div class="prompt" id="p_s3h2">from langchain_chroma import Chroma
+
+start = time.time()
+chroma_db = Chroma.from_documents(docs, embeddings, collection_name="test")
+chroma_results = chroma_db.similarity_search_with_score(query, k=3)
+chroma_time = time.time() - start
+
+print(f"[Chroma] 検索時間: {chroma_time:.3f}s")
+for doc, score in chroma_results:
+    print(f"  score={score:.4f} | {doc.page_content[:50]}...")<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+
+<h4>パート3: FAISS(10min)</h4>
+<div class="prompt" id="p_s3h3">from langchain_community.vectorstores import FAISS
+
+start = time.time()
+faiss_db = FAISS.from_documents(docs, embeddings)
+faiss_results = faiss_db.similarity_search_with_score(query, k=3)
+faiss_time = time.time() - start
+
+print(f"[FAISS] 検索時間: {faiss_time:.3f}s")
+for doc, score in faiss_results:
+    print(f"  score={score:.4f} | {doc.page_content[:50]}...")
+
+# FAISSはローカル保存/読み込み可能
+faiss_db.save_local("faiss_index")
+# loaded = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)<button class="cb" onclick="copyP('p_s3h3')">コピー</button></div>
+
+<h4>パート4: 結果比較(10min)</h4>
+<div class="prompt" id="p_s3h4">print("=" * 60)
+print("検索速度比較:")
+print(f"  Chroma: {chroma_time:.3f}s")
+print(f"  FAISS : {faiss_time:.3f}s")
+print()
+print("Top-1 結果比較:")
+print(f"  Chroma: {chroma_results[0][0].page_content[:60]}")
+print(f"  FAISS : {faiss_results[0][0].page_content[:60]}")
+print()
+print("考察:")
+print("- 両方とも「リモートワーク」の文書をTop-1に返すはず")
+print("- 「テレワーク」という単語は文書にないが、意味的類似性で検索できている")
+print("- FAISSは純粋な検索速度が速い(初期化を除く)")
+print("- Chromaはメタデータフィルタリングが使いやすい")<button class="cb" onclick="copyP('p_s3h4')">コピー</button></div>
+
+<details><summary>補足: Pineconeを使う場合</summary><div class="inner">
+<p>Pineconeはクラウドサービスのため、APIキーの取得とインデックス作成が必要です。<a href="https://www.pinecone.io/" target="_blank" rel="noopener">pinecone.io</a> で無料アカウントを作成し、langchain-pineconeパッケージを使います。本番環境でスケーラビリティが必要な場合に検討してください。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://www.trychroma.com/" target="_blank" rel="noopener">Chroma</a> -- ローカルベクトルDB</li>
+<li><a href="https://python.langchain.com/docs/integrations/vectorstores/" target="_blank" rel="noopener">LangChain VectorStore一覧</a> -- 対応DB全リスト</li>
+<li><a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">FAISS (GitHub)</a> -- Meta製高速ベクトル検索</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習A (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review Hands-on A -- 30min</div><h2>復習A: 基本RAGパイプライン構築</h2>
+<p>Sec01-03で学んだRAGの基本構造を1本のスクリプトにまとめます。ドキュメント読込からChroma格納、LLMによる回答生成まで通しで実装してください。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 業務マニュアルRAGの構築 <span class="hs-time">30min</span></div>
+<div class="hs-goal">成果物: 5問のテスト質問に正確に回答できるRAGスクリプト</div>
+
+<h4>要件</h4>
+<ol>
+<li>以下のDLテンプレート「サンプルドキュメント.txt」をドキュメントソースとして使用してください</li>
+<li>Chromaにベクトル格納し、retrieverを構築してください</li>
+<li>LCELでRAG Chainを組み、5問に回答してください</li>
+</ol>
+
+<h4>テスト質問(5問)</h4>
+<ol>
+<li>有給休暇の付与日数は?</li>
+<li>リモートワークの上限日数と必要な手続きは?</li>
+<li>出張経費の申請期限は?</li>
+<li>育児休業は何歳まで延長できますか?</li>
+<li>PCの社外持ち出しに必要なことは?</li>
+</ol>
+
+<div class="prompt" id="p_rA"># 復習A: 基本RAGパイプライン
+# 以下を埋めて完成させてください
+
+import os
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+os.environ["OPENAI_API_KEY"] = "sk-..."
+
+# 1. ドキュメントを定義(サンプルドキュメント.txtの内容をDocumentに変換)
+documents = [
+    # TODO: Document(page_content="...", metadata={"source": "..."})
+]
+
+# 2. ベクトルDB構築
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(documents, embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+# 3. RAG Chain構築(LCEL)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+prompt = ChatPromptTemplate.from_template("""
+以下の参考情報のみを使って質問に回答してください。
+参考情報に含まれない内容には「情報が見つかりませんでした」と回答してください。
+
+参考情報:
+{context}
+
+質問: {question}
+""")
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# 4. テスト実行
+questions = [
+    "有給休暇の付与日数は?",
+    "リモートワークの上限日数と必要な手続きは?",
+    "出張経費の申請期限は?",
+    "育児休業は何歳まで延長できますか?",
+    "PCの社外持ち出しに必要なことは?",
+]
+
+for q in questions:
+    print(f"Q: {q}")
+    print(f"A: {chain.invoke(q)}")
+    print("-" * 50)<button class="cb" onclick="copyP('p_rA')">コピー</button></div>
+
+<ul class="checklist">
+<li>ドキュメントをDocument形式に変換できた</li>
+<li>Chromaにベクトル格納できた</li>
+<li>LCELでChainを構築できた</li>
+<li>5問すべてに正確に回答できた</li>
+<li>ドキュメントにない質問で「情報が見つかりませんでした」と返せた</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: ドキュメントローダーとチャンク戦略 (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 60min(講義25 + ハンズオン35)</div><h2>ドキュメントローダーとチャンク戦略</h2>
+<p>RAGの品質はドキュメントの前処理で8割決まると言っても過言ではありません。どの形式をどう読み込み、どの粒度で分割するか。この設計を雑にすると、どれだけ高性能なLLMを使っても回答精度は頭打ちになります。</p>
+
+<h3>ドキュメントローダー一覧</h3>
+<table class="ct"><thead><tr><th>形式</th><th>ローダー</th><th>パッケージ</th><th>備考</th></tr></thead><tbody>
+<tr><td>PDF</td><td>PyPDFLoader</td><td>langchain-community</td><td>ページ単位で分割。OCR不要のテキストPDF向け</td></tr>
+<tr><td>CSV</td><td>CSVLoader</td><td>langchain-community</td><td>行単位でDocumentに変換</td></tr>
+<tr><td>Excel</td><td>UnstructuredExcelLoader</td><td>langchain-community</td><td>unstructuredパッケージが必要</td></tr>
+<tr><td>Web</td><td>WebBaseLoader</td><td>langchain-community</td><td>BeautifulSoupでHTML→テキスト</td></tr>
+<tr><td>Notion</td><td>NotionDirectoryLoader</td><td>langchain-community</td><td>エクスポートしたMarkdownを読込</td></tr>
+<tr><td>GitHub</td><td>GitLoader</td><td>langchain-community</td><td>リポジトリのコードを読込</td></tr>
+</tbody></table>
+
+<h3>チャンク戦略の4種</h3>
+<div class="cols">
+<div class="col-card"><h4>1. 固定サイズ分割</h4><p>文字数で機械的に分割。実装が最も簡単だが、文の途中で切れるリスクがあります。CharacterTextSplitterで実現。</p></div>
+<div class="col-card"><h4>2. 再帰的分割(推奨)</h4><p>段落→文→単語の順で再帰的に分割。文脈を保ちやすく、多くのケースでベストプラクティスです。RecursiveCharacterTextSplitterがデフォルト選択肢。</p></div>
+<div class="col-card"><h4>3. セマンティック分割</h4><p>Embeddingの類似度が変化する箇所で分割。意味の区切りで切れるため精度が高いが、Embedding計算コストが発生します。SemanticChunkerで実現。</p></div>
+<div class="col-card"><h4>4. 構造ベース分割</h4><p>Markdown見出し、HTMLタグ、PDFのページ区切りなど、ドキュメントの構造を利用。MarkdownHeaderTextSplitter等。</p></div>
+</div>
+
+<h3>チャンクサイズとoverlapの選び方</h3>
+<p>チャンクサイズはトレードオフです。小さすぎると1チャンクに十分な文脈が含まれず、大きすぎるとノイズが増えて検索精度が落ちます。</p>
+<table class="ct"><thead><tr><th>パラメータ</th><th>推奨値</th><th>考慮点</th></tr></thead><tbody>
+<tr><td>chunk_size</td><td>500〜1000文字</td><td>Q&Aなら短め(300-500)、技術文書なら長め(800-1200)</td></tr>
+<tr><td>chunk_overlap</td><td>chunk_sizeの10〜20%</td><td>前後のチャンクの意味的接続を維持する</td></tr>
+</tbody></table>
+
+<h3>オーバーラップ(重複)の効果</h3>
+<p>チャンク間のオーバーラップは「前後のチャンクの文脈を繋ぐ接着剤」です。設定値による影響を具体例で示します。</p>
+<p>例えば以下の3文を含むドキュメントを、chunk_size=100で分割する場合を考えます。</p>
+<p>文A(50文字): 「リモートワークは週3日まで利用可能です。」<br>
+文B(50文字): 「利用にはHRシステムから事前申請が必要です。」<br>
+文C(50文字): 「申請は上長の承認後、翌営業日に有効になります。」</p>
+<table class="ct"><thead><tr><th>overlap設定</th><th>Chunk 1の内容</th><th>Chunk 2の内容</th><th>「申請方法は?」の検索精度</th></tr></thead><tbody>
+<tr><td>0%(重複なし)</td><td>文A + 文B</td><td>文C のみ</td><td>低 -- 文Bと文Cの関連が切れるため、Chunk 2だけでは申請→承認の流れが不明</td></tr>
+<tr><td>10%(10文字)</td><td>文A + 文B</td><td>文Bの末尾10文字 + 文C</td><td>中 -- 「事前申請が必要」の断片がChunk 2にも含まれ、文脈が部分的に繋がる</td></tr>
+<tr><td>20%(20文字)</td><td>文A + 文B</td><td>文Bの後半20文字 + 文C</td><td>高 -- 「HRシステムから事前申請が必要」がChunk 2にも含まれ、申請→承認の一連の流れが検索で引ける</td></tr>
+</tbody></table>
+<p>実務での推奨値はchunk_sizeの10〜20%。20%を超えるとストレージの無駄が増え、検索速度にも影響します。FAQのような短い独立した項目の場合は0%でも問題ありません。</p>
+
+<div class="box warn"><div class="bt">注意: チャンクサイズのアンチパターン</div>chunk_sizeを2000以上にすると、1チャンクに複数の話題が混在し、検索精度が著しく低下します。「1チャンク = 1つの意味単位」が原則です。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 4種のチャンク戦略で分割して比較 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: PDF読込後に4種のチャンク戦略で分割し、検索精度の違いを確認する</div>
+
+<h4>パート1: ドキュメント読込+チャンク分割(20min)</h4>
+<div class="prompt" id="p_s4h1">from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
+from langchain_text_splitters import (
+    CharacterTextSplitter,
+    RecursiveCharacterTextSplitter,
+)
+from langchain_experimental.text_splitter import SemanticChunker
+from langchain_openai import OpenAIEmbeddings
+
+# --- サンプルテキスト(PDF読込の代わり) ---
+sample_text = """
+第1章 有給休暇制度
+
+当社の有給休暇は、入社6ヶ月経過後に10日が付与されます。
+勤続年数に応じて付与日数は増加し、6年6ヶ月以上の勤続で最大20日となります。
+未消化の有給休暇は翌年度に限り繰り越し可能です。
+半日単位での取得も可能で、事前に上長の承認を得てください。
+
+第2章 リモートワーク制度
+
+リモートワークは週3日まで利用可能です。
+コアタイム(10:00-15:00)中はオンラインで連絡が取れる状態を維持してください。
+利用にあたっては、HRシステムから事前申請し、上長の承認を得る必要があります。
+セキュリティの観点から、VPN接続を必須とし、公共Wi-Fiでの業務は禁止します。
+
+第3章 出張経費精算
+
+出張経費は出張完了後2週間以内に経費精算システムで申請してください。
+申請には領収書の原本(またはスキャン画像)の添付が必須です。
+日当は国内出張5,000円、海外出張10,000円です。
+宿泊費の上限は国内15,000円、海外30,000円(税込)です。
+上限を超える場合は事前に部長承認が必要です。
+"""
+
+# 1. 固定サイズ分割
+fixed_splitter = CharacterTextSplitter(
+    separator="\n",
+    chunk_size=200,
+    chunk_overlap=30,
+)
+fixed_chunks = fixed_splitter.split_text(sample_text)
+
+# 2. 再帰的分割(推奨)
+recursive_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=200,
+    chunk_overlap=30,
+    separators=["\n\n", "\n", "。", "、", " ", ""],
+)
+recursive_chunks = recursive_splitter.split_text(sample_text)
+
+# 3. セマンティック分割
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+semantic_splitter = SemanticChunker(embeddings)
+semantic_chunks = [doc.page_content for doc in semantic_splitter.create_documents([sample_text])]
+
+# 結果比較
+for name, chunks in [("固定サイズ", fixed_chunks), ("再帰的", recursive_chunks), ("セマンティック", semantic_chunks)]:
+    print(f"\n{'='*50}")
+    print(f"[{name}] チャンク数: {len(chunks)}")
+    for i, chunk in enumerate(chunks):
+        print(f"  Chunk {i+1} ({len(chunk)}文字): {chunk[:60]}...")<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+
+<h4>パート2: 検索精度比較(15min)</h4>
+<div class="prompt" id="p_s4h2">from langchain_chroma import Chroma
+from langchain_core.documents import Document
+
+query = "出張の日当はいくらですか?"
+
+# 各チャンク戦略でベクトルDBを構築し検索
+for name, chunks in [("固定サイズ", fixed_chunks), ("再帰的", recursive_chunks), ("セマンティック", semantic_chunks)]:
+    docs = [Document(page_content=c) for c in chunks]
+    db = Chroma.from_documents(docs, embeddings, collection_name=name.replace(" ", "_"))
+    results = db.similarity_search_with_score(query, k=2)
+
+    print(f"\n[{name}]")
+    for doc, score in results:
+        print(f"  score={score:.4f} | {doc.page_content[:80]}...")
+
+print("\n考察:")
+print("- 再帰的分割は章ごとにきれいに分かれやすく、検索精度が安定する")
+print("- 固定サイズは文の途中で切れると検索精度が低下する")
+print("- セマンティック分割は意味の区切りで分割できるが、計算コストが高い")<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<details><summary>補足: 構造ベース分割(Markdown)</summary><div class="inner">
+<div class="prompt" id="p_s4h3">from langchain_text_splitters import MarkdownHeaderTextSplitter
+
+markdown_text = """
+# 有給休暇制度
+入社6ヶ月後に10日付与。最大20日。
+
+## 取得方法
+半日単位で取得可能。上長承認が必要。
+
+# リモートワーク制度
+週3日まで利用可能。
+
+## セキュリティ要件
+VPN必須。公共Wi-Fi禁止。
+"""
+
+headers = [("#", "Chapter"), ("##", "Section")]
+splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers)
+chunks = splitter.split_text(markdown_text)
+
+for chunk in chunks:
+    print(f"metadata={chunk.metadata}")
+    print(f"content={chunk.page_content[:60]}")
+    print("-" * 40)<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://python.langchain.com/docs/how_to/#text-splitters" target="_blank" rel="noopener">LangChain Text Splitters</a> -- チャンク戦略の公式ガイド</li>
+<li><a href="https://python.langchain.com/docs/how_to/#document-loaders" target="_blank" rel="noopener">LangChain Document Loaders</a> -- 対応ローダー一覧</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: 検索精度チューニング (65min: 講義25 + ハンズオン40) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 65min(講義25 + ハンズオン40)</div><h2>検索精度チューニング</h2>
+<p>RAGの回答品質はRetrievalフェーズの精度に強く依存します。良い文書を引けなければ、どれほど優れたLLMでもまともな回答は返せません。ここでは検索精度を引き上げる5つの手法を実装します。</p>
+
+<h3>5つのチューニング手法</h3>
+<table class="ct"><thead><tr><th>手法</th><th>概要</th><th>効果</th></tr></thead><tbody>
+<tr><td>Top-K調整</td><td>取得するチャンク数を調整(k=3〜5が一般的)</td><td>適切なkで情報不足/ノイズ過多を防止</td></tr>
+<tr><td>Score閾値</td><td>類似度がn以上のチャンクだけ採用</td><td>無関係な低スコア文書を除外</td></tr>
+<tr><td>Hybrid Search</td><td>ベクトル検索 + キーワード検索(BM25)の組み合わせ</td><td>意味検索とキーワード一致の両方を活用</td></tr>
+<tr><td>Re-ranking</td><td>検索結果をCross-EncoderやCohere Rerankで再順位付け</td><td>Top-K内の順序を最適化</td></tr>
+<tr><td>Multi-Query</td><td>1つの質問を複数表現に変換して検索</td><td>表現のゆれに対するカバー範囲を拡大</td></tr>
+</tbody></table>
+
+<h3>Hybrid Search</h3>
+<p>ベクトル検索は「意味」で探すのが得意ですが、固有名詞や型番のようなキーワード一致は苦手です。BM25(キーワードベースの検索)と組み合わせることで、両方の強みを活かせます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TD
+  Q["ユーザーの質問"] --> V["ベクトル検索<br/>(意味的類似性)"]
+  Q --> K["BM25検索<br/>(キーワード一致)"]
+  V --> M["結果マージ<br/>(重み付け統合)"]
+  K --> M
+  M --> R["Re-ranking<br/>(再順位付け)"]
+  R --> F["最終結果<br/>(Top-K)"]
+</pre><div class="caption">Hybrid Search: ベクトル検索とBM25を統合し、Re-rankingで仕上げる</div></div>
+
+<h3>Multi-Query Retriever</h3>
+<p>「テレワークの上限日数は?」という質問を「リモートワークは週何日まで?」「在宅勤務の制限は?」など複数の表現に変換してから検索します。同じ意味の異なる表現をカバーでき、検索のRecall(再現率)が向上します。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: Hybrid Search + Re-ranking の実装 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: BM25とベクトル検索を統合するHybrid Searchを実装し、Re-rankingで精度を向上させる</div>
+
+<h4>パート1: BM25 + ベクトル検索のHybrid(20min)</h4>
+<div class="prompt" id="p_s5h1">from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_chroma import Chroma
+from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
+from langchain_core.documents import Document
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+
+docs = [
+    Document(page_content="当社の有給休暇は入社6ヶ月後に10日付与されます。勤続年数に応じて最大20日。", metadata={"id": 1}),
+    Document(page_content="リモートワークは週3日まで可能です。HRシステムから事前申請し上長承認を得てください。", metadata={"id": 2}),
+    Document(page_content="出張経費は出張後2週間以内に経費精算システムで申請。領収書の添付が必須です。", metadata={"id": 3}),
+    Document(page_content="育児休業は子が1歳になるまで取得可能。延長申請により最長2歳まで延長できます。", metadata={"id": 4}),
+    Document(page_content="PCの持ち出しには情報システム部への申請が必要。VPN接続を必須とします。", metadata={"id": 5}),
+    Document(page_content="社内Slackの利用ガイドラインに従い、機密情報の投稿は禁止されています。", metadata={"id": 6}),
+    Document(page_content="健康診断は年1回、会社指定の医療機関で受診してください。費用は会社負担。", metadata={"id": 7}),
+    Document(page_content="年末調整の書類は毎年11月中旬までに人事部へ提出してください。", metadata={"id": 8}),
+]
+
+# ベクトル検索用Retriever
+vectorstore = Chroma.from_documents(docs, embeddings)
+vector_retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+# BM25(キーワード検索)用Retriever
+bm25_retriever = BM25Retriever.from_documents(docs)
+bm25_retriever.k = 3
+
+# Hybrid: 両方を統合(重みを調整可能)
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[vector_retriever, bm25_retriever],
+    weights=[0.6, 0.4],  # ベクトル60% + BM25 40%
+)
+
+# 比較テスト
+query = "テレワークの申請方法を教えて"
+print("=== ベクトル検索のみ ===")
+for doc in vector_retriever.invoke(query):
+    print(f"  [{doc.metadata['id']}] {doc.page_content[:50]}...")
+
+print("\n=== BM25のみ ===")
+for doc in bm25_retriever.invoke(query):
+    print(f"  [{doc.metadata['id']}] {doc.page_content[:50]}...")
+
+print("\n=== Hybrid Search ===")
+for doc in ensemble_retriever.invoke(query):
+    print(f"  [{doc.metadata['id']}] {doc.page_content[:50]}...")<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>パート2: Multi-Query Retriever(10min)</h4>
+<div class="prompt" id="p_s5h2">from langchain.retrievers.multi_query import MultiQueryRetriever
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+
+multi_retriever = MultiQueryRetriever.from_llm(
+    retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+    llm=llm,
+)
+
+import logging
+logging.basicConfig(level=logging.INFO)
+
+query = "在宅勤務のルールは?"
+results = multi_retriever.invoke(query)
+
+print(f"\n=== Multi-Query結果({len(results)}件) ===")
+for doc in results:
+    print(f"  [{doc.metadata['id']}] {doc.page_content[:60]}...")<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+
+<h4>パート3: Score閾値フィルタリング(10min)</h4>
+<div class="prompt" id="p_s5h3"># Score閾値でフィルタリング
+results_with_score = vectorstore.similarity_search_with_score(
+    "社員食堂のメニューは?",  # ドキュメントにない質問
+    k=3,
+)
+
+THRESHOLD = 0.5  # Chromaのスコアは距離(小さいほど類似)
+print("=== Score閾値フィルタリング ===")
+for doc, score in results_with_score:
+    status = "採用" if score < THRESHOLD else "除外"
+    print(f"  score={score:.4f} [{status}] {doc.page_content[:50]}...")
+
+print()
+print("考察:")
+print("- ドキュメントにない質問でもTop-K件は必ず返される")
+print("- Score閾値を設定することで無関係な結果を除外できる")
+print("- 閾値はドメインに応じて調整が必要(0.3〜0.7が一般的)")<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 05</h4>
+<div class="q"><p>Q3. Hybrid Searchが単独のベクトル検索より優れるケースは?</p>
+<label><input type="radio" name="q3" value="a">質問文が長い場合</label>
+<label><input type="radio" name="q3" value="b">固有名詞や型番など、キーワード一致が重要な場合</label>
+<label><input type="radio" name="q3" value="c">ドキュメント数が少ない場合</label>
+<label><input type="radio" name="q3" value="d">LLMの性能が高い場合</label>
+<div class="ans" id="a3">正解: B。ベクトル検索は意味的類似性は得意ですが、固有名詞や型番のような正確なキーワード一致は苦手です。BM25との組み合わせでカバーできます。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://python.langchain.com/docs/how_to/ensemble_retriever/" target="_blank" rel="noopener">Ensemble Retriever</a> -- Hybrid Searchの公式ガイド</li>
+<li><a href="https://python.langchain.com/docs/how_to/MultiQueryRetriever/" target="_blank" rel="noopener">MultiQueryRetriever</a> -- 公式ドキュメント</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習B (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review Hands-on B -- 30min</div><h2>復習B: 高精度RAGの構築</h2>
+<p>Sec04-05で学んだチャンク戦略とチューニング手法を組み合わせ、復習Aの基本RAGを高精度版に改良してください。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 高精度RAGパイプライン <span class="hs-time">30min</span></div>
+<div class="hs-goal">成果物: RecursiveCharacterTextSplitter + Hybrid Search + Score閾値を組み合わせた高精度RAG</div>
+
+<h4>改良ポイント</h4>
+<ol>
+<li>チャンク分割をRecursiveCharacterTextSplitter(chunk_size=300, overlap=50)に変更</li>
+<li>BM25 + ベクトル検索のEnsembleRetrieverに差し替え</li>
+<li>Score閾値を設定し、無関係な結果を除外するロジックを追加</li>
+<li>復習Aと同じ5問で回答精度を比較</li>
+</ol>
+
+<ul class="checklist">
+<li>RecursiveCharacterTextSplitterでチャンク分割できた</li>
+<li>EnsembleRetriever(ベクトル+BM25)を構築できた</li>
+<li>Score閾値フィルタリングを実装できた</li>
+<li>復習Aより回答精度が向上した(特に具体的な数値の回答)</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: LangGraph入門 (70min: 講義30 + ハンズオン40) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 70min(講義30 + ハンズオン40)</div><h2>LangGraph入門 -- ステートマシンRAG</h2>
+<p>LangGraphはLangChain上に構築されたステートマシンフレームワークです。条件分岐、ループ、ツール呼出し、マルチステップ推論をグラフ(有向グラフ)として表現できます。「検索して、結果を評価し、不十分なら再検索する」といった反復的なRAGパターンはLangGraphが最も得意とする領域です。</p>
+
+<h3>なぜLangGraphが必要か</h3>
+<p>LCELのパイプラインは直線的です。A → B → Cと一方向に流れます。「Cの結果が不十分ならBに戻る」「条件によってDかEに分岐する」といった制御フローはLCELだけでは表現が困難。LangGraphはこの問題をステートマシンで解決します。</p>
+
+<h3>4つの基本概念</h3>
+<div class="cols">
+<div class="col-card"><h4>State</h4><p>グラフ全体で共有するデータ構造。TypedDictで定義し、各ノードがStateを読み書きします。「質問」「検索結果」「回答」「評価スコア」などを保持。</p></div>
+<div class="col-card"><h4>Node</h4><p>処理の単位。Stateを受け取り、加工して返す関数。「検索ノード」「生成ノード」「評価ノード」など。</p></div>
+<div class="col-card"><h4>Edge</h4><p>ノード間の遷移。add_edgeで無条件に遷移。前のノード完了後に必ず次のノードが実行されます。</p></div>
+<div class="col-card"><h4>Conditional Edge</h4><p>条件付き遷移。add_conditional_edgesで、Stateの内容に応じて次のノードを選択。Self-RAGのループ制御に使います。</p></div>
+</div>
+
+<h4>Stateの定義方法 -- TypedDictの実践パターン</h4>
+<p>StateはPythonのTypedDictで定義します。各フィールドがグラフ全体の「共有メモリ」として機能し、ノードはStateを受け取って部分的に更新を返します。</p>
+<div class="prompt" id="p_s6_state">from typing import TypedDict, List, Annotated
+from langgraph.graph import add_messages  # メッセージ蓄積用のreducer
+from langchain_core.messages import BaseMessage
+
+# 基本パターン: RAG用State
+class RAGState(TypedDict):
+    question: str           # ユーザーの質問(不変)
+    context: str            # 検索で取得した文脈(retrieveノードが更新)
+    answer: str             # 生成された回答(generateノードが更新)
+    is_quality_ok: bool     # 品質チェック結果(evaluateノードが更新)
+    retry_count: int        # リトライ回数(evaluateノードが更新)
+
+# 発展パターン: チャット履歴付きState
+class ChatRAGState(TypedDict):
+    messages: Annotated[List[BaseMessage], add_messages]  # メッセージ蓄積
+    context: str
+    route: str              # "rag" or "direct" の分岐用
+
+# ノードの実装ではStateの一部だけを返せばOK
+def retrieve(state: RAGState) -> dict:
+    # question を読み取り、context だけを更新して返す
+    docs = retriever.invoke(state["question"])
+    return {"context": "\n".join(d.page_content for d in docs)}
+    # ← answer, is_quality_ok, retry_count は変更しない<button class="cb" onclick="copyP('p_s6_state')">コピー</button></div>
+<p>Annotatedとreducer(add_messages等)を使うと、ノードが返した値を「上書き」ではなく「追記」にできます。チャット履歴のように蓄積が必要なフィールドで活用してください。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TD
+  S["START"] --> R["retrieve<br/>ベクトル検索"]
+  R --> G["generate<br/>回答生成"]
+  G --> E["evaluate<br/>品質チェック"]
+  E -->|"品質OK"| END["END"]
+  E -->|"品質NG<br/>(retry < 3)"| R
+  E -->|"retry >= 3"| END
+</pre><div class="caption">Self-RAG: 回答品質が不十分なら再検索するループ構造</div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: Self-RAGをLangGraphで実装 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: 検索 → 回答生成 → 品質チェック → 必要なら再検索、のループをLangGraphで構築する</div>
+
+<h4>パート1: State定義とノード実装(25min)</h4>
+<div class="prompt" id="p_s6h1">import os
+from typing import TypedDict, List, Annotated
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langgraph.graph import StateGraph, END
+import operator
+
+os.environ["OPENAI_API_KEY"] = "sk-..."
+
+# --- ドキュメント準備 ---
+docs = [
+    Document(page_content="当社の有給休暇は入社6ヶ月後に10日付与。勤続年数に応じて最大20日まで増加。未消化分は翌年度に限り繰越可能。"),
+    Document(page_content="リモートワークは週3日まで可能。コアタイム10:00-15:00はオンライン必須。HRシステムで事前申請し上長承認を得ること。"),
+    Document(page_content="出張経費は出張後2週間以内に申請。日当は国内5,000円、海外10,000円。宿泊費上限は国内15,000円、海外30,000円。"),
+    Document(page_content="育児休業は子が1歳まで取得可能。延長申請で最長2歳まで。復帰後は短時間勤務制度(子が3歳まで)を利用可能。"),
+    Document(page_content="健康診断は年1回、会社指定医療機関で受診。35歳以上は人間ドック受診可(会社負担上限3万円)。"),
+]
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(docs, embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# --- State定義 ---
+class RAGState(TypedDict):
+    question: str
+    context: str
+    answer: str
+    is_quality_ok: bool
+    retry_count: int
+
+# --- Node: 検索 ---
+def retrieve(state: RAGState) -> dict:
+    docs = retriever.invoke(state["question"])
+    context = "\n\n".join(doc.page_content for doc in docs)
+    return {"context": context}
+
+# --- Node: 回答生成 ---
+def generate(state: RAGState) -> dict:
+    prompt = ChatPromptTemplate.from_template("""
+以下の参考情報のみを使って質問に回答してください。
+具体的な数値や条件を含めて回答してください。
+参考情報に含まれない場合は「情報が見つかりませんでした」と回答してください。
+
+参考情報:
+{context}
+
+質問: {question}
+""")
+    chain = prompt | llm | StrOutputParser()
+    answer = chain.invoke({"context": state["context"], "question": state["question"]})
+    return {"answer": answer}
+
+# --- Node: 品質評価 ---
+def evaluate(state: RAGState) -> dict:
+    eval_prompt = ChatPromptTemplate.from_template("""
+以下の質問と回答を評価してください。
+回答が質問に対して具体的かつ正確に答えているなら「OK」、不十分なら「NG」と1単語で回答してください。
+
+質問: {question}
+回答: {answer}
+""")
+    chain = eval_prompt | llm | StrOutputParser()
+    result = chain.invoke({"question": state["question"], "answer": state["answer"]})
+    is_ok = "ok" in result.strip().lower()
+    return {"is_quality_ok": is_ok, "retry_count": state.get("retry_count", 0) + 1}
+
+# --- 条件分岐 ---
+def should_retry(state: RAGState) -> str:
+    if state["is_quality_ok"]:
+        return "end"
+    if state.get("retry_count", 0) >= 3:
+        return "end"
+    return "retry"<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+
+<h4>パート2: グラフ構築と実行(15min)</h4>
+<div class="prompt" id="p_s6h2"># --- グラフ構築 ---
+workflow = StateGraph(RAGState)
+
+# ノード追加
+workflow.add_node("retrieve", retrieve)
+workflow.add_node("generate", generate)
+workflow.add_node("evaluate", evaluate)
+
+# エッジ追加
+workflow.set_entry_point("retrieve")
+workflow.add_edge("retrieve", "generate")
+workflow.add_edge("generate", "evaluate")
+
+# 条件分岐エッジ
+workflow.add_conditional_edges(
+    "evaluate",
+    should_retry,
+    {
+        "retry": "retrieve",  # 品質NGなら再検索
+        "end": END,           # 品質OKまたはリトライ上限
+    },
+)
+
+# コンパイル
+app = workflow.compile()
+
+# --- 実行 ---
+questions = [
+    "有給休暇は最大何日もらえますか?",
+    "海外出張の日当と宿泊費の上限は?",
+    "育児休業後に利用できる制度は?",
+]
+
+for q in questions:
+    print(f"\nQ: {q}")
+    result = app.invoke({
+        "question": q,
+        "context": "",
+        "answer": "",
+        "is_quality_ok": False,
+        "retry_count": 0,
+    })
+    print(f"A: {result['answer']}")
+    print(f"   (リトライ回数: {result['retry_count']}, 品質OK: {result['is_quality_ok']})")
+    print("-" * 50)<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+
+<details><summary>グラフの可視化</summary><div class="inner">
+<p>LangGraphのグラフはMermaid形式で出力可能です。</p>
+<div class="prompt" id="p_s6h3"># グラフをMermaid形式で出力
+print(app.get_graph().draw_mermaid())<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+<p>出力されたMermaidコードを<a href="https://mermaid.live/" target="_blank" rel="noopener">Mermaid Live Editor</a>に貼り付けると、グラフを視覚的に確認できます。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph Documentation</a> -- 公式ドキュメント</li>
+<li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_self_rag/" target="_blank" rel="noopener">Self-RAG Tutorial</a> -- Self-RAGの公式チュートリアル</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: LangSmith (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 55min(講義25 + ハンズオン30)</div><h2>LangSmith -- デバッグ / 評価 / 監視</h2>
+<p>LangSmithはLangChainの実行をトレース・評価・監視するプラットフォームです。RAGパイプラインの各ステップでどんな入出力が流れたかをリアルタイムに可視化でき、「なぜ変な回答が返ったか」の原因特定に威力を発揮します。</p>
+
+<h3>LangSmithの3つの機能</h3>
+<div class="cols">
+<div class="col-card"><h4>1. トレース</h4><p>各ステップ(検索、プロンプト構築、LLM呼出し、パース)の入出力をタイムスタンプ付きで記録。遅いステップやエラー箇所を即座に特定できます。</p></div>
+<div class="col-card"><h4>2. 評価</h4><p>テストデータセットを作成し、RAGの回答精度を定量測定。正解率、F1スコア、LLM-as-Judgeによる評価を自動化できます。</p></div>
+<div class="col-card"><h4>3. 監視</h4><p>プロダクション環境のトレースをダッシュボードで監視。レイテンシ、エラー率、コストの推移をリアルタイムで追跡します。</p></div>
+</div>
+
+<h3>セットアップ</h3>
+<div class="prompt" id="p_s7setup"># 環境変数の設定(LangSmith接続)
+export LANGCHAIN_TRACING_V2=true
+export LANGCHAIN_API_KEY="lsv2_..."       # LangSmithのAPIキー
+export LANGCHAIN_PROJECT="c12-rag-demo"   # プロジェクト名<button class="cb" onclick="copyP('p_s7setup')">コピー</button></div>
+
+<div class="box tip"><div class="bt">Tips: LangSmithの無料枠</div><a href="https://smith.langchain.com/" target="_blank" rel="noopener">smith.langchain.com</a>でアカウント作成すると、月5,000トレースまで無料で利用可能です。ハンズオンの学習用途には十分な量です。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: トレース確認と評価パイプライン <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: LangSmithでRAGパイプラインのトレースを確認し、テストデータセットで回答精度を定量評価する</div>
+
+<h4>パート1: トレースを有効化してRAGを実行(10min)</h4>
+<div class="prompt" id="p_s7h1">import os
+
+# LangSmith接続
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = "lsv2_..."  # ご自身のAPIキー
+os.environ["LANGCHAIN_PROJECT"] = "c12-rag-demo"
+
+# Sec01で作成したRAG Chainをそのまま実行
+# chain.invoke() を呼ぶだけで自動的にトレースされる
+
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+docs = [
+    Document(page_content="当社の有給休暇は入社6ヶ月後に10日付与。最大20日。"),
+    Document(page_content="リモートワークは週3日まで可能。上長承認が必要。"),
+    Document(page_content="出張経費は2週間以内に申請。領収書添付必須。"),
+]
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(docs, embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+prompt = ChatPromptTemplate.from_template("""
+参考情報のみを使って回答してください。
+
+参考情報:
+{context}
+
+質問: {question}
+""")
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# 実行(自動的にLangSmithにトレースが送信される)
+result = chain.invoke("有給は何日ですか?")
+print(result)
+print()
+print("LangSmith (https://smith.langchain.com/) にアクセスして")
+print("c12-rag-demo プロジェクトのトレースを確認してください")<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+
+<h4>パート2: 評価データセットの作成と自動評価(20min)</h4>
+<div class="prompt" id="p_s7h2">from langsmith import Client
+from langsmith.evaluation import evaluate
+
+client = Client()
+
+# 評価データセットの作成
+dataset_name = "c12-rag-eval"
+
+# データセットが既に存在する場合は削除(デモ用)
+try:
+    existing = client.read_dataset(dataset_name=dataset_name)
+    client.delete_dataset(dataset_id=existing.id)
+except:
+    pass
+
+dataset = client.create_dataset(dataset_name=dataset_name)
+
+# テストケースを追加
+test_cases = [
+    {"input": "有給休暇は何日もらえますか?", "expected": "入社6ヶ月後に10日。最大20日。"},
+    {"input": "リモートワークの上限は?", "expected": "週3日まで。上長承認が必要。"},
+    {"input": "出張経費の申請期限は?", "expected": "出張後2週間以内。"},
+    {"input": "社員食堂の場所は?", "expected": "情報が見つかりませんでした"},
+]
+
+for tc in test_cases:
+    client.create_example(
+        inputs={"question": tc["input"]},
+        outputs={"answer": tc["expected"]},
+        dataset_id=dataset.id,
+    )
+
+# 評価実行
+def predict(inputs: dict) -> dict:
+    return {"answer": chain.invoke(inputs["question"])}
+
+# LLM-as-Judge評価
+from langsmith.evaluation import LangChainStringEvaluator
+
+evaluator = LangChainStringEvaluator(
+    "qa",
+    config={"llm": ChatOpenAI(model="gpt-4o-mini", temperature=0)},
+    prepare_data=lambda run, example: {
+        "prediction": run.outputs["answer"],
+        "reference": example.outputs["answer"],
+        "input": example.inputs["question"],
+    },
+)
+
+results = evaluate(
+    predict,
+    data=dataset_name,
+    evaluators=[evaluator],
+    experiment_prefix="rag-v1",
+)
+
+print("評価完了。LangSmithで結果を確認してください。")<button class="cb" onclick="copyP('p_s7h2')">コピー</button></div>
+
+<details><summary>LangSmith画面の見方</summary><div class="inner">
+<p>LangSmithにログインし、プロジェクト一覧から「c12-rag-demo」を選択すると、実行したトレースが表示されます。各トレースをクリックすると、Retriever → PromptTemplate → ChatOpenAI → StrOutputParser の各ステップの入出力、所要時間、トークン数が確認できます。</p>
+<p>Datasets & Testingタブから「c12-rag-eval」を開くと、各テストケースの評価結果(Pass/Fail)が一覧で確認できます。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://smith.langchain.com/" target="_blank" rel="noopener">LangSmith</a> -- 公式プラットフォーム</li>
+<li><a href="https://docs.smith.langchain.com/" target="_blank" rel="noopener">LangSmith Documentation</a> -- 公式ドキュメント</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: 高度なRAGパターン (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 60min(講義25 + ハンズオン35)</div><h2>高度なRAGパターン -- Self-RAG / Adaptive RAG / Corrective RAG</h2>
+<p>Sec06で実装したSelf-RAGの発展形として、Adaptive RAGとCorrective RAGを学びます。いずれもLangGraphのステートマシンで実現する設計パターンで、質問の難易度や検索結果の質に応じて動的にパイプラインを制御します。</p>
+
+<h3>3つのパターン比較</h3>
+<table class="ct"><thead><tr><th>パターン</th><th>判断対象</th><th>分岐ロジック</th><th>適用場面</th></tr></thead><tbody>
+<tr><td>Self-RAG</td><td>回答の品質</td><td>回答生成後に自己評価。不十分なら再検索</td><td>回答精度を確実に担保したい場合</td></tr>
+<tr><td>Adaptive RAG</td><td>質問の複雑さ</td><td>質問をルーティング。簡単→直接回答、複雑→RAG実行</td><td>不要な検索コストを削減したい場合</td></tr>
+<tr><td>Corrective RAG</td><td>検索結果の関連度</td><td>検索結果を評価。無関係→Web検索にフォールバック</td><td>社内DBにない質問にも対応したい場合</td></tr>
+</tbody></table>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TD
+  S["START"] --> CL["classify<br/>質問を分類"]
+  CL -->|"simple"| DIR["direct_answer<br/>LLM直接回答"]
+  CL -->|"complex"| RET["retrieve<br/>ベクトル検索"]
+  RET --> CHK["check_relevance<br/>関連度チェック"]
+  CHK -->|"relevant"| GEN["generate<br/>回答生成"]
+  CHK -->|"irrelevant"| WEB["web_search<br/>Web検索"]
+  WEB --> GEN
+  GEN --> EVAL["evaluate<br/>品質評価"]
+  EVAL -->|"OK"| END["END"]
+  EVAL -->|"NG"| RET
+  DIR --> END
+</pre><div class="caption">Adaptive + Corrective + Self-RAG の統合パターン</div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: Adaptive RAGの実装 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: 質問の複雑さを判定し、簡単な質問はLLM直接回答、複雑な質問はRAGパイプラインで処理するAdaptive RAGを構築する</div>
+
+<div class="prompt" id="p_s8h1">import os
+from typing import TypedDict, Literal
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langgraph.graph import StateGraph, END
+
+os.environ["OPENAI_API_KEY"] = "sk-..."
+
+# --- ドキュメント準備 ---
+docs = [
+    Document(page_content="当社の有給休暇は入社6ヶ月後に10日付与。勤続年数に応じて最大20日。"),
+    Document(page_content="リモートワークは週3日まで。コアタイム10:00-15:00はオンライン必須。"),
+    Document(page_content="出張日当は国内5,000円、海外10,000円。宿泊費上限は国内15,000円、海外30,000円。"),
+    Document(page_content="育児休業は子が1歳まで。延長で最長2歳。復帰後は短時間勤務(子3歳まで)可能。"),
+]
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(docs, embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# --- State ---
+class AdaptiveState(TypedDict):
+    question: str
+    route: str
+    context: str
+    answer: str
+
+# --- Node: 質問分類 ---
+def classify(state: AdaptiveState) -> dict:
+    prompt = ChatPromptTemplate.from_template("""
+以下の質問を分類してください。
+- 社内規則やルールに関する質問 → "rag"
+- 一般的な知識やPythonの使い方など → "direct"
+
+1単語(ragまたはdirect)のみ回答してください。
+
+質問: {question}
+""")
+    chain = prompt | llm | StrOutputParser()
+    route = chain.invoke({"question": state["question"]}).strip().lower()
+    route = "rag" if "rag" in route else "direct"
+    return {"route": route}
+
+# --- Node: RAG検索 ---
+def retrieve(state: AdaptiveState) -> dict:
+    docs = retriever.invoke(state["question"])
+    context = "\n\n".join(doc.page_content for doc in docs)
+    return {"context": context}
+
+# --- Node: RAG回答 ---
+def rag_generate(state: AdaptiveState) -> dict:
+    prompt = ChatPromptTemplate.from_template("""
+参考情報のみを使って回答してください。
+
+参考情報:
+{context}
+
+質問: {question}
+""")
+    chain = prompt | llm | StrOutputParser()
+    answer = chain.invoke({"context": state["context"], "question": state["question"]})
+    return {"answer": answer}
+
+# --- Node: 直接回答 ---
+def direct_answer(state: AdaptiveState) -> dict:
+    prompt = ChatPromptTemplate.from_template(
+        "以下の質問に簡潔に回答してください。\n\n質問: {question}"
+    )
+    chain = prompt | llm | StrOutputParser()
+    answer = chain.invoke({"question": state["question"]})
+    return {"answer": answer}
+
+# --- ルーティング ---
+def route_question(state: AdaptiveState) -> str:
+    return state["route"]
+
+# --- グラフ構築 ---
+workflow = StateGraph(AdaptiveState)
+workflow.add_node("classify", classify)
+workflow.add_node("retrieve", retrieve)
+workflow.add_node("rag_generate", rag_generate)
+workflow.add_node("direct_answer", direct_answer)
+
+workflow.set_entry_point("classify")
+workflow.add_conditional_edges(
+    "classify",
+    route_question,
+    {"rag": "retrieve", "direct": "direct_answer"},
+)
+workflow.add_edge("retrieve", "rag_generate")
+workflow.add_edge("rag_generate", END)
+workflow.add_edge("direct_answer", END)
+
+app = workflow.compile()
+
+# --- テスト ---
+questions = [
+    "有給休暇は何日取れますか?",         # → RAG
+    "Pythonでリスト内包表記の書き方は?",  # → Direct
+    "海外出張の日当はいくら?",            # → RAG
+    "LangChainとは何ですか?",             # → Direct
+]
+
+for q in questions:
+    result = app.invoke({
+        "question": q, "route": "", "context": "", "answer": "",
+    })
+    print(f"Q: {q}")
+    print(f"Route: {result['route']}")
+    print(f"A: {result['answer']}")
+    print("-" * 50)<button class="cb" onclick="copyP('p_s8h1')">コピー</button></div>
+
+<details><summary>深掘り: Corrective RAGの仕組みと実装</summary><div class="inner">
+<p>Corrective RAGの核心は「検索結果の関連度を評価し、低ければ別のソースにフォールバックする」という判断ロジックです。通常のRAGは検索結果をそのままLLMに渡しますが、Corrective RAGは「この検索結果は本当に質問と関連があるか?」を間に挟みます。</p>
+
+<p>処理の流れは以下の4ステップです。</p>
+<ol>
+<li>ユーザーの質問をベクトルDBで検索(通常のRetrieval)</li>
+<li>取得したチャンクをLLMに渡し、質問との関連度を「relevant / irrelevant / ambiguous」で判定</li>
+<li>relevantなら通常通り回答生成。irrelevantならWeb検索(Tavily等)にフォールバック。ambiguousなら両方の結果を統合</li>
+<li>最終的な回答を生成</li>
+</ol>
+
+<div class="prompt" id="p_s8_crag"># Corrective RAGの関連度チェックノード
+def check_relevance(state: dict) -> dict:
+    """検索結果が質問に関連しているか判定"""
+    prompt = ChatPromptTemplate.from_template("""
+以下の参考情報が質問に関連しているか判定してください。
+1単語で回答: relevant / irrelevant / ambiguous
+
+質問: {question}
+参考情報: {context}
+""")
+    chain = prompt | llm | StrOutputParser()
+    relevance = chain.invoke({
+        "question": state["question"],
+        "context": state["context"],
+    }).strip().lower()
+
+    if "irrelevant" in relevance:
+        return {"relevance": "irrelevant"}
+    elif "ambiguous" in relevance:
+        return {"relevance": "ambiguous"}
+    return {"relevance": "relevant"}
+
+# Web検索フォールバックノード
+def web_search(state: dict) -> dict:
+    """ベクトルDB検索で関連文書が見つからない場合のフォールバック"""
+    from langchain_community.tools.tavily_search import TavilySearchResults
+    search = TavilySearchResults(max_results=3)
+    results = search.invoke(state["question"])
+    context = "\n\n".join(r["content"] for r in results)
+    return {"context": context}
+
+# 条件分岐: relevanceに応じてルーティング
+def route_by_relevance(state: dict) -> str:
+    if state["relevance"] == "relevant":
+        return "generate"
+    elif state["relevance"] == "irrelevant":
+        return "web_search"
+    else:  # ambiguous
+        return "web_search"  # 安全側に倒す<button class="cb" onclick="copyP('p_s8_crag')">コピー</button></div>
+
+<p>Web検索にはTavily Search API(langchain-communityのTavilySearchResults)が最も統合しやすい選択肢です。Brave Search APIやGoogle Custom Search APIも代替として使えます。Corrective RAGの肝は「判定精度」にあるため、check_relevanceノードのプロンプトを丁寧に作り込む価値があります。</p>
+</div></details>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 08</h4>
+<div class="q"><p>Q4. Adaptive RAGの最大のメリットは?</p>
+<label><input type="radio" name="q4" value="a">回答精度が常に最高になる</label>
+<label><input type="radio" name="q4" value="b">質問の複雑さに応じてパイプラインを切替え、不要な検索コストを削減できる</label>
+<label><input type="radio" name="q4" value="c">Web検索が不要になる</label>
+<label><input type="radio" name="q4" value="d">LangSmithが不要になる</label>
+<div class="ans" id="a4">正解: B。簡単な質問にはLLM直接回答、複雑な質問にはRAGを使うことで、レイテンシとAPIコストを最適化しつつ回答品質を維持できます。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_self_rag/" target="_blank" rel="noopener">Self-RAG Tutorial</a> -- LangGraph公式</li>
+<li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_adaptive_rag/" target="_blank" rel="noopener">Adaptive RAG Tutorial</a> -- LangGraph公式</li>
+<li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_crag/" target="_blank" rel="noopener">Corrective RAG Tutorial</a> -- LangGraph公式</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 09: 総合ハンズオン (140min: 講義10 + ハンズオン130) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 140min(講義10 + ハンズオン130)</div><h2>総合ハンズオン: 社内ドキュメント検索システム</h2>
+<p>ここまで学んだ全技術を統合し、社内ドキュメント(PDF/テキスト)を対象としたRAG検索システムを構築します。10ステップで段階的に完成させていきます。</p>
+
+<div class="box warn"><div class="bt">前提条件</div>OpenAI APIキーが有効であること。LangSmithアカウントがセットアップ済みであること。Python 3.10以上を推奨します。</div>
+
+<div class="handson">
+<div class="hs-title">社内ドキュメントRAG検索システム構築 <span class="hs-time">130min</span></div>
+<div class="hs-goal">成果物: PDF/テキストから検索・回答できるRAGシステム。LangGraphによるマルチステップ処理、LangSmithによる評価付き。</div>
+
+<h4>Step 1: 要件定義(10min)</h4>
+<p>対象ドキュメント、想定質問、求める回答品質を整理してください。DLテンプレートの「RAG設計シート」を使います。</p>
+<ul>
+<li>対象: 社内規則(就業規則、経費規程、情報セキュリティポリシー)</li>
+<li>想定質問: 「有給は何日?」「リモートワークの手続きは?」など</li>
+<li>回答品質: 具体的な数値・条件を含む回答。ドキュメントにない質問は「不明」と回答</li>
+</ul>
+
+<h4>Step 2: ドキュメント読込 + チャンク設定(15min)</h4>
+<div class="prompt" id="p_s9h2">from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+
+# サンプルドキュメント(DLテンプレートの内容を使用)
+raw_docs = [
+    Document(page_content="""就業規則 第3章 有給休暇
+当社の有給休暇は、入社6ヶ月経過後に10日が付与されます。
+勤続年数に応じて付与日数は増加し、6年6ヶ月以上で最大20日。
+未消化分は翌年度に限り繰越可能。半日単位の取得も可能。
+時間単位の有給休暇は年5日分(40時間)まで取得可能です。
+事前に上長の承認を得てください。急な体調不良の場合は事後申請可。""", metadata={"source": "就業規則", "chapter": "有給休暇"}),
+
+    Document(page_content="""就業規則 第5章 リモートワーク
+リモートワークは週3日まで利用可能です。
+コアタイム(10:00-15:00)中はオンラインで連絡が取れる状態を維持してください。
+利用にあたってはHRシステムから事前申請し、上長の承認を得ること。
+セキュリティの観点からVPN接続を必須とし、公共Wi-Fiでの業務は禁止。
+自宅以外(カフェ、コワーキング等)での作業は部長承認が必要です。""", metadata={"source": "就業規則", "chapter": "リモートワーク"}),
+
+    Document(page_content="""経費規程 第2章 出張経費
+出張経費は出張完了後2週間以内に経費精算システムで申請してください。
+申請には領収書原本(またはスキャン画像)の添付が必須です。
+日当は国内出張5,000円、海外出張10,000円。
+宿泊費上限は国内15,000円、海外30,000円(税込)。
+上限超過の場合は事前に部長承認が必要です。
+交通費は原則として最も経済的な経路を選択してください。""", metadata={"source": "経費規程", "chapter": "出張経費"}),
+
+    Document(page_content="""情報セキュリティポリシー 第1章
+社内情報の取り扱いは機密レベルに応じて3段階に分類されます。
+レベル1(公開可): 会社概要、採用情報など。
+レベル2(社外秘): 社内マニュアル、組織図、売上データなど。
+レベル3(極秘): 個人情報、未公開の経営計画、契約書など。
+レベル2以上の情報をAIツールに入力する場合は、情報システム部の承認が必要です。
+無料版AIツールへのレベル2以上の情報入力は禁止されています。""", metadata={"source": "情報セキュリティ", "chapter": "機密分類"}),
+
+    Document(page_content="""福利厚生制度
+育児休業は子が1歳になるまで取得可能。延長申請により最長2歳まで。
+復帰後は短時間勤務制度(子が3歳になるまで)を利用可能。
+健康診断は年1回、会社指定の医療機関で受診。費用は会社負担。
+35歳以上は人間ドック受診可(会社負担上限3万円)。
+カフェテリアプラン(年間5万円分)で書籍購入、資格取得費用等に充当可能。""", metadata={"source": "福利厚生", "chapter": "各種制度"}),
+]
+
+# RecursiveCharacterTextSplitterで分割
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=300,
+    chunk_overlap=50,
+    separators=["\n\n", "\n", "。", "、", " ", ""],
+)
+
+chunks = splitter.split_documents(raw_docs)
+print(f"チャンク数: {len(chunks)}")
+for i, chunk in enumerate(chunks):
+    print(f"  [{i}] ({len(chunk.page_content)}文字) {chunk.metadata} | {chunk.page_content[:40]}...")<button class="cb" onclick="copyP('p_s9h2')">コピー</button></div>
+
+<h4>Step 3: ベクトルDB構築(10min)</h4>
+<div class="prompt" id="p_s9h3">from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(
+    chunks,
+    embeddings,
+    collection_name="company_docs",
+    persist_directory="./chroma_db",
+)
+print(f"ベクトルDB構築完了。チャンク数: {vectorstore._collection.count()}")<button class="cb" onclick="copyP('p_s9h3')">コピー</button></div>
+
+<h4>Step 4: 基本RAGパイプライン構築(15min)</h4>
+<div class="prompt" id="p_s9h4">from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+rag_prompt = ChatPromptTemplate.from_template("""
+あなたは社内規則に詳しいアシスタントです。
+以下の参考情報のみを使って質問に回答してください。
+具体的な数値や条件を含めてください。
+参考情報に含まれない場合は「社内規則に該当する情報が見つかりませんでした」と回答してください。
+回答の最後に、参照した情報源(source)を明記してください。
+
+参考情報:
+{context}
+
+質問: {question}
+""")
+
+def format_docs(docs):
+    return "\n\n".join(
+        f"[{doc.metadata.get('source', '不明')}] {doc.page_content}"
+        for doc in docs
+    )
+
+basic_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | rag_prompt
+    | llm
+    | StrOutputParser()
+)
+
+# テスト
+print(basic_chain.invoke("有給休暇は何日もらえますか?"))<button class="cb" onclick="copyP('p_s9h4')">コピー</button></div>
+
+<h4>Step 5: Hybrid Search + Re-ranking 追加(15min)</h4>
+<div class="prompt" id="p_s9h5">from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
+
+# BM25 Retriever
+bm25_retriever = BM25Retriever.from_documents(chunks)
+bm25_retriever.k = 3
+
+# Vector Retriever
+vector_retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+# Ensemble(Hybrid)
+hybrid_retriever = EnsembleRetriever(
+    retrievers=[vector_retriever, bm25_retriever],
+    weights=[0.6, 0.4],
+)
+
+# Hybrid版Chain
+hybrid_chain = (
+    {"context": hybrid_retriever | format_docs, "question": RunnablePassthrough()}
+    | rag_prompt
+    | llm
+    | StrOutputParser()
+)
+
+# 比較テスト
+q = "VPN接続のルールは?"
+print("=== Basic RAG ===")
+print(basic_chain.invoke(q))
+print("\n=== Hybrid RAG ===")
+print(hybrid_chain.invoke(q))<button class="cb" onclick="copyP('p_s9h5')">コピー</button></div>
+
+<h4>Step 6: LangGraphでマルチステップRAG化(20min)</h4>
+<div class="prompt" id="p_s9h6">from typing import TypedDict
+from langgraph.graph import StateGraph, END
+
+class SystemState(TypedDict):
+    question: str
+    route: str
+    context: str
+    answer: str
+    is_quality_ok: bool
+    retry_count: int
+
+def classify_question(state: SystemState) -> dict:
+    prompt = ChatPromptTemplate.from_template(
+        "質問を分類: 社内規則→'rag'、一般知識→'direct'。1単語のみ。\n質問: {question}"
+    )
+    chain = prompt | llm | StrOutputParser()
+    route = chain.invoke({"question": state["question"]}).strip().lower()
+    return {"route": "rag" if "rag" in route else "direct"}
+
+def retrieve_docs(state: SystemState) -> dict:
+    docs = hybrid_retriever.invoke(state["question"])
+    return {"context": format_docs(docs)}
+
+def generate_answer(state: SystemState) -> dict:
+    chain = rag_prompt | llm | StrOutputParser()
+    answer = chain.invoke({"context": state["context"], "question": state["question"]})
+    return {"answer": answer}
+
+def direct_answer(state: SystemState) -> dict:
+    prompt = ChatPromptTemplate.from_template("簡潔に回答: {question}")
+    chain = prompt | llm | StrOutputParser()
+    return {"answer": chain.invoke({"question": state["question"]})}
+
+def evaluate_answer(state: SystemState) -> dict:
+    eval_prompt = ChatPromptTemplate.from_template(
+        "回答が具体的で正確なら'OK'、不十分なら'NG'。1単語。\n質問:{question}\n回答:{answer}"
+    )
+    chain = eval_prompt | llm | StrOutputParser()
+    result = chain.invoke({"question": state["question"], "answer": state["answer"]})
+    return {"is_quality_ok": "ok" in result.lower(), "retry_count": state.get("retry_count", 0) + 1}
+
+def route_fn(state: SystemState) -> str:
+    return state["route"]
+
+def retry_fn(state: SystemState) -> str:
+    if state["is_quality_ok"] or state.get("retry_count", 0) >= 2:
+        return "end"
+    return "retry"
+
+# グラフ構築
+wf = StateGraph(SystemState)
+wf.add_node("classify", classify_question)
+wf.add_node("retrieve", retrieve_docs)
+wf.add_node("generate", generate_answer)
+wf.add_node("direct", direct_answer)
+wf.add_node("evaluate", evaluate_answer)
+
+wf.set_entry_point("classify")
+wf.add_conditional_edges("classify", route_fn, {"rag": "retrieve", "direct": "direct"})
+wf.add_edge("retrieve", "generate")
+wf.add_edge("generate", "evaluate")
+wf.add_conditional_edges("evaluate", retry_fn, {"retry": "retrieve", "end": END})
+wf.add_edge("direct", END)
+
+app = wf.compile()
+
+# テスト
+test_qs = [
+    "出張の日当と宿泊費上限を教えて",
+    "AIツールに社内情報を入力する際のルールは?",
+    "Pythonのリスト内包表記の書き方は?",
+]
+
+for q in test_qs:
+    r = app.invoke({"question": q, "route": "", "context": "", "answer": "", "is_quality_ok": False, "retry_count": 0})
+    print(f"Q: {q}")
+    print(f"Route: {r['route']} | Retry: {r['retry_count']}")
+    print(f"A: {r['answer']}")
+    print("=" * 60)<button class="cb" onclick="copyP('p_s9h6')">コピー</button></div>
+
+<h4>Step 7: LangSmithでトレース + 評価設定(15min)</h4>
+<div class="prompt" id="p_s9h7">import os
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = "lsv2_..."
+os.environ["LANGCHAIN_PROJECT"] = "c12-final-system"
+
+# 上記のappを再実行するだけで自動トレース
+for q in test_qs:
+    r = app.invoke({"question": q, "route": "", "context": "", "answer": "", "is_quality_ok": False, "retry_count": 0})
+    print(f"Q: {q} → A: {r['answer'][:50]}...")
+
+print("\nLangSmith (https://smith.langchain.com/) で")
+print("c12-final-system プロジェクトのトレースを確認してください")<button class="cb" onclick="copyP('p_s9h7')">コピー</button></div>
+
+<h4>Step 8: テストケース10問で精度測定(15min)</h4>
+<div class="prompt" id="p_s9h8">test_cases = [
+    {"q": "有給休暇は何日もらえますか?", "expected": "10日(入社6ヶ月後)。最大20日。"},
+    {"q": "リモートワークは週何日まで?", "expected": "週3日まで"},
+    {"q": "出張の日当は?", "expected": "国内5,000円、海外10,000円"},
+    {"q": "宿泊費の上限は?", "expected": "国内15,000円、海外30,000円"},
+    {"q": "育児休業は何歳まで延長できる?", "expected": "最長2歳まで"},
+    {"q": "カフェテリアプランの金額は?", "expected": "年間5万円分"},
+    {"q": "AIツールに入力してはいけない情報は?", "expected": "レベル2以上(社外秘、極秘)の情報"},
+    {"q": "健康診断で人間ドックを受けられるのは?", "expected": "35歳以上。会社負担上限3万円"},
+    {"q": "時間単位の有給は年何時間?", "expected": "年5日分(40時間)"},
+    {"q": "社員食堂のメニューは?", "expected": "情報なし"},
+]
+
+correct = 0
+for tc in test_cases:
+    r = app.invoke({"question": tc["q"], "route": "", "context": "", "answer": "", "is_quality_ok": False, "retry_count": 0})
+    # 簡易判定: 期待キーワードが含まれているか
+    keywords = [kw for kw in tc["expected"].split("、") if len(kw) > 1]
+    hit = any(kw in r["answer"] for kw in keywords) if keywords else "見つかりません" in r["answer"]
+    correct += 1 if hit else 0
+    status = "PASS" if hit else "FAIL"
+    print(f"[{status}] Q: {tc['q']}")
+    print(f"  Expected: {tc['expected']}")
+    print(f"  Got: {r['answer'][:80]}...")
+    print()
+
+print(f"精度: {correct}/{len(test_cases)} ({correct/len(test_cases)*100:.0f}%)")<button class="cb" onclick="copyP('p_s9h8')">コピー</button></div>
+
+<h4>Step 9: 精度改善(15min)</h4>
+<p>精度が目標に達しない場合、以下のパラメータを調整してStep 8を再実行してください。</p>
+<ul>
+<li>chunk_size: 300→500に増やすと文脈が豊富に</li>
+<li>chunk_overlap: 50→100に増やすと境界での情報欠落を防止</li>
+<li>retriever k: 3→5に増やすと取得件数が増加</li>
+<li>Hybrid weights: [0.6, 0.4]→[0.5, 0.5]でBM25の比率を上げる</li>
+<li>プロンプトの改善: 「箇条書きで回答」「数値は必ず含める」など制約を追加</li>
+</ul>
+
+<h4>Step 10: ドキュメント整備(10min)</h4>
+<p>完成したシステムの設計をDLテンプレートの「RAG設計シート」に記録してください。チャンク戦略、検索設定、評価結果を記載しておくと、後日のチューニングが効率的に進みます。</p>
+
+<ul class="checklist">
+<li>Step 1: 要件定義を完了した</li>
+<li>Step 2: ドキュメント読込とチャンク分割を実装した</li>
+<li>Step 3: ベクトルDBを構築した</li>
+<li>Step 4: 基本RAGパイプラインが動作する</li>
+<li>Step 5: Hybrid Searchを追加した</li>
+<li>Step 6: LangGraphでマルチステップRAGを構築した</li>
+<li>Step 7: LangSmithでトレースを確認した</li>
+<li>Step 8: 10問で精度を測定した</li>
+<li>Step 9: パラメータ調整で精度を改善した</li>
+<li>Step 10: 設計ドキュメントを記録した</li>
+</ul>
+</div>
+
+<div class="quiz"><h4>最終チェック: Section 09</h4>
+<div class="q"><p>Q5. RAGシステムの精度改善で最も効果が高いのは?</p>
+<label><input type="radio" name="q5" value="a">LLMをより大きなモデルに変更する</label>
+<label><input type="radio" name="q5" value="b">チャンク戦略と検索パラメータの最適化</label>
+<label><input type="radio" name="q5" value="c">サーバーのCPUを増やす</label>
+<label><input type="radio" name="q5" value="d">データベースをPostgreSQLに変更する</label>
+<div class="ans" id="a5">正解: B。RAGの回答品質はRetrievalフェーズの精度に最も強く依存します。適切なチャンクサイズ、overlap、検索手法の選択が、LLMの変更よりも効果的です。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DLテンプレート -->
+<!-- ============================================================ -->
+<div class="sec" id="downloads"><div class="sec-label">Downloads</div><h2>DLテンプレート</h2>
+<p>各ハンズオンで使用するテンプレートとサンプルファイルです。</p>
+<a class="dl" onclick="downloadDesignSheet()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>RAG設計シート.md</a>
+<a class="dl" onclick="downloadRequirements()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>requirements.txt</a>
+<a class="dl" onclick="downloadSampleDoc()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルドキュメント.txt</a>
+<a class="dl" onclick="downloadTestCases()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>テストケース集.md</a>
+<a class="dl" onclick="downloadEvalSheet()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>LangSmith評価シート.md</a>
+</div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C12 RAG実践 LangChain/LangGraph完全ガイド<br>
+  全9セクション + 復習2回 = 720分(12時間)<br>
+  前提コース: C02 Claude基礎 / C04 Python基礎
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadDesignSheet(){const t=`# RAG設計シート\n\n## 1. 対象ドキュメント\n- ドキュメント名:\n- 形式: PDF / CSV / Excel / Web / テキスト\n- 件数:\n- 合計サイズ:\n- 更新頻度:\n\n## 2. チャンク戦略\n- 分割方式: 固定サイズ / 再帰的 / セマンティック / 構造ベース\n- chunk_size:\n- chunk_overlap:\n- separators:\n- 理由:\n\n## 3. Embeddingモデル\n- モデル名:\n- 次元数:\n- 選定理由:\n\n## 4. ベクトルDB\n- DB: Chroma / FAISS / Pinecone / その他\n- 選定理由:\n- 永続化方法:\n\n## 5. 検索設定\n- 検索方式: ベクトルのみ / Hybrid(ベクトル+BM25)\n- Top-K:\n- Score閾値:\n- Hybrid比率: ベクトル___% + BM25___%\n- Re-ranking: あり / なし\n- Multi-Query: あり / なし\n\n## 6. LLM設定\n- モデル:\n- temperature:\n- max_tokens:\n\n## 7. LangGraph構成\n- ノード一覧:\n  1.\n  2.\n  3.\n- 条件分岐:\n- リトライ上限:\n\n## 8. 評価結果\n- テストケース数:\n- 正答率: ___%\n- 改善前精度: ___%\n- 改善後精度: ___%\n- 主な改善施策:\n\n---\n作成日:\n作成者:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='RAG設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadRequirements(){const t=`# C12 RAG実践 -- 必要パッケージ\n# Python 3.10以上推奨\n\nlangchain>=0.3.0\nlangchain-core>=0.3.0\nlangchain-openai>=0.2.0\nlangchain-community>=0.3.0\nlangchain-chroma>=0.2.0\nlangchain-experimental>=0.3.0\nlangchain-text-splitters>=0.3.0\nlanggraph>=0.2.0\nchromadb>=0.5.0\nfaiss-cpu>=1.8.0\nopenai>=1.50.0\nlangsmith>=0.1.0\nrank-bm25>=0.2.2\npypdf>=4.0.0\nbs4>=0.0.2\n`;const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='requirements.txt';a.click();URL.revokeObjectURL(u);}
+
+function downloadSampleDoc(){const t=`=== 就業規則(抜粋) ===\n\n【有給休暇制度】\n当社の有給休暇は、入社6ヶ月経過後に10日が付与されます。\n勤続年数に応じて付与日数は増加し、6年6ヶ月以上の勤続で最大20日となります。\n未消化の有給休暇は翌年度に限り繰り越し可能です。\n半日単位での取得も可能で、事前に上長の承認を得てください。\n時間単位の有給休暇は年5日分（40時間）まで取得可能です。\n急な体調不良の場合は事後申請も受け付けます。\n\n【リモートワーク制度】\nリモートワークは週3日まで利用可能です。\nコアタイム（10:00-15:00）中はオンラインで連絡が取れる状態を維持してください。\n利用にあたっては、HRシステムから事前申請し、上長の承認を得る必要があります。\nセキュリティの観点から、VPN接続を必須とし、公共Wi-Fiでの業務は禁止します。\n自宅以外（カフェ、コワーキングスペース等）での作業は部長承認が必要です。\n\n=== 経費規程（抜粋） ===\n\n【出張経費】\n出張経費は出張完了後2週間以内に経費精算システムで申請してください。\n申請には領収書の原本（またはスキャン画像）の添付が必須です。\n日当は国内出張5,000円、海外出張10,000円です。\n宿泊費の上限は国内15,000円、海外30,000円（税込）です。\n上限を超える場合は事前に部長承認が必要です。\n交通費は原則として最も経済的な経路を選択してください。\n\n=== 情報セキュリティポリシー（抜粋） ===\n\n社内情報の取り扱いは機密レベルに応じて3段階に分類されます。\nレベル1（公開可）: 会社概要、採用情報、プレスリリースなど。\nレベル2（社外秘）: 社内マニュアル、組織図、売上データ、議事録など。\nレベル3（極秘）: 個人情報、未公開の経営計画、契約書、給与情報など。\nレベル2以上の情報をAIツールに入力する場合は、情報システム部の承認が必要です。\n無料版AIツールへのレベル2以上の情報入力は禁止されています。\n\n=== 福利厚生制度 ===\n\n【育児支援】\n育児休業は子が1歳になるまで取得可能です。\n延長申請により最長2歳まで延長できます。\n復帰後は短時間勤務制度（子が3歳になるまで）を利用可能です。\n\n【健康管理】\n健康診断は年1回、会社指定の医療機関で受診してください。費用は会社負担です。\n35歳以上は人間ドック受診可（会社負担上限3万円）。\n\n【カフェテリアプラン】\n年間5万円分のポイントで書籍購入、資格取得費用、フィットネス費用等に充当可能。\n`;const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプルドキュメント.txt';a.click();URL.revokeObjectURL(u);}
+
+function downloadTestCases(){const t=`# RAGテストケース集（10問）\n\n## 使い方\n以下の質問をRAGシステムに投入し、期待される回答と比較して精度を測定してください。\n\n## テストケース\n\n| # | 質問 | 期待される回答 | 難易度 |\n|---|------|-------------|--------|\n| 1 | 有給休暇は何日もらえますか? | 入社6ヶ月後に10日。勤続年数に応じて最大20日。 | 低 |\n| 2 | リモートワークの上限と申請方法は? | 週3日まで。HRシステムから事前申請、上長承認が必要。 | 低 |\n| 3 | 出張の日当と宿泊費上限は? | 日当: 国内5,000円、海外10,000円。宿泊: 国内15,000円、海外30,000円。 | 低 |\n| 4 | 育児休業は何歳まで延長できる? | 延長申請で最長2歳まで。 | 低 |\n| 5 | AIツールに入力してはいけない情報は? | レベル2以上（社外秘、極秘）。無料版AIツールへの入力は禁止。 | 中 |\n| 6 | 時間単位の有給は年何時間取れる? | 年5日分（40時間）まで。 | 中 |\n| 7 | カフェで仕事するには何が必要? | 部長承認が必要。VPN接続必須。 | 中 |\n| 8 | 35歳以上の健康診断の特典は? | 人間ドック受診可。会社負担上限3万円。 | 中 |\n| 9 | カフェテリアプランで何が買える? | 書籍、資格取得費用、フィットネス費用等。年間5万円分。 | 中 |\n| 10 | 社員食堂の営業時間は? | 情報なし（ドキュメントに含まれない） | 高 |\n\n## 評価基準\n- PASS: 期待される回答のキーワードが含まれている\n- FAIL: キーワードが含まれていない、または誤った情報\n- 目標精度: 80%以上（8問/10問）\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='テストケース集.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadEvalSheet(){const t=`# LangSmith評価シート\n\n## プロジェクト情報\n- プロジェクト名:\n- 評価日:\n- 評価者:\n\n## 実行環境\n- LLM: gpt-4o-mini / gpt-4o / その他\n- Embedding: text-embedding-3-small / text-embedding-3-large\n- ベクトルDB: Chroma / FAISS / Pinecone\n- チャンク設定: size=___ overlap=___\n- 検索設定: k=___ Hybrid=Yes/No weights=___\n\n## 評価結果\n\n### 定量指標\n- テストケース数:\n- 正答率: ___%\n- 平均レイテンシ: ___ms\n- 平均トークン消費: ___tokens/query\n- LangSmith評価スコア: ___/5\n\n### テストケース別結果\n\n| # | 質問 | 結果 | スコア | コメント |\n|---|------|------|--------|----------|\n| 1 | | PASS/FAIL | /5 | |\n| 2 | | PASS/FAIL | /5 | |\n| 3 | | PASS/FAIL | /5 | |\n| 4 | | PASS/FAIL | /5 | |\n| 5 | | PASS/FAIL | /5 | |\n| 6 | | PASS/FAIL | /5 | |\n| 7 | | PASS/FAIL | /5 | |\n| 8 | | PASS/FAIL | /5 | |\n| 9 | | PASS/FAIL | /5 | |\n| 10 | | PASS/FAIL | /5 | |\n\n### 失敗ケース分析\n\n| # | 失敗原因 | 改善施策 |\n|---|---------|----------|\n| | チャンクに情報が含まれていない | chunk_sizeを拡大 |\n| | 検索でTop-Kに入らなかった | kを増やす or Hybrid化 |\n| | LLMが情報を見落とした | プロンプトを改善 |\n\n### 改善前後の比較\n\n| 変更項目 | Before | After | 精度変化 |\n|---------|--------|-------|----------|\n| | | | +___ % |\n| | | | +___ % |\n\n## 次のアクション\n1.\n2.\n3.\n\n---\n作成日:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='LangSmith評価シート.md';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

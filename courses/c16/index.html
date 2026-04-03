@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C16 AI駆動開発マスター 統合プロジェクト - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.toc .review-item{counter-increment:none;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+.step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:20px 0;}
+.step-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.step-card .step-num{font-size:11px;font-weight:700;color:var(--asagi);margin-bottom:4px;}
+.step-card h5{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.step-card p{font-size:12px;color:var(--text-muted);margin:0;}
+.finale-banner{max-width:960px;margin:0 auto;padding:48px 40px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.08) 0%,transparent 100%;}
+.finale-banner h2{font-size:24px;font-weight:700;color:var(--asagi);margin-bottom:12px;}
+.finale-banner p{font-size:15px;color:var(--text-muted);max-width:700px;margin:0 auto;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}.step-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01</a><a href="#s2">02</a><a href="#s3">03</a><a href="#s4">04</a><a href="#rA">RevA</a><a href="#s5">05</a><a href="#s6">06</a><a href="#rB">RevB</a><a href="#s7">07</a><a href="#s8">08</a><a href="#s9">09</a><a href="#s10">10</a><a href="#s11">11</a><a href="#rC">RevC</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 16 / Layer 3 -- 統合マスター</div>
+  <h1><span>AI駆動開発マスター</span> 統合プロジェクト</h1>
+  <p class="lead">シリーズ全16コースの集大成。Copilot、Claude Code、Codex、LangGraph、Dify、MCP/A2Aを横断的に活用し、3つのプロダクションレベルプロジェクトを構築する。コンテキストエンジニアリング、チーム開発設計、コスト最適化、ポートフォリオ作成まで。日本語圏にこのレベルの統合コースは存在しない。</p>
+  <div class="meta"><span class="tag">上級</span><span class="tag">約15時間(900分)</span><span class="tag">11 Sections + 3 Review</span><span class="tag">ハンズオン比率 76%</span><span class="tag">前提: Layer 1-2の複数コース受講済み</span></div>
+</div>
+
+<img src="assets/master-integration.png" alt="AI駆動開発マスター 統合アーキテクチャ" class="sec-hero-img" style="margin-top:40px;">
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">コンテキストエンジニアリング -- AIへの文脈設計論 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s2">AI開発環境の最適構成 -- ツール横断ワークフロー <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s3">PJ1準備: SaaS型Webアプリの要件定義と設計 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s4">PJ1実装: 仕様駆動でフルスタック実装 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">120min</span></a></li>
+  <li class="review-item"><a href="#rA">復習A -- PJ1コードレビューと改善 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s5">PJ2準備: RAGチャットボットの設計 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s6">PJ2実装: LangGraph + Dify + Slack連携 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">120min</span></a></li>
+  <li class="review-item"><a href="#rB">復習B -- PJ2精度評価と改善 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s7">PJ3準備: マルチエージェントシステムの設計 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s8">PJ3実装: MCP + A2A + 自律タスク実行 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">120min</span></a></li>
+  <li><a href="#s9">AI時代のチーム開発 -- 設定ファイル横断設計 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s10">パフォーマンス最適化とコスト管理 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s11">ポートフォリオ作成 -- 受講証明プロジェクト一式 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li class="review-item"><a href="#rC">復習C -- 全コース振り返りと今後の学習計画 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">20min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- DLテンプレート -->
+<!-- ============================================================ -->
+<div class="sec" style="padding-top:32px;padding-bottom:32px;">
+<h3>ダウンロードテンプレート</h3>
+<p>各プロジェクトで使用する設計シート一式です。事前にダウンロードしておいてください。</p>
+<a class="dl" onclick="dlContextSheet()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>コンテキストエンジニアリング設計シート.md</a>
+<a class="dl" onclick="dlToolConfigSet()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>ツール横断設定ファイルセット.md</a>
+<a class="dl" onclick="dlPJ1Spec()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PJ1要件定義テンプレート.md</a>
+<a class="dl" onclick="dlPJ2RAG()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PJ2 RAG設計シート.md</a>
+<a class="dl" onclick="dlPJ3Agent()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PJ3マルチエージェント設計シート.md</a>
+<a class="dl" onclick="dlPortfolioReadme()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>ポートフォリオREADMEテンプレート.md</a>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 01: コンテキストエンジニアリング (60min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 60min(講義35 + ハンズオン25)</div><h2>コンテキストエンジニアリング -- AIへの文脈設計論</h2>
+
+<h3>コンテキストエンジニアリングとは何か</h3>
+<p>プロンプトエンジニアリングという言葉はすでに広く知られています。しかし2026年の現場で求められているのは、その上位概念にあたる「コンテキストエンジニアリング」です。プロンプト単体の改善ではなく、AIに渡す文脈全体を構造的に設計する技術を指します。</p>
+<p>具体的に言えば、プロンプトの文言だけでなく、設定ファイル(CLAUDE.md、AGENTS.md)、メモリ(過去の会話履歴やプロジェクト知識)、ツール接続(MCP経由の外部サービス)まで含めた「AIが参照する情報のすべて」を設計対象にします。プロンプトはコンテキストの一部にすぎません。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TB
+  subgraph L1["Layer 1: システム指示"]
+    A["モデルの基本的な振る舞い<br/>安全性ガイドライン"]
+  end
+  subgraph L2["Layer 2: プロジェクト設定"]
+    B["CLAUDE.md / AGENTS.md<br/>copilot-instructions.md<br/>.cursorrules"]
+  end
+  subgraph L3["Layer 3: セッション文脈"]
+    C["メモリ(CLAUDE.md auto-memory)<br/>会話履歴<br/>ファイルコンテキスト"]
+  end
+  subgraph L4["Layer 4: タスク指示"]
+    D["個別プロンプト<br/>ユーザーの都度入力"]
+  end
+  L1 --> L2 --> L3 --> L4
+</pre><div class="caption">4層コンテキストモデル。上位の層ほど永続的で変更頻度が低い</div></div>
+
+<h3>4層それぞれの設計原則</h3>
+
+<h4>Layer 1: システム指示(ユーザーは通常変更しない)</h4>
+<p>モデルプロバイダー(Anthropic、OpenAI等)が設定する基盤レイヤーです。安全性や基本的な振る舞いが規定されています。ユーザーが直接触れる部分ではありませんが、この層の存在を意識することで「なぜAIが特定の回答を拒否するのか」を理解できます。</p>
+
+<h4>Layer 2: プロジェクト設定(設定ファイル)</h4>
+<p>開発者が最も丁寧に設計すべき層です。プロジェクトのルート直下に置く設定ファイルがこれにあたります。</p>
+
+<table class="ct"><thead><tr><th>ツール</th><th>設定ファイル</th><th>配置場所</th><th>読み込みタイミング</th></tr></thead><tbody>
+<tr><td>Claude Code</td><td>CLAUDE.md</td><td>プロジェクトルート</td><td>セッション開始時に自動読み込み</td></tr>
+<tr><td>Codex CLI</td><td>AGENTS.md</td><td>プロジェクトルート</td><td>セッション開始時に自動読み込み</td></tr>
+<tr><td>GitHub Copilot</td><td>.github/copilot-instructions.md</td><td>.github/配下</td><td>エディタ起動時</td></tr>
+<tr><td>Cursor</td><td>.cursor/rules/*.mdc</td><td>.cursor/配下</td><td>条件マッチ時</td></tr>
+</tbody></table>
+
+<p>設計のポイントは3つ。「具体的 > 抽象的」が原則で、「テストを書いてください」ではなく「Vitestで各関数に最低2つのテストケースを書いてください」と記述します。禁止事項は理由とセットで書き、「any型を使わないでください。型推論が効かなくなりバグの温床になるため。」のように根拠を添えると効果的です。そして指示はテスト可能にする。「適切なエラーハンドリングをしてください」ではなく「try-catchですべてのAPI呼び出しを囲み、エラー時はconsole.errorでログを出力してください」と書けば、AIの出力を検証できます。</p>
+
+<h4>設定ファイル横断対照表(記述例)</h4>
+<p>同じルール(TypeScript strict / any型禁止)を各ツールのフォーマットでどう記述するか、比較すると構造が見えてきます。</p>
+
+<table class="ct"><thead><tr><th>ファイル</th><th>対象ツール</th><th>記述例(TypeScript strict / any禁止)</th></tr></thead><tbody>
+<tr><td>CLAUDE.md</td><td>Claude Code</td><td><code># コーディング規約\n- TypeScript strict mode。any型禁止(型推論が無効化されるため)</code></td></tr>
+<tr><td>AGENTS.md</td><td>Codex CLI</td><td><code># Rules\n- Always use TypeScript strict mode. Never use `any` type.</code></td></tr>
+<tr><td>.github/copilot-instructions.md</td><td>GitHub Copilot</td><td><code>When generating TypeScript code, always use strict mode. Do not use `any`; prefer `unknown` with type guards.</code></td></tr>
+<tr><td>.cursor/rules/coding.mdc</td><td>Cursor</td><td><code>---\nalwaysApply: true\n---\nTypeScript strict mode必須。any型の代わりにunknownとtype guardを使用すること。</code></td></tr>
+<tr><td>.claude/settings.json</td><td>Claude Code(権限)</td><td><code>{"permissions": {"allow": ["Bash(npm run *)", "Read", "Write"], "deny": ["Bash(rm -rf *)"]}}</code></td></tr>
+</tbody></table>
+
+<h4>設定ファイルが矛盾している場合の優先順位</h4>
+<p>チーム開発で複数の設定ファイルが並存すると、記述内容が食い違うことがあります。CLAUDE.mdには「クラス禁止」と書いてあるのに、copilot-instructions.mdには「クラスベースで実装」と残っている、といった状況です。</p>
+<p>各ツールは自身の設定ファイルだけを読むため、ツール間の矛盾をAIが自動解消することはありません。CLAUDE.mdはClaude Codeしか読まず、copilot-instructions.mdはCopilotしか読みません。矛盾の解決策はシンプルで、マスターファイルを1つ決め(CLAUDE.mdを推奨)、他のファイルはマスターからAIに変換生成させる運用にする。マスターを更新したら「CLAUDE.mdの内容をAGENTS.mdフォーマットに変換して」と指示し、派生ファイルを再生成します。手動で個別に編集するとドリフトが起きるため、マスター以外は直接編集しないルールを徹底してください。</p>
+
+<h4>Layer 3: セッション文脈(メモリ)</h4>
+<p>Claude Codeの場合、~/.claude/CLAUDE.md(グローバルメモリ)とプロジェクト直下のCLAUDE.mdに自動メモリが蓄積されます。過去の会話で学んだプロジェクト固有の知識がここに残り、次回セッションで自動的に参照されます。Cursorの.cursor/rules/にalways適用ルールを書くのも同じ効果を狙った設計です。</p>
+
+<h4>Layer 4: タスク指示(プロンプト)</h4>
+<p>ユーザーが都度入力する個別の指示です。上位3層が適切に設計されていれば、ここはシンプルで済みます。「ユーザー認証機能を追加して」の一言で、CLAUDE.mdに書かれたプロジェクト規約に従いながら、メモリに保存されたDB設計に基づいて実装が進みます。</p>
+
+<div class="box tip"><div class="bt">Tips: 優れたCLAUDE.mdの共通点</div>業界で実績のあるCLAUDE.mdを分析すると、300行前後に収まっているものが多い。冗長な指示は逆効果で、AIのコンテキストウィンドウを無駄に消費します。本当に守ってほしいルールだけを書き、例外や補足はdetailsタグ等で折りたたむ設計が効きます。</div>
+
+<details><summary>設計ファイルの記述例: CLAUDE.md(抜粋)</summary><div class="inner">
+<div class="prompt" id="p_s1_claude"># プロジェクト概要
+タスク管理SaaS。Next.js 15 + TypeScript + Supabase。
+
+# コーディング規約
+- TypeScript strict mode。any型禁止
+- 関数型パターンを優先。クラスは使わない
+- コンポーネントはfunction宣言、export名前付き
+- Tailwind CSSのみ。styled-components禁止
+- 日本語コメント。変数名は英語
+
+# テスト
+- Vitestで各関数に最低2テストケース
+- E2EはPlaywright。主要フローのみ
+
+# 禁止事項
+- console.logをコミットしない(debuggerも同様)
+- 環境変数をハードコードしない
+- node_modulesを直接編集しない<button class="cb" onclick="copyP('p_s1_claude')">コピー</button></div>
+</div></details>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 4層コンテキストの設計 <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: 1つのプロジェクトに対して、Layer 2(設定ファイル)とLayer 4(プロンプトテンプレート)を設計する</div>
+
+<h4>Step 1: プロジェクト選定(3min)</h4>
+<p>以下のいずれかを対象プロジェクトとして選んでください。このコースのPJ1-3でも使いますが、ここでは設計練習が目的です。</p>
+<ul>
+<li>タスク管理SaaS(Next.js + Supabase)</li>
+<li>社内FAQチャットボット(LangGraph + Dify)</li>
+<li>営業支援マルチエージェント(MCP + A2A)</li>
+</ul>
+
+<h4>Step 2: CLAUDE.mdの作成(10min)</h4>
+<p>ダウンロード済みの「コンテキストエンジニアリング設計シート.md」を開き、以下の項目を記入してください。</p>
+<ol>
+<li>プロジェクト概要(1-2文)</li>
+<li>技術スタック</li>
+<li>コーディング規約(5項目以上)</li>
+<li>テスト方針</li>
+<li>禁止事項(理由つきで3項目以上)</li>
+</ol>
+
+<div class="prompt" id="p_s1h1">以下のプロジェクトのCLAUDE.mdを作成してください。
+
+プロジェクト: [ここにプロジェクト名]
+技術スタック: [ここに技術スタック]
+開発方針: TypeScript strict, 関数型パターン優先, 日本語コメント
+
+以下の項目を含めてください:
+1. プロジェクト概要(2文以内)
+2. コーディング規約(5項目以上、具体的に)
+3. テスト方針(ツール名と最低カバレッジ指定)
+4. 禁止事項(理由つきで3項目以上)
+5. Git規約(コミットメッセージフォーマット等)
+
+300行以内に収めてください。<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+
+<h4>Step 3: AGENTS.mdとcopilot-instructions.mdの作成(7min)</h4>
+<p>Step 2で作ったCLAUDE.mdを元に、AGENTS.md(Codex CLI用)とcopilot-instructions.md(GitHub Copilot用)を生成してください。</p>
+<div class="prompt" id="p_s1h2">以下のCLAUDE.mdの内容を元に、2つのファイルを作成してください。
+
+[CLAUDE.mdの内容をここに貼り付け]
+
+1. AGENTS.md(Codex CLI用)
+   - CLAUDE.mdと同じ規約を、Codex CLIが読み取れる形式で
+   - Codex固有の設定(sandbox permissions等)を追加
+
+2. .github/copilot-instructions.md(GitHub Copilot用)
+   - コード補完に特化した指示
+   - import順序、命名規則、型定義の書き方を具体的に<button class="cb" onclick="copyP('p_s1h2')">コピー</button></div>
+
+<h4>Step 4: プロンプトテンプレートの作成(5min)</h4>
+<p>Layer 4用のプロンプトテンプレートを3つ作成してください。CLAUDE.mdが適切に設計されていれば、タスク指示は短くなるはずです。</p>
+<ul>
+<li>新機能追加用テンプレート(1-2文で済む形)</li>
+<li>バグ修正用テンプレート</li>
+<li>リファクタリング用テンプレート</li>
+</ul>
+
+<ul class="checklist">
+<li>CLAUDE.md(300行以内)を作成した</li>
+<li>禁止事項に理由を付けた</li>
+<li>AGENTS.mdを作成した</li>
+<li>copilot-instructions.mdを作成した</li>
+<li>プロンプトテンプレートを3つ作成した</li>
+</ul>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. コンテキストエンジニアリングの4層モデルで、開発者が最も力を入れて設計すべき層はどれですか?</p>
+<label><input type="radio" name="q1" value="a">Layer 1: システム指示</label>
+<label><input type="radio" name="q1" value="b">Layer 2: プロジェクト設定(CLAUDE.md等)</label>
+<label><input type="radio" name="q1" value="c">Layer 3: セッション文脈(メモリ)</label>
+<label><input type="radio" name="q1" value="d">Layer 4: タスク指示(プロンプト)</label>
+<div class="ans" id="a1">正解: B。Layer 1はプロバイダーが管理し、Layer 3は自動蓄積、Layer 4はLayer 2が適切なら簡素で済みます。プロジェクト設定ファイルの質がAI開発の生産性を決定づけます。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. CLAUDE.mdの禁止事項に「理由」を添えるべき理由は?</p>
+<label><input type="radio" name="q2" value="a">文字数を稼ぐため</label>
+<label><input type="radio" name="q2" value="b">AIが理由を理解することで、類似ケースにも適切に対応できるため</label>
+<label><input type="radio" name="q2" value="c">社内ドキュメントの体裁を整えるため</label>
+<label><input type="radio" name="q2" value="d">AIの学習データに反映させるため</label>
+<div class="ans" id="a2">正解: B。理由つきの禁止事項はAIの汎化能力を引き出します。「any型禁止」だけでは回避されますが、「型推論が効かなくなりバグの温床になるため」と添えれば、unknown型の安易な使用も自主的に避けるようになります。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 02: AI開発環境の最適構成 (60min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 60min(講義30 + ハンズオン30)</div><h2>AI開発環境の最適構成 -- ツール横断ワークフロー</h2>
+
+<h3>ツール横断の基本戦略</h3>
+<p>AI駆動開発のツールは1つに絞るものではありません。それぞれの得意領域が異なるため、場面に応じて使い分けるのが合理的です。「全部Claude Codeで」や「全部Copilotで」は、ハンマーしか持っていない人がすべての問題を釘に見立てるのと同じ発想になります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart LR
+  subgraph IDE["IDE作業"]
+    A["GitHub Copilot<br/>コード補完 + Chat"]
+  end
+  subgraph Terminal["ターミナル"]
+    B["Claude Code / Codex<br/>大規模変更・リファクタ"]
+  end
+  subgraph NoCode["ノーコード"]
+    C["Dify<br/>ワークフロー構築"]
+  end
+  subgraph Agent["エージェント連携"]
+    D["MCP / A2A<br/>外部サービス接続"]
+  end
+  IDE --> Terminal
+  Terminal --> NoCode
+  NoCode --> Agent
+  Agent -.->|フィードバック| IDE
+</pre><div class="caption">開発フローと各ツールの担当範囲。矢印は主要な連携方向</div></div>
+
+<h3>各ツールの担当範囲</h3>
+
+<div class="cols">
+<div class="col-card"><h4>GitHub Copilot</h4>
+<p>日常のコーディングに最適。インライン補完、Copilot Chat、Copilot Editsの3機能を軸に、IDE内で完結する作業を担当します。1ファイル内の修正、関数の追加、型定義の作成といった粒度の細かい作業が得意。</p>
+<ul><li>インライン補完: Tab受け入れ</li><li>Chat: 設計相談、コードレビュー</li><li>Edits: 複数ファイルの一括変更</li></ul>
+</div>
+<div class="col-card"><h4>Claude Code / Codex</h4>
+<p>ターミナルから大規模な変更を指示する場面で威力を発揮します。プロジェクト全体を読み込み、複数ファイルの同時変更、テスト生成、リファクタリングを一気に実行できます。</p>
+<ul><li>プロジェクト初期構築</li><li>大規模リファクタリング</li><li>テスト一括生成</li><li>CI/CD設定</li></ul>
+</div>
+<div class="col-card"><h4>Dify</h4>
+<p>ノーコードでAIワークフローを構築。RAGパイプライン、チャットボット、分類器などをGUIで組み立て、APIとして公開できます。非エンジニアとの協業や、プロトタイプの高速検証に向いています。</p>
+<ul><li>RAGチャットボット</li><li>文書分類ワークフロー</li><li>APIエンドポイント公開</li></ul>
+</div>
+<div class="col-card"><h4>MCP / A2A</h4>
+<p>AIエージェントと外部サービスの接続レイヤーです。MCPはツール接続(DB、API、ファイルシステム)、A2Aはエージェント間通信のプロトコル。複数エージェントの協調動作を実現します。</p>
+<ul><li>DB直接参照</li><li>外部API呼び出し</li><li>エージェント間連携</li></ul>
+</div>
+</div>
+
+<h3>環境統一設定: 1リポジトリに全ツールの設定を配置</h3>
+<p>チーム開発では各メンバーが好みのツールを使います。それでもコード品質を統一するために、リポジトリに全ツールの設定ファイルを揃えます。</p>
+
+<div class="prompt" id="p_s2_tree">project-root/
+  CLAUDE.md                          # Claude Code用
+  AGENTS.md                          # Codex CLI / 汎用エージェント用
+  .github/
+    copilot-instructions.md          # GitHub Copilot用
+    instructions/
+      coding-standards.instructions.md
+    agents/
+      code-reviewer.yml
+  .cursor/
+    rules/
+      coding.mdc                     # Cursor用
+    mcp.json
+  .claude/
+    settings.json                    # Claude Code設定
+  .mcp.json                          # MCP接続設定(共通)
+  .codex/
+    config.toml                      # Codex CLI設定<button class="cb" onclick="copyP('p_s2_tree')">コピー</button></div>
+
+<h3>環境セットアップ コマンド一覧</h3>
+<p>このコースで使う主要ツールのインストールと初期設定を一括で行うコマンドです。macOSを前提としていますが、Windowsの場合はwingetやscoopで代替してください。</p>
+
+<div class="prompt" id="p_s2_setup"># --- Claude Code ---
+npm install -g @anthropic-ai/claude-code
+# インストール確認
+claude --version
+# プロジェクトで初期化(CLAUDE.mdの自動生成)
+cd your-project && claude /init
+
+# --- Codex CLI ---
+npm install -g @openai/codex
+# インストール確認
+codex --version
+
+# --- GitHub Copilot (VS Code拡張) ---
+code --install-extension GitHub.copilot
+code --install-extension GitHub.copilot-chat
+
+# --- Cursor IDE ---
+# https://cursor.com/ からインストーラーをダウンロード
+# インストール後、Settings > Models でAPIキーを設定
+
+# --- MCP接続設定(Claude Code用) ---
+# プロジェクトルートに .mcp.json を配置
+cat > .mcp.json << 'MCPEOF'
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-filesystem", "/path/to/allowed/dir"]
+    }
+  }
+}
+MCPEOF
+
+# --- 全ツール設定ファイルの一括生成(Claude Codeを使う場合) ---
+# Claude Codeに以下を指示すると、CLAUDE.mdから派生ファイルを自動生成できます
+# 「CLAUDE.mdの規約をもとに、AGENTS.md、copilot-instructions.md、.cursor/rules/coding.mdcを生成して」<button class="cb" onclick="copyP('p_s2_setup')">コピー</button></div>
+
+<div class="box warn"><div class="bt">注意: 設定ファイルの同期</div>CLAUDE.md、AGENTS.md、copilot-instructions.mdに同じルールを3回書くのは保守の地獄です。1つのソース(例: CLAUDE.md)をマスターにして、他のファイルはAIに「CLAUDE.mdと同じルールを[ツール名]のフォーマットに変換して」と生成させるのが実務的な解決策です。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 統合開発環境のセットアップ <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 1つのリポジトリに全ツールの設定ファイルを配置し、動作確認する</div>
+
+<h4>Step 1: リポジトリの初期化(5min)</h4>
+<div class="prompt" id="p_s2h1">mkdir -p pj1-task-saas && cd pj1-task-saas
+git init
+mkdir -p .github/instructions .github/agents .cursor/rules .claude .codex<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>Step 2: CLAUDE.mdの配置(5min)</h4>
+<p>Section 01で作成したCLAUDE.mdをプロジェクトルートに配置してください。未作成の場合はClaude Codeで生成します。</p>
+<div class="prompt" id="p_s2h2">このプロジェクトはタスク管理SaaSです。Next.js 15 + TypeScript + Supabaseで構築します。
+
+CLAUDE.mdを作成してください。以下の方針で:
+- TypeScript strict mode
+- 関数型パターン優先
+- Tailwind CSS v4
+- Vitestでテスト
+- 日本語コメント、英語変数名<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+
+<h4>Step 3: 全ツール設定ファイルの生成(10min)</h4>
+<div class="prompt" id="p_s2h3">プロジェクトルートのCLAUDE.mdを読み込み、以下の4つの設定ファイルを生成してください。
+CLAUDE.mdの内容と整合性を保つこと。
+
+1. AGENTS.md -- Codex CLI用。CLAUDE.mdと同等の規約 + sandbox設定
+2. .github/copilot-instructions.md -- Copilot用。コード補完に特化した指示
+3. .cursor/rules/coding.mdc -- Cursor用。alwaysApplyルール
+4. .mcp.json -- MCP接続設定のスケルトン(filesystem + supabase)<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<h4>Step 4: 動作確認(10min)</h4>
+<ol>
+<li>Claude Codeでプロジェクトを開き、CLAUDE.mdが読み込まれていることを確認</li>
+<li>VS CodeでCopilotの補完が出ることを確認</li>
+<li>小さな関数を書いて、各ツールの挙動が設定ファイルに従っているか検証</li>
+</ol>
+
+<ul class="checklist">
+<li>CLAUDE.mdをプロジェクトルートに配置した</li>
+<li>AGENTS.mdを作成した</li>
+<li>copilot-instructions.mdを作成した</li>
+<li>Cursorルールを作成した</li>
+<li>.mcp.jsonのスケルトンを配置した</li>
+<li>Claude Codeで設定が読み込まれることを確認した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/memory" target="_blank" rel="noopener">Claude Code Memory (CLAUDE.md)</a></li>
+<li><a href="https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot" target="_blank" rel="noopener">GitHub Copilot Custom Instructions</a></li>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a></li>
+</ul></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 03: PJ1準備 (60min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 60min(講義20 + ハンズオン40)</div><h2>PJ1準備: SaaS型Webアプリの要件定義と設計</h2>
+
+<h3>プロジェクト概要</h3>
+<p>PJ1はタスク管理SaaSアプリです。技術スタックはNext.js 15 + TypeScript + Supabase + Tailwind CSS。認証、CRUD、リアルタイム通知、デプロイまでを含むフルスタック構成で、仕様駆動開発の型で進めます。</p>
+<p>このプロジェクトを通じて「AIと協働する要件定義」の進め方を体得してください。ゼロから人間が仕様書を書くのではなく、AIに叩き台を出させて人間が判断・修正するフローです。</p>
+
+<h3>AIと協働する要件定義</h3>
+<p>従来の要件定義では人間が仕様書を書き、実装者に渡していました。AI駆動開発では「AIに要件の叩き台を出力させ、人間がレビューして確定する」というフローに変わります。AIは見落としがちな非機能要件やエッジケースの洗い出しが得意で、人間はビジネス判断とスコープの確定に集中できます。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: PJ1の要件定義と設計 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: AIと協働でタスク管理SaaSの要件定義書、画面設計、DB設計を完成させる</div>
+
+<h4>Step 1: 要件定義の叩き台生成(10min)</h4>
+<div class="prompt" id="p_s3h1">タスク管理SaaSアプリの要件定義書を作成してください。
+
+技術スタック: Next.js 15 + TypeScript + Supabase + Tailwind CSS v4
+デプロイ: Vercel
+
+機能要件:
+- メール/パスワード認証(Supabase Auth)
+- ダッシュボード(タスク一覧、統計)
+- タスクCRUD(作成・読取・更新・削除)
+- ステータス管理(未着手/進行中/完了)
+- 優先度(高/中/低)
+- 期限設定とアラート
+- 検索・フィルタ
+- リアルタイム通知(Supabase Realtime)
+
+非機能要件も含めてください:
+- レスポンス200ms以内
+- 同時接続100ユーザー
+- データバックアップ戦略
+- アクセシビリティ(WCAG 2.1 AA)
+
+出力形式: Markdownの構造化ドキュメント<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+
+<h4>Step 2: 画面設計(10min)</h4>
+<div class="prompt" id="p_s3h2">要件定義に基づいて、以下の画面のワイヤーフレームをテキストで記述してください。
+
+1. ログイン画面
+2. ダッシュボード(タスク一覧 + 統計サマリー)
+3. タスク作成/編集モーダル
+4. タスク詳細ビュー
+
+各画面について:
+- 配置する要素を列挙
+- ユーザーフロー(画面遷移)をmermaid図で表現
+- レスポンシブ対応の方針(モバイルファースト)<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+
+<h4>Step 3: DB設計(10min)</h4>
+<div class="prompt" id="p_s3h3">タスク管理SaaSのSupabase DB設計を作成してください。
+
+テーブル:
+- users(Supabase Auth連携)
+- tasks
+- notifications
+- activity_logs
+
+以下を含めてください:
+- CREATE TABLE文(SQL)
+- RLS(Row Level Security)ポリシー
+- インデックス設計
+- ER図(mermaid erDiagram)
+
+Supabaseのベストプラクティスに従ってください。<button class="cb" onclick="copyP('p_s3h3')">コピー</button></div>
+
+<h4>Step 4: CLAUDE.mdの確定(10min)</h4>
+<p>要件定義、画面設計、DB設計の結果を踏まえてCLAUDE.mdを最終調整してください。仕様駆動開発では、CLAUDE.mdに「何を作るか」と「どう作るか」の両方を書いておくと、以降の実装が格段にスムーズになります。</p>
+
+<ul class="checklist">
+<li>要件定義書の叩き台をAIに生成させた</li>
+<li>人間の目でスコープと優先度を確定した</li>
+<li>画面設計(テキストワイヤーフレーム)を作成した</li>
+<li>DB設計(SQL + ER図)を作成した</li>
+<li>CLAUDE.mdを最終調整した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 04: PJ1実装 (120min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 120min(講義10 + ハンズオン110)</div><h2>PJ1実装: 仕様駆動でフルスタック実装</h2>
+
+<h3>仕様駆動開発の実践</h3>
+<p>仕様駆動開発(Spec-Driven Development)では、先にテストと仕様を定義してから実装に入ります。AIにとっては「何を満たせばよいか」が明確になるため、的外れな実装が激減します。人間にとっても、AIの出力をテスト結果で客観的に評価できるので手戻りが少ない。</p>
+<p>ここからは10ステップに分けて実装を進めます。各ステップのプロンプトをClaude Code(またはCopilot)に投入し、出力を確認しながら前に進んでください。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: PJ1フルスタック実装(10ステップ) <span class="hs-time">110min</span></div>
+<div class="hs-goal">目標: タスク管理SaaSをNext.js + Supabaseでプロダクションレベルまで実装する</div>
+
+<h4>プロジェクト初期化コマンド(Next.js + Supabase + Tailwind CSS)</h4>
+<p>Step 1に入る前に、ローカル環境でプロジェクトの骨格を作っておくと、Claude Codeへの指示がスムーズになります。以下のコマンドでNext.js + Supabase + Tailwind CSSの初期構成が整います。</p>
+
+<div class="prompt" id="p_s4_init"># Next.js 15 プロジェクト作成(TypeScript + Tailwind CSS + App Router)
+npx create-next-app@latest pj1-task-saas \
+  --typescript --tailwind --eslint --app --src-dir \
+  --import-alias "@/*" --use-npm
+
+cd pj1-task-saas
+
+# Supabase クライアントライブラリ
+npm install @supabase/supabase-js @supabase/ssr
+
+# Supabase CLI(マイグレーション管理用)
+npm install -D supabase
+
+# フォームバリデーション
+npm install zod
+
+# テスト環境
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+
+# 環境変数テンプレート作成
+cat > .env.local.example << 'EOF'
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+EOF<button class="cb" onclick="copyP('p_s4_init')">コピー</button></div>
+
+<h4>認証(Supabase Auth)の実装手順 概要</h4>
+<p>PJ1ではSupabase Authを使ってメール/パスワード認証を実装します。全体の流れは4段階です。</p>
+<ol>
+<li>Supabaseダッシュボードで Authentication > Providers からEmail認証を有効化。確認メールのテンプレートはデフォルトのままで問題ありません</li>
+<li>lib/supabase/client.ts(ブラウザ用)と lib/supabase/server.ts(Server Component用)の2ファイルにSupabaseクライアントを初期化。@supabase/ssrのcreateBrowserClientとcreateServerClientを使い分けます</li>
+<li>middleware.tsでセッション検証を行い、未認証ユーザーを/loginにリダイレクト。getUser()でセッションの存在確認をし、/login と /signup と /auth/callback はリダイレクト対象から除外します</li>
+<li>各画面(/login, /signup)はServer Actionでsignup/signinを呼び出す構成にします。成功時はredirect('/dashboard')、失敗時はエラーメッセージを表示。OAuth(Google/GitHub)を追加する場合はSupabaseダッシュボードでプロバイダーを有効化し、callbackハンドラーを/auth/callback/routeに配置するだけで拡張できます</li>
+</ol>
+
+<h4>Step 1: プロジェクト初期化(10min)</h4>
+<div class="prompt" id="p_s4h1">Next.js 15のプロジェクトを初期化してください。
+
+要件:
+- TypeScript strict mode
+- Tailwind CSS v4
+- src/ディレクトリ構成(App Router)
+- ESLint + Prettier設定
+- Vitest + Testing Library設定
+- .env.local.example(Supabase用の空テンプレート)
+
+初期化後、package.jsonのscriptsにdev/build/test/lintを確認してください。<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+
+<h4>Step 2: Supabase接続とDB構築(10min)</h4>
+<div class="prompt" id="p_s4h2">Supabaseプロジェクトとの接続を設定し、Section 03で設計したDBスキーマを適用してください。
+
+実装:
+- lib/supabase/client.ts(ブラウザ用)
+- lib/supabase/server.ts(サーバー用)
+- supabase/migrations/001_initial_schema.sql
+- RLSポリシーの適用
+- 型生成(supabase gen types typescript)
+
+.env.localにSUPABASE_URLとSUPABASE_ANON_KEYを設定する手順も示してください。<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<h4>Step 3: 認証機能(15min)</h4>
+<div class="prompt" id="p_s4h3">Supabase Authを使った認証機能を実装してください。
+
+画面:
+- /login -- メール/パスワードログイン
+- /signup -- 新規登録
+- /auth/callback -- OAuth callback
+
+実装:
+- ミドルウェアで未認証ユーザーをリダイレクト
+- Server Componentでセッション取得
+- ログアウト機能
+- エラーハンドリング(不正な認証情報、ネットワークエラー)
+
+テスト:
+- 認証フローのユニットテスト(モック使用)<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+
+<h4>Step 4: ダッシュボード(10min)</h4>
+<div class="prompt" id="p_s4h4">認証済みユーザーのダッシュボードページを実装してください。
+
+/dashboard:
+- 統計サマリー(全タスク数、未着手、進行中、完了、期限切れ)
+- タスク一覧(テーブル形式、ソート可能)
+- クイック作成ボタン
+- Server Componentでデータ取得
+- Suspenseでローディング表示
+
+Tailwind CSSでレスポンシブ対応してください。<button class="cb" onclick="copyP('p_s4h4')">コピー</button></div>
+
+<h4>Step 5: タスクCRUD(15min)</h4>
+<div class="prompt" id="p_s4h5">タスクのCRUD操作を実装してください。
+
+機能:
+- タスク作成(モーダル形式)
+- タスク詳細表示
+- タスク編集(インライン or モーダル)
+- タスク削除(確認ダイアログ付き)
+- ステータス変更(ドラッグ&ドロップ or ボタン)
+
+Server Actions使用。Optimistic Updatesで体感速度を向上させてください。
+バリデーションはZodスキーマで。
+
+テスト:
+- 各CRUD操作のユニットテスト<button class="cb" onclick="copyP('p_s4h5')">コピー</button></div>
+
+<h4>Step 6: 検索とフィルタ(10min)</h4>
+<div class="prompt" id="p_s4h6">タスク一覧に検索とフィルタ機能を追加してください。
+
+機能:
+- テキスト検索(タイトル、説明文)
+- ステータスフィルタ(複数選択可)
+- 優先度フィルタ
+- 期限でのソート(昇順/降順)
+- URLクエリパラメータでフィルタ状態を保持
+
+debounce(300ms)で検索入力を最適化してください。<button class="cb" onclick="copyP('p_s4h6')">コピー</button></div>
+
+<h4>Step 7: リアルタイム通知(10min)</h4>
+<div class="prompt" id="p_s4h7">Supabase Realtimeを使ったリアルタイム通知を実装してください。
+
+通知トリガー:
+- タスクの期限が24時間以内
+- タスクのステータスが変更された
+- 新規タスクが追加された
+
+UI:
+- 画面右上に通知ベルアイコン + 未読数バッジ
+- クリックで通知ドロップダウン表示
+- 各通知に「既読にする」ボタン
+
+Supabase Realtimeのsubscriptionはクライアントコンポーネントで管理してください。<button class="cb" onclick="copyP('p_s4h7')">コピー</button></div>
+
+<h4>Step 8: テスト(15min)</h4>
+<div class="prompt" id="p_s4h8">プロジェクト全体のテストを整備してください。
+
+Vitest:
+- 全Server Actionsのユニットテスト
+- ユーティリティ関数のテスト
+- Zodスキーマのバリデーションテスト
+
+Playwright(E2E):
+- ログイン→ダッシュボード表示フロー
+- タスク作成→編集→削除フロー
+- 検索・フィルタフロー
+
+カバレッジ80%以上を目指してください。<button class="cb" onclick="copyP('p_s4h8')">コピー</button></div>
+
+<h4>Step 9: CI/CD設定(5min)</h4>
+<div class="prompt" id="p_s4h9">GitHub ActionsでCI/CDパイプラインを設定してください。
+
+CI(PRごと):
+- lint
+- 型チェック(tsc --noEmit)
+- ユニットテスト
+- ビルド確認
+
+CD(mainマージ時):
+- Vercelへ自動デプロイ
+
+.github/workflows/ci.yml を作成してください。<button class="cb" onclick="copyP('p_s4h9')">コピー</button></div>
+
+<h4>Step 10: Vercelデプロイ(10min)</h4>
+<div class="prompt" id="p_s4h10">Vercelへのデプロイ設定を確認し、本番環境を構築してください。
+
+確認項目:
+- 環境変数の設定(SUPABASE_URL, SUPABASE_ANON_KEY)
+- ビルド成功確認
+- 本番URLでの動作確認
+- OGPメタデータの設定
+- robots.txt / sitemap.xml
+
+問題があれば修正してください。<button class="cb" onclick="copyP('p_s4h10')">コピー</button></div>
+
+<ul class="checklist">
+<li>Next.jsプロジェクトを初期化した</li>
+<li>Supabase接続とDB構築を完了した</li>
+<li>認証機能が動作する</li>
+<li>ダッシュボードが表示される</li>
+<li>タスクのCRUDが動作する</li>
+<li>検索・フィルタが機能する</li>
+<li>リアルタイム通知が動作する</li>
+<li>テストが80%以上のカバレッジで通過する</li>
+<li>CI/CDパイプラインが動作する</li>
+<li>Vercelにデプロイされ、本番URLでアクセス可能</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Review A (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review A -- 30min</div><h2>復習A: PJ1コードレビューと改善</h2>
+
+<p>PJ1の実装を振り返り、品質を引き上げます。AIにコードレビューを依頼し、指摘された問題を修正する一連のフローを体験してください。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: AIコードレビュー <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: PJ1のコードをAIにレビューさせ、3つ以上の改善を実施する</div>
+
+<h4>Step 1: コードレビュー依頼(10min)</h4>
+<div class="prompt" id="p_rAh1">プロジェクト全体のコードレビューを実施してください。
+
+以下の観点でレビューしてください:
+1. TypeScript: 型安全性、any/unknownの不適切な使用
+2. セキュリティ: RLSポリシーの抜け、XSS/CSRF対策
+3. パフォーマンス: 不要な再レンダリング、N+1クエリ
+4. アクセシビリティ: ARIA属性、キーボード操作
+5. エラーハンドリング: 未処理のPromise、エラー境界
+
+各問題に対して:
+- 該当ファイルと行番号
+- 問題の説明
+- 修正案(コード付き)
+を出力してください。<button class="cb" onclick="copyP('p_rAh1')">コピー</button></div>
+
+<h4>Step 2: 改善実施(15min)</h4>
+<p>レビュー結果から優先度の高い問題を3つ以上選び、修正してください。</p>
+
+<h4>Step 3: 改善確認(5min)</h4>
+<p>テストを再実行し、修正がリグレッションを起こしていないことを確認してください。</p>
+
+<ul class="checklist">
+<li>AIにコードレビューを依頼した</li>
+<li>レビュー結果を確認し、優先度をつけた</li>
+<li>3つ以上の問題を修正した</li>
+<li>テストが通ることを確認した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 05: PJ2準備 (60min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 60min(講義20 + ハンズオン40)</div><h2>PJ2準備: RAGチャットボットの設計</h2>
+
+<h3>プロジェクト概要</h3>
+<p>PJ2は社内ドキュメントFAQボットです。LangGraphでSelf-RAGパイプラインを構築し、Difyでノーコードワークフローとして統合、Slack連携で社内展開する構成になります。PJ1がフロントエンド中心だったのに対し、PJ2はバックエンドとAIパイプラインに軸足を置きます。</p>
+
+<h3>RAGアーキテクチャの全体像</h3>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart TB
+  A["ユーザー質問<br/>(Slack/Web)"] --> B["クエリ分析<br/>意図分類"]
+  B --> C["ベクトル検索<br/>関連文書取得"]
+  C --> D["関連性判定<br/>(Self-RAG)"]
+  D -->|関連あり| E["回答生成"]
+  D -->|関連なし| F["クエリ書き換え"]
+  F --> C
+  E --> G["ハルシネーションチェック"]
+  G -->|問題なし| H["回答出力"]
+  G -->|問題あり| F
+</pre><div class="caption">Self-RAGフロー。検索結果の関連性と回答の事実整合性を自己検証する</div></div>
+
+<h3>データソースとチャンク戦略</h3>
+<p>RAGの精度はチャンク設計で8割決まります。大きすぎるチャンクはノイズが増え、小さすぎるチャンクは文脈が欠落する。512〜1024トークン、オーバーラップ20%が実務的な出発点です。ただしこれは万能ではなく、ドキュメントの性質によって調整が必要です。</p>
+
+<table class="ct"><thead><tr><th>ドキュメント種別</th><th>推奨チャンクサイズ</th><th>オーバーラップ</th><th>理由</th></tr></thead><tbody>
+<tr><td>社内マニュアル(手順書)</td><td>512トークン</td><td>20%</td><td>手順ごとの区切りが明確</td></tr>
+<tr><td>FAQ集</td><td>Q&Aペアごと</td><td>不要</td><td>1問1答が自己完結</td></tr>
+<tr><td>契約書/規程</td><td>1024トークン</td><td>30%</td><td>条項間の参照関係が多い</td></tr>
+<tr><td>技術ドキュメント</td><td>見出し単位</td><td>15%</td><td>Markdownの構造を活かす</td></tr>
+</tbody></table>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: PJ2の設計 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: RAGチャットボットのアーキテクチャ設計、データ戦略、Difyワークフロー設計を完成させる</div>
+
+<h4>Step 1: アーキテクチャ設計(10min)</h4>
+<div class="prompt" id="p_s5h1">社内ドキュメントFAQボットのアーキテクチャ設計書を作成してください。
+
+技術スタック:
+- LangGraph(Self-RAGパイプライン)
+- LangChain(ドキュメントローダー、ベクトルストア)
+- OpenAI Embeddings(text-embedding-3-small)
+- Chroma or Supabase pgvector(ベクトルDB)
+- Dify(ワークフロー統合)
+- Slack API(Bot連携)
+- LangSmith(監視)
+
+以下を含めてください:
+- システム構成図(mermaid)
+- データフロー
+- 各コンポーネントの責務
+- エラーハンドリング戦略<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>Step 2: チャンク戦略の設計(10min)</h4>
+<div class="prompt" id="p_s5h2">以下の3種類のドキュメントに対するチャンク戦略を設計してください。
+
+ドキュメント:
+1. 社内ITマニュアル(PDF, 50ページ)
+2. FAQ集(Markdown, 200問)
+3. 社内規程集(PDF, 100ページ)
+
+各ドキュメントについて:
+- ローダー選択(PyPDFLoader / MarkdownLoader等)
+- チャンク分割戦略(サイズ、オーバーラップ、分割単位)
+- メタデータ設計(ソース名、ページ番号、カテゴリ)
+- 前処理(クリーニング、正規化)<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+
+<h4>Step 3: LangGraphのノード設計(10min)</h4>
+<div class="prompt" id="p_s5h3">LangGraphでSelf-RAGパイプラインを構築する際のノード設計をしてください。
+
+ノード:
+1. query_analyzer -- 質問の意図分類と前処理
+2. retriever -- ベクトル検索で関連文書を取得
+3. relevance_checker -- 取得文書の関連性を判定
+4. generator -- 回答を生成
+5. hallucination_checker -- ハルシネーションを検出
+6. query_rewriter -- 検索クエリを書き換えて再検索
+
+各ノードのStateスキーマ、入出力、条件分岐ロジックを定義してください。
+mermaid stateDiagramで全体フローを図示してください。<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+
+<h4>Step 4: Difyワークフロー設計(10min)</h4>
+<p>Difyのワークフローとして上記のRAGパイプラインをどう統合するか設計してください。Difyの「ワークフロー」ノードでLangGraphのAPIを呼び出す構成が現実的です。</p>
+
+<ul class="checklist">
+<li>アーキテクチャ設計書を作成した</li>
+<li>3種類のドキュメントのチャンク戦略を決定した</li>
+<li>LangGraphのノード設計を完了した</li>
+<li>Difyワークフローの設計を完了した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph Documentation</a></li>
+<li><a href="https://docs.dify.ai/" target="_blank" rel="noopener">Dify Documentation</a></li>
+<li><a href="https://docs.smith.langchain.com/" target="_blank" rel="noopener">LangSmith Documentation</a></li>
+</ul></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 06: PJ2実装 (120min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 120min(講義10 + ハンズオン110)</div><h2>PJ2実装: LangGraph + Dify + Slack連携</h2>
+
+<h3>実装の進め方</h3>
+<p>PJ1と同様に10ステップで進めます。PJ2ではPythonがメイン言語になります。Claude Codeはターミナルから大規模なPythonプロジェクトの構築にも対応しているので、TypeScriptと同じ感覚で進めてください。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: PJ2フルスタック実装(10ステップ) <span class="hs-time">110min</span></div>
+<div class="hs-goal">目標: Self-RAGチャットボットを構築し、Dify + Slack連携でデプロイする</div>
+
+<h4>Step 1: ナレッジベース構築(15min)</h4>
+<div class="prompt" id="p_s6h1">RAGチャットボットのナレッジベースを構築してください。
+
+Pythonプロジェクト構成:
+pj2-rag-chatbot/
+  src/
+    ingestion/    -- ドキュメント取り込み
+    retrieval/    -- ベクトル検索
+    generation/   -- 回答生成
+    graph/        -- LangGraphパイプライン
+    api/          -- FastAPIエンドポイント
+  data/
+    documents/    -- 生ドキュメント
+  tests/
+  .env.example
+  requirements.txt
+  CLAUDE.md
+
+Step 1ではsrc/ingestion/を実装:
+- PDFローダー(PyPDFLoader)
+- Markdownローダー
+- チャンク分割(Section 05で設計した戦略)
+- Chromaベクトルストアへの格納
+- OpenAI Embeddingsの設定
+
+サンプルドキュメント(data/documents/)も3つ作成してください。<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+
+<h4>Step 2: LangChain RAGパイプライン(10min)</h4>
+<div class="prompt" id="p_s6h2">基本的なRAGパイプラインをLangChainで実装してください。
+
+src/retrieval/retriever.py:
+- Chromaからベクトル検索(k=5)
+- MMR(Maximal Marginal Relevance)で多様性確保
+- メタデータフィルタ対応
+
+src/generation/generator.py:
+- ChatOpenAI(gpt-4o-mini)で回答生成
+- プロンプトテンプレート(ソース引用を必須にする)
+- ストリーミング対応<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+
+<h4>Step 3: LangGraph Self-RAG(15min)</h4>
+<div class="prompt" id="p_s6h3">LangGraphでSelf-RAGパイプラインを実装してください。
+
+src/graph/self_rag.py:
+Section 05で設計した6ノードを実装:
+
+1. query_analyzer -- 質問意図の分類
+2. retriever -- ベクトル検索
+3. relevance_checker -- 取得文書の関連性スコアリング(閾値0.7)
+4. generator -- 回答生成
+5. hallucination_checker -- 事実整合性チェック
+6. query_rewriter -- 検索クエリ書き換え(最大3回リトライ)
+
+StateGraphで接続し、条件分岐をadd_conditional_edgesで定義してください。
+グラフの可視化(graph.get_graph().draw_mermaid())も出力してください。<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+
+<h4>Step 4: Difyワークフロー構築(15min)</h4>
+<div class="prompt" id="p_s6h4">DifyでRAGチャットボットのワークフローを構築する手順を示してください。
+
+構成:
+- Difyのワークフロータイプ: Chatflow
+- 入力: ユーザーの質問
+- HTTP Request ノード: LangGraph Self-RAGのAPIを呼び出し
+- 回答整形ノード: ソース引用付きで回答をフォーマット
+- 出力: 整形された回答
+
+Dify DSLのエクスポート形式(YAML)で構成を記述してください。
+FastAPIのエンドポイント(src/api/main.py)も実装してください。<button class="cb" onclick="copyP('p_s6h4')">コピー</button></div>
+
+<h4>Step 5: Slack連携(10min)</h4>
+<div class="prompt" id="p_s6h5">Slack Botを構築し、DifyワークフローをSlackから呼び出せるようにしてください。
+
+実装:
+- Slack Bolt(Python)でBot構築
+- メンション(@bot)でトリガー
+- スレッド返信で回答
+- ソース引用はブロックキットで表示
+- タイピングインジケーター表示
+
+src/slack/bot.py として実装してください。<button class="cb" onclick="copyP('p_s6h5')">コピー</button></div>
+
+<h4>Step 6: テスト(10min)</h4>
+<div class="prompt" id="p_s6h6">PJ2のテストを整備してください。
+
+pytest:
+- 各ノードの単体テスト(モック使用)
+- Self-RAGグラフの結合テスト
+- APIエンドポイントのテスト(TestClient)
+- チャンク分割のテスト(期待されるチャンク数、メタデータ)
+
+conftest.pyに共通フィクスチャを定義してください。<button class="cb" onclick="copyP('p_s6h6')">コピー</button></div>
+
+<h4>Step 7: 精度チューニング(10min)</h4>
+<div class="prompt" id="p_s6h7">RAGの回答精度を向上させるチューニングを実施してください。
+
+チューニング項目:
+1. チャンクサイズの調整(512→768→1024で比較)
+2. 検索k値の調整(3→5→10で比較)
+3. 関連性スコアの閾値調整
+4. プロンプトテンプレートの改善
+5. リランキング(Cross-Encoder)の導入
+
+評価指標:
+- 回答正確性(人間評価10問)
+- ソース引用の適切性
+- ハルシネーション率
+
+結果を表形式でまとめてください。<button class="cb" onclick="copyP('p_s6h7')">コピー</button></div>
+
+<h4>LangSmithでのRAG評価セットアップ</h4>
+<p>精度チューニングの前に、LangSmithで評価基盤を整えておくと改善のサイクルが回しやすくなります。テストケースを登録し、チューニング前後の精度を数値で比較する仕組みです。</p>
+
+<div class="prompt" id="p_s6_langsmith">from langsmith import Client
+from langsmith.evaluation import evaluate
+
+# LangSmithクライアント初期化
+client = Client()
+
+# --- テストケース(データセット)の登録 ---
+dataset_name = "pj2-rag-evaluation"
+dataset = client.create_dataset(dataset_name, description="RAG精度評価用テストケース")
+
+# テストケースを登録(質問 + 期待される回答 + 根拠ソース)
+test_cases = [
+    {
+        "inputs": {"question": "有給休暇の申請方法を教えてください"},
+        "outputs": {
+            "answer": "社内ポータルの申請フォームから上長承認フローで申請します",
+            "source": "就業規則_v3.pdf"
+        }
+    },
+    {
+        "inputs": {"question": "リモートワークの上限日数は?"},
+        "outputs": {
+            "answer": "週3日までリモートワークが可能です",
+            "source": "リモートワーク規定.pdf"
+        }
+    },
+    {
+        "inputs": {"question": "出張旅費の精算期限はいつまでですか?"},
+        "outputs": {
+            "answer": "出張終了後2週間以内に経費精算システムで申請してください",
+            "source": "経費精算マニュアル.pdf"
+        }
+    },
+]
+
+for case in test_cases:
+    client.create_example(
+        inputs=case["inputs"],
+        outputs=case["outputs"],
+        dataset_id=dataset.id
+    )
+
+# --- 自動評価の実行 ---
+# RAGパイプラインを関数として定義
+def rag_pipeline(inputs: dict) -> dict:
+    from src.graph.self_rag import create_graph
+    graph = create_graph()
+    result = graph.invoke({"question": inputs["question"]})
+    return {"answer": result["answer"], "sources": result.get("sources", [])}
+
+# 評価実行(正確性 + ハルシネーション検知)
+results = evaluate(
+    rag_pipeline,
+    data=dataset_name,
+    evaluators=["qa", "context_qa", "cot_qa"],
+    experiment_prefix="self-rag-v1"
+)
+
+print(f"評価完了: {results.experiment_name}")
+print(f"結果はLangSmithダッシュボードで確認してください")<button class="cb" onclick="copyP('p_s6_langsmith')">コピー</button></div>
+
+<h4>Step 8: LangSmith監視設定(5min)</h4>
+<div class="prompt" id="p_s6h8">LangSmithを使ったRAGパイプラインの監視を設定してください。
+
+設定:
+- トレーシング有効化(LANGCHAIN_TRACING_V2=true)
+- プロジェクト名設定
+- カスタムメタデータの付与(ユーザーID、セッションID)
+- コスト追跡(トークン消費量)
+
+監視ダッシュボードで確認すべき指標:
+- レイテンシ(P50/P95/P99)
+- 成功率
+- リトライ率
+- トークン消費量/リクエスト<button class="cb" onclick="copyP('p_s6h8')">コピー</button></div>
+
+<h4>Step 9: デプロイ(10min)</h4>
+<div class="prompt" id="p_s6h9">PJ2をデプロイしてください。
+
+デプロイ構成:
+- FastAPI: Railway or Render
+- Chroma: 永続化ストレージ設定
+- Dify: セルフホスト or クラウド
+- Slack Bot: 常駐プロセス
+
+Dockerfileとdocker-compose.ymlを作成してください。
+環境変数の設定一覧も示してください。<button class="cb" onclick="copyP('p_s6h9')">コピー</button></div>
+
+<h4>Step 10: ドキュメント作成(10min)</h4>
+<p>README.md、APIドキュメント(OpenAPI)、運用手順書を作成してください。</p>
+
+<ul class="checklist">
+<li>ナレッジベースを構築した</li>
+<li>LangChainで基本RAGパイプラインが動作する</li>
+<li>LangGraphでSelf-RAGが動作する</li>
+<li>Difyワークフローを構築した</li>
+<li>Slack Botが質問に回答する</li>
+<li>テストが通過する</li>
+<li>精度チューニングを実施した</li>
+<li>LangSmithで監視設定が完了した</li>
+<li>デプロイが完了した</li>
+<li>ドキュメントを作成した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Review B (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review B -- 30min</div><h2>復習B: PJ2精度評価と改善</h2>
+
+<p>PJ2のRAGシステムを評価し、改善します。定量的な評価指標を用いて、改善前後の差を数値で確認する習慣をつけてください。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: RAG精度評価 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 10問の評価セットで精度を測定し、2つ以上の改善を実施する</div>
+
+<h4>Step 1: 評価セット作成(10min)</h4>
+<div class="prompt" id="p_rBh1">RAGチャットボットの精度評価用テストセットを作成してください。
+
+10問の質問を作成し、それぞれに:
+- 期待される回答(正解)
+- 参照すべきソースドキュメント
+- 難易度(易/中/難)
+
+難易度の分布:
+- 易(直接的な質問): 4問
+- 中(複数文書の統合が必要): 4問
+- 難(文書に明示されていない推論): 2問
+
+JSON形式で出力してください。<button class="cb" onclick="copyP('p_rBh1')">コピー</button></div>
+
+<h4>Step 2: 精度測定(10min)</h4>
+<p>評価セットを使って現在の精度を測定してください。各質問に対する回答を記録し、正確性(0-5点)を手動で評価します。</p>
+
+<h4>Step 3: 改善と再測定(10min)</h4>
+<p>精度が低かった質問の原因を分析し、改善を実施してください。チャンクサイズ、プロンプト、閾値のどれが効果的かは問題によって異なります。</p>
+
+<ul class="checklist">
+<li>10問の評価セットを作成した</li>
+<li>改善前の精度を記録した</li>
+<li>2つ以上の改善を実施した</li>
+<li>改善後の精度を再測定した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 07: PJ3準備 (60min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 60min(講義20 + ハンズオン40)</div><h2>PJ3準備: マルチエージェントシステムの設計</h2>
+
+<h3>プロジェクト概要</h3>
+<p>PJ3は営業支援マルチエージェントシステムです。3つの専門エージェントがMCPサーバーとして動作し、A2Aプロトコルで連携します。リサーチエージェントが企業情報を収集し、ドラフトエージェントが提案書を作成し、レビューエージェントが品質をチェックする。この一連の流れを自律的に実行します。</p>
+
+<h3>3エージェントの設計</h3>
+
+<div class="cols">
+<div class="col-card"><h4>リサーチエージェント</h4>
+<p>Web検索とデータ収集を担当。企業名を入力として受け取り、業界情報、最近のニュース、競合状況、経営課題を構造化データで返します。</p>
+<ul><li>MCPツール: web_search, scrape_url</li><li>出力: 構造化リサーチレポート(JSON)</li></ul>
+</div>
+<div class="col-card"><h4>ドラフトエージェント</h4>
+<p>リサーチ結果を元に提案書の草稿を生成。テンプレートに沿いつつ、対象企業の課題に合わせた提案内容を組み立てます。</p>
+<ul><li>MCPツール: template_engine, document_generator</li><li>出力: Markdown提案書ドラフト</li></ul>
+</div>
+</div>
+<div class="cols">
+<div class="col-card"><h4>レビューエージェント</h4>
+<p>ドラフトの品質をチェック。事実確認、論理的一貫性、トーンの適切さ、誤字脱字を検出し、修正提案を返します。</p>
+<ul><li>MCPツール: fact_checker, grammar_checker</li><li>出力: レビューコメント + 修正版ドラフト</li></ul>
+</div>
+<div class="col-card"><h4>オーケストレーター</h4>
+<p>3エージェントの実行順序を管理。リサーチ→ドラフト→レビューのパイプラインを制御し、レビューで不合格なら再ドラフトのループを回します。</p>
+<ul><li>A2A Agent Card参照</li><li>タイムアウト、エラーハンドリング</li></ul>
+</div>
+</div>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+sequenceDiagram
+  participant O as オーケストレーター
+  participant R as リサーチAgent
+  participant D as ドラフトAgent
+  participant V as レビューAgent
+  O->>R: 企業名 + 調査要件
+  R-->>O: リサーチレポート(JSON)
+  O->>D: リサーチレポート + テンプレート
+  D-->>O: 提案書ドラフト(MD)
+  O->>V: ドラフト + チェック基準
+  V-->>O: レビュー結果
+  alt 不合格
+    O->>D: フィードバック + 修正指示
+    D-->>O: 修正版ドラフト
+    O->>V: 再レビュー
+    V-->>O: 合格
+  end
+  O-->>O: 最終成果物出力
+</pre><div class="caption">マルチエージェントの連携フロー。レビュー不合格時は修正ループが回る</div></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: PJ3の設計 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: 3エージェントのMCPサーバー設計、A2A Agent Card、オーケストレーションフローを完成させる</div>
+
+<h4>Step 1: MCPサーバー設計(15min)</h4>
+<div class="prompt" id="p_s7h1">3つのMCPサーバーの設計書を作成してください。
+
+各MCPサーバーについて:
+- サーバー名とdescription
+- 提供するツール一覧(name, description, inputSchema, outputSchema)
+- 提供するリソース(あれば)
+- transport設定(stdio / SSE)
+
+1. research-server
+   - web_search(query, max_results)
+   - scrape_url(url, extract_schema)
+   - company_profile(company_name)
+
+2. draft-server
+   - generate_proposal(research_data, template_name)
+   - format_document(content, output_format)
+
+3. review-server
+   - check_facts(document, sources)
+   - check_grammar(document, language)
+   - overall_review(document, criteria)
+
+JSON Schema形式で定義してください。<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+
+<h4>Step 2: A2A Agent Card設計(10min)</h4>
+<div class="prompt" id="p_s7h2">各エージェントのA2A Agent Cardを設計してください。
+
+A2A仕様に準拠し、以下の項目を含めてください:
+- name
+- description
+- url
+- capabilities(streaming, pushNotifications)
+- skills(id, name, description, inputModes, outputModes)
+- authentication
+
+3エージェント分のAgent Card(JSON)を出力してください。<button class="cb" onclick="copyP('p_s7h2')">コピー</button></div>
+
+<h4>Step 3: オーケストレーション設計(15min)</h4>
+<div class="prompt" id="p_s7h3">オーケストレーターの詳細設計を作成してください。
+
+設計項目:
+- 実行パイプラインの定義(DAG)
+- 各ステップの入出力マッピング
+- エラーハンドリング戦略
+  - タイムアウト(各エージェント30秒、全体5分)
+  - リトライ(最大3回、指数バックオフ)
+  - フォールバック(レビュー不能時はドラフトをそのまま出力)
+- レビューループの終了条件
+  - 合格スコア80点以上
+  - 最大修正回数3回
+
+Claude Agent SDKでの実装方針も示してください。<button class="cb" onclick="copyP('p_s7h3')">コピー</button></div>
+
+<ul class="checklist">
+<li>3つのMCPサーバーのツール定義を完了した</li>
+<li>3つのA2A Agent Cardを作成した</li>
+<li>オーケストレーションフローを設計した</li>
+<li>エラーハンドリング戦略を定義した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a></li>
+<li><a href="https://google.github.io/A2A/" target="_blank" rel="noopener">A2A (Agent-to-Agent Protocol)</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK</a></li>
+</ul></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 08: PJ3実装 (120min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 120min(講義10 + ハンズオン110)</div><h2>PJ3実装: MCP + A2A + 自律タスク実行</h2>
+
+<h3>実装の進め方</h3>
+<p>PJ3もPython中心で進めます。MCPサーバーはTypeScript(公式SDK)でもPythonでも構築可能ですが、このコースではPythonのmcp-sdkを使用します。Claude Agent SDKでオーケストレーターを実装し、3つのMCPサーバーを連携させます。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: PJ3フルスタック実装(10ステップ) <span class="hs-time">110min</span></div>
+<div class="hs-goal">目標: マルチエージェント営業支援システムを構築し、デプロイする</div>
+
+<h4>Step 1: MCPサーバー3つの構築(20min)</h4>
+<div class="prompt" id="p_s8h1">3つのMCPサーバーを構築してください。
+
+プロジェクト構成:
+pj3-multi-agent/
+  servers/
+    research/
+      server.py       -- リサーチMCPサーバー
+      tools.py         -- ツール実装
+    draft/
+      server.py        -- ドラフトMCPサーバー
+      tools.py
+    review/
+      server.py        -- レビューMCPサーバー
+      tools.py
+  orchestrator/
+    main.py            -- オーケストレーター
+    agent_cards/       -- A2A Agent Card定義
+  tests/
+  .mcp.json
+  CLAUDE.md
+  requirements.txt
+
+まずservers/research/を実装してください:
+- mcp-sdk(Python)を使用
+- web_search: SerpAPI or Tavily APIで検索
+- scrape_url: BeautifulSoupでスクレイピング
+- company_profile: 検索結果を構造化して返す
+
+stdio transportで動作させてください。<button class="cb" onclick="copyP('p_s8h1')">コピー</button></div>
+
+<div class="prompt" id="p_s8h1b">続いてservers/draft/とservers/review/を実装してください。
+
+draft/server.py:
+- generate_proposal: リサーチデータをテンプレートに流し込み、Claude APIで提案書を生成
+- format_document: Markdown→HTML変換
+
+review/server.py:
+- check_facts: リサーチデータとドラフトの整合性を検証
+- check_grammar: 文法・誤字チェック
+- overall_review: 総合スコア(0-100)と改善コメント<button class="cb" onclick="copyP('p_s8h1b')">コピー</button></div>
+
+<h4>Docker Composeで3MCPサーバーを一括起動</h4>
+<p>開発中は3つのMCPサーバーを個別に起動するのが面倒になります。Docker Composeで一括起動する設定を用意しておくと、チームメンバーも同じ環境を再現できます。</p>
+
+<div class="prompt" id="p_s8_docker"># docker-compose.yml
+version: "3.9"
+
+services:
+  research-server:
+    build:
+      context: ./servers/research
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - SERPAPI_KEY=${SERPAPI_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./servers/research:/app
+    command: python server.py --transport sse --port 8000
+
+  draft-server:
+    build:
+      context: ./servers/draft
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./servers/draft:/app
+    command: python server.py --transport sse --port 8000
+
+  review-server:
+    build:
+      context: ./servers/review
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./servers/review:/app
+    command: python server.py --transport sse --port 8000
+
+# --- 各サーバー共通の Dockerfile ---
+# servers/research/Dockerfile (draft, reviewも同じ構成)
+#
+# FROM python:3.12-slim
+# WORKDIR /app
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
+# COPY . .
+# EXPOSE 8000
+# CMD ["python", "server.py"]
+
+# --- 起動コマンド ---
+# docker compose up -d          # 全サーバー一括起動
+# docker compose logs -f        # ログ監視
+# docker compose down           # 全サーバー停止
+
+# --- .mcp.json(SSEトランスポート版) ---
+# {
+#   "mcpServers": {
+#     "research": {"url": "http://localhost:8001/sse"},
+#     "draft": {"url": "http://localhost:8002/sse"},
+#     "review": {"url": "http://localhost:8003/sse"}
+#   }
+# }<button class="cb" onclick="copyP('p_s8_docker')">コピー</button></div>
+
+<h4>Step 2: A2A Agent Card定義(5min)</h4>
+<div class="prompt" id="p_s8h2">Section 07で設計したA2A Agent Cardを実装してください。
+
+orchestrator/agent_cards/配下に3つのJSONファイルを配置:
+- research-agent.json
+- draft-agent.json
+- review-agent.json
+
+各Agent Cardは/.well-known/agent.jsonとして公開する設定も含めてください。<button class="cb" onclick="copyP('p_s8h2')">コピー</button></div>
+
+<h4>Step 3: オーケストレーター実装(15min)</h4>
+<div class="prompt" id="p_s8h3">Claude Agent SDKを使ってオーケストレーターを実装してください。
+
+orchestrator/main.py:
+- 3つのMCPサーバーに接続
+- リサーチ→ドラフト→レビューのパイプライン実行
+- レビュースコアが80点未満なら修正ループ(最大3回)
+- 各ステップの結果をログ出力
+- 最終成果物をファイル出力
+
+CLI引数で企業名を受け取り、提案書を生成する形にしてください。<button class="cb" onclick="copyP('p_s8h3')">コピー</button></div>
+
+<h4>Step 4: ワークフロー結合(10min)</h4>
+<div class="prompt" id="p_s8h4">オーケストレーターと3つのMCPサーバーを結合テストしてください。
+
+テストシナリオ:
+1. 「テスト株式会社」で提案書生成を実行
+2. 各ステップの出力を確認
+3. レビューループが正常に動作するか確認
+4. 最終出力の品質を目視確認
+
+問題があれば修正してください。<button class="cb" onclick="copyP('p_s8h4')">コピー</button></div>
+
+<h4>Step 5: エラーハンドリング(10min)</h4>
+<div class="prompt" id="p_s8h5">堅牢なエラーハンドリングを実装してください。
+
+対処すべきエラー:
+1. MCPサーバーの接続失敗 → リトライ(3回、指数バックオフ)
+2. API呼び出しのタイムアウト → 30秒でタイムアウト、フォールバック
+3. レート制限 → 適切な待機後にリトライ
+4. 不正な出力形式 → バリデーション + 再生成
+5. 全体タイムアウト → 5分で強制終了、途中結果を出力
+
+各エラーハンドラーのテストも作成してください。<button class="cb" onclick="copyP('p_s8h5')">コピー</button></div>
+
+<h4>Step 6: テスト(10min)</h4>
+<div class="prompt" id="p_s8h6">PJ3の包括的なテストを作成してください。
+
+単体テスト:
+- 各MCPサーバーのツール(モックAPI使用)
+- オーケストレーターのパイプライン制御
+- エラーハンドリング
+
+結合テスト:
+- 3サーバー連携の正常フロー
+- レビューループの動作
+- タイムアウト時の挙動<button class="cb" onclick="copyP('p_s8h6')">コピー</button></div>
+
+<h4>Step 7: セキュリティ(5min)</h4>
+<div class="prompt" id="p_s8h7">マルチエージェントシステムのセキュリティを強化してください。
+
+対策:
+- MCPサーバー間の認証(API Key)
+- 入力のサニタイズ(プロンプトインジェクション対策)
+- 出力のフィルタリング(機密情報の漏洩防止)
+- ログの個人情報マスキング
+- 環境変数での秘密情報管理<button class="cb" onclick="copyP('p_s8h7')">コピー</button></div>
+
+<h4>Step 8: 監視設定(5min)</h4>
+<p>LangSmithまたは独自のログシステムで各エージェントの実行状況を追跡できるよう設定してください。</p>
+
+<h4>Step 9: デプロイ(10min)</h4>
+<div class="prompt" id="p_s8h9">PJ3のデプロイ設定を作成してください。
+
+Docker Compose構成:
+- research-server(ポート3001)
+- draft-server(ポート3002)
+- review-server(ポート3003)
+- orchestrator(CLIツールとして)
+
+Dockerfile(各サーバー共通ベース)とdocker-compose.ymlを作成してください。
+ヘルスチェックエンドポイントも各サーバーに追加してください。<button class="cb" onclick="copyP('p_s8h9')">コピー</button></div>
+
+<h4>Step 10: ドキュメント(10min)</h4>
+<p>README.md、アーキテクチャ図、API仕様、デプロイ手順をまとめてください。</p>
+
+<ul class="checklist">
+<li>3つのMCPサーバーが動作する</li>
+<li>A2A Agent Cardを定義した</li>
+<li>オーケストレーターが3サーバーを連携させる</li>
+<li>レビューループが動作する</li>
+<li>エラーハンドリングが実装されている</li>
+<li>テストが通過する</li>
+<li>セキュリティ対策を実施した</li>
+<li>監視設定が完了した</li>
+<li>Docker Composeでデプロイできる</li>
+<li>ドキュメントを作成した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 09: AI時代のチーム開発 (50min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 50min(講義25 + ハンズオン25)</div><h2>AI時代のチーム開発 -- 設定ファイル横断設計</h2>
+
+<h3>問題の本質</h3>
+<p>チームの中にCopilot派とClaude Code派とCursor派がいる。ツールの選択は個人の生産性に直結するため、統一を強制するのは得策ではありません。しかし「各自が好きなツールを使った結果、コード品質がバラバラ」では困る。解決策は、品質基準をリポジトリに埋め込み、どのツールを使っても同じ規約に従うようにすることです。</p>
+
+<h3>設定ファイル横断設計</h3>
+<p>Section 02で触れた環境統一をチーム規模で展開します。マスターファイルは1つ(CLAUDE.md推奨)。そこから他のツール向けファイルをAIに変換させ、CIでドリフトを検知する構成が実務的です。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart TB
+  A["CLAUDE.md<br/>(マスター規約)"] --> B["AGENTS.md<br/>AI変換"]
+  A --> C["copilot-instructions.md<br/>AI変換"]
+  A --> D[".cursor/rules/*.mdc<br/>AI変換"]
+  E["CI/CD"] --> F["規約整合性チェック"]
+  F --> A
+  F --> B
+  F --> C
+  F --> D
+</pre><div class="caption">マスターファイルから派生させ、CIで整合性を維持する</div></div>
+
+<h3>コードレビューの自動化</h3>
+<p>PR作成時にAIが自動レビューを実行する仕組みを導入します。GitHub ActionsでClaude CodeやCopilot PRレビューを呼び出し、コーディング規約違反やセキュリティリスクを機械的に検出します。人間のレビュアーはビジネスロジックの妥当性に集中できるようになります。</p>
+
+<h3>ドキュメントの自動更新</h3>
+<p>コードが変更されたとき、関連ドキュメント(API仕様、READMEの使い方セクション等)をAIが自動更新するフローも構築できます。Claude CodeのGit Hookやpost-commitフックで実行するのが簡便です。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: チーム開発用設定ファイルセットの設計 <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: チーム開発を想定した設定ファイルセットとCI自動レビューを構成する</div>
+
+<h4>Step 1: マスター規約の作成(10min)</h4>
+<div class="prompt" id="p_s9h1">チーム開発を想定したCLAUDE.md(マスター規約)を作成してください。
+
+チーム構成:
+- フロントエンド2名(Copilot + Cursor)
+- バックエンド2名(Claude Code + Codex)
+- リーダー1名(レビュー担当)
+
+規約内容:
+- コーディング標準(命名、フォーマット、型定義)
+- ブランチ戦略(GitHub Flow)
+- コミットメッセージ規約(Conventional Commits)
+- PRルール(テンプレート、レビュー人数)
+- テスト方針(カバレッジ基準)
+- ドキュメント更新ルール
+
+このCLAUDE.mdから、AGENTS.md、copilot-instructions.md、.cursor/rules/team.mdcを自動生成してください。<button class="cb" onclick="copyP('p_s9h1')">コピー</button></div>
+
+<h4>Step 2: PR自動レビューの設定(10min)</h4>
+<div class="prompt" id="p_s9h2">PR作成時にAIが自動レビューを実行するGitHub Actionsワークフローを作成してください。
+
+.github/workflows/ai-review.yml:
+- PRが作成/更新されたときにトリガー
+- 変更されたファイルの差分を取得
+- CLAUDE.mdの規約に基づいてレビューコメントを投稿
+- 深刻な問題(セキュリティ、型安全性)はblocking、軽微な問題はsuggestionで
+
+gh CLIとClaude API(またはCopilot PR Review)を使ってください。<button class="cb" onclick="copyP('p_s9h2')">コピー</button></div>
+
+<p>以下は claude -p を使ったPRレビュー自動化ワークフローの実装例です。ANTHROPIC_API_KEYをリポジトリのSecretsに登録しておく必要があります。</p>
+
+<div class="prompt" id="p_s9_actions"># .github/workflows/ai-review.yml
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr_diff.txt
+          echo "diff_size=$(wc -c < /tmp/pr_diff.txt)" >> $GITHUB_OUTPUT
+
+      - name: AI Review
+        if: steps.diff.outputs.diff_size > 0
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          REVIEW=$(claude -p "
+          あなたはコードレビュアーです。
+          以下のCLAUDE.md(プロジェクト規約)とPR差分を読み、
+          問題点をGitHubのレビューコメント形式で指摘してください。
+
+          重大な問題(セキュリティリスク、型安全性違反)は [BLOCKING] プレフィックスで、
+          改善提案は [SUGGESTION] プレフィックスで出力してください。
+          問題がなければ「LGTM」とだけ出力してください。
+
+          --- CLAUDE.md ---
+          $(cat CLAUDE.md)
+
+          --- PR差分 ---
+          $(cat /tmp/pr_diff.txt | head -5000)
+          ")
+
+          echo "$REVIEW" > /tmp/review_comment.txt
+
+      - name: Post Review Comment
+        if: steps.diff.outputs.diff_size > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "$(cat /tmp/review_comment.txt)"<button class="cb" onclick="copyP('p_s9_actions')">コピー</button></div>
+
+<h4>Step 3: 設定ドリフト検知(5min)</h4>
+<p>CLAUDE.mdが更新されたとき、他の設定ファイル(AGENTS.md等)との整合性をCIでチェックするスクリプトを作成してください。</p>
+
+<ul class="checklist">
+<li>チーム用CLAUDE.md(マスター)を作成した</li>
+<li>派生設定ファイルを3つ生成した</li>
+<li>PR自動レビューのGitHub Actionsを設定した</li>
+<li>設定ドリフト検知のCIジョブを追加した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 10: パフォーマンスとコスト最適化 (50min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s10"><div class="sec-label">Section 10 -- 50min(講義25 + ハンズオン25)</div><h2>パフォーマンス最適化とコスト管理</h2>
+
+<h3>モデル使い分け戦略</h3>
+<p>すべてのタスクにOpusを使う必要はありません。タスクの複雑さに応じてモデルを切り替えることで、品質を維持しつつコストを大幅に削減できます。</p>
+
+<table class="ct"><thead><tr><th>タスク種別</th><th>推奨モデル</th><th>入力単価(100万トークン)</th><th>理由</th></tr></thead><tbody>
+<tr><td>アーキテクチャ設計、要件定義</td><td>Claude Opus</td><td>$15</td><td>高度な推論が必要</td></tr>
+<tr><td>コード実装、テスト生成</td><td>Claude Sonnet</td><td>$3</td><td>コスパと品質のバランス</td></tr>
+<tr><td>コードフォーマット、単純変換</td><td>Claude Haiku</td><td>$0.25</td><td>速度重視の軽量タスク</td></tr>
+<tr><td>コード補完(IDE内)</td><td>Copilot(GPT-4o mini)</td><td>サブスク定額</td><td>リアルタイム補完に最適化</td></tr>
+<tr><td>RAGの埋め込み生成</td><td>text-embedding-3-small</td><td>$0.02</td><td>低コストで十分な精度</td></tr>
+</tbody></table>
+
+<h3>トークン消費の可視化</h3>
+<p>Claude Codeは各セッションのトークン消費量を表示します。/costコマンドで累計を確認できます。LangSmithを使えばRAGパイプライン全体のトークン消費をリクエスト単位で追跡可能です。「見えないものは管理できない」ので、まず可視化から始めてください。</p>
+
+<h3>キャッシュ戦略</h3>
+<h4>プロンプトキャッシュ</h4>
+<p>Anthropic APIにはプロンプトキャッシュ機能があります。同じシステムプロンプトを繰り返し送信する場合、キャッシュヒットすれば入力コストが90%削減されます。CLAUDE.mdのように毎回送信されるプロンプトはキャッシュの恩恵が大きい。</p>
+
+<h4>レスポンスキャッシュ</h4>
+<p>RAGシステムでは、同一の質問に対するレスポンスをキャッシュすることで、APIコールを削減できます。Redis等のキャッシュストアにクエリのハッシュ値をキーとして回答を保存し、TTL(例: 1時間)で鮮度を管理します。</p>
+
+<h3>月間コスト試算</h3>
+<table class="ct"><thead><tr><th>利用シナリオ</th><th>Claude Code</th><th>Copilot</th><th>API(RAG等)</th><th>月間合計</th></tr></thead><tbody>
+<tr><td>個人開発(週20h)</td><td>$100(Max Plan)</td><td>$19</td><td>$10</td><td>$129</td></tr>
+<tr><td>小規模チーム(5名)</td><td>$500</td><td>$95</td><td>$50</td><td>$645</td></tr>
+<tr><td>中規模チーム(20名)</td><td>$3,600(Enterprise)</td><td>$380</td><td>$200</td><td>$4,180</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: コスト対効果の考え方</div>月$129の投資で開発速度が2倍になるなら、エンジニアの人件費(月$5,000-10,000)に対するROIは極めて高い。ツール費用を「コスト」ではなく「生産性投資」として捉える視点が、AI駆動開発の導入判断では決定的に効く。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 3プロジェクトのコスト分析 <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: PJ1-3の開発/運用コストを分析し、最適化計画を立てる</div>
+
+<h4>Step 1: 開発コストの推定(10min)</h4>
+<div class="prompt" id="p_s10h1">PJ1-3の開発で消費したトークン量とコストを推定してください。
+
+各プロジェクトについて:
+- Claude Codeのセッション数とプロンプト規模
+- Copilotの補完回数(推定)
+- API呼び出し回数(PJ2のRAG, PJ3のエージェント)
+
+表形式で、プロジェクト別・ツール別のコスト内訳を出力してください。<button class="cb" onclick="copyP('p_s10h1')">コピー</button></div>
+
+<h4>Step 2: 運用コストの推定(10min)</h4>
+<div class="prompt" id="p_s10h2">PJ2(RAGチャットボット)とPJ3(マルチエージェント)の月間運用コストを推定してください。
+
+PJ2:
+- 想定利用者: 50名
+- 1日あたりの質問数: 100件
+- 回答あたりのトークン消費(入力+出力)
+
+PJ3:
+- 1日あたりの提案書生成: 5件
+- 1件あたりの全エージェント合計トークン消費
+
+モデルの使い分けで最適化した場合のコスト削減額も算出してください。<button class="cb" onclick="copyP('p_s10h2')">コピー</button></div>
+
+<h4>Step 3: 最適化計画(5min)</h4>
+<p>コスト削減のために実施すべき施策を優先度順に3つ挙げてください。キャッシュ導入、モデルダウングレード、バッチ処理のいずれが最も効果的か、数値で比較します。</p>
+
+<ul class="checklist">
+<li>開発コストの内訳を算出した</li>
+<li>運用コストの月間試算を完了した</li>
+<li>最適化施策を3つ特定した</li>
+<li>施策ごとの削減効果を数値で見積もった</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 11: ポートフォリオ作成 (60min) -->
+<!-- ============================================================ -->
+<div class="sec" id="s11"><div class="sec-label">Section 11 -- 60min(講義10 + ハンズオン50)</div><h2>ポートフォリオ作成 -- 受講証明プロジェクト一式</h2>
+
+<h3>なぜポートフォリオを作るのか</h3>
+<p>このコースで構築した3つのプロジェクトは、そのままAI駆動開発のポートフォリオになります。「AIを使えます」という口頭の主張ではなく、「AIと協働して3つのプロダクションレベルシステムを構築しました」という実績を、GitHubリポジトリとして見せられるのが強い。</p>
+
+<h3>ポートフォリオの構成</h3>
+<p>3プロジェクトをまとめたモノレポ、または個別リポジトリ+ポートフォリオREADMEの2パターンがあります。このコースでは個別リポジトリ方式を推奨します。各PJが独立してデモ可能な状態になっているためです。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: ポートフォリオリポジトリの完成 <span class="hs-time">50min</span></div>
+<div class="hs-goal">目標: 3プロジェクトのGitHubリポジトリを整備し、ポートフォリオとして公開できる状態にする</div>
+
+<h4>Step 1: 各リポジトリの整理(15min)</h4>
+<div class="prompt" id="p_s11h1">PJ1-3の各リポジトリのREADME.mdを作成/更新してください。
+
+各READMEに含める項目:
+1. プロジェクト概要(1段落)
+2. スクリーンショット/デモGIF(プレースホルダー)
+3. 技術スタック(バッジ形式)
+4. セットアップ手順(3ステップ以内)
+5. 使い方(主要機能の操作手順)
+6. アーキテクチャ(mermaid図)
+7. AI駆動開発で使用したツール一覧
+8. 学びと振り返り(3-5行)
+
+Markdown形式で、GitHubの表示に最適化してください。<button class="cb" onclick="copyP('p_s11h1')">コピー</button></div>
+
+<h4>Step 2: 技術スタック一覧の作成(5min)</h4>
+<div class="prompt" id="p_s11h2">3プロジェクトで使用した全技術をカテゴリ別に整理してください。
+
+カテゴリ:
+- フロントエンド
+- バックエンド
+- AI/LLM
+- インフラ/デプロイ
+- AI開発ツール
+- テスト/品質管理
+
+表形式で、各技術の用途と使用したプロジェクトを明示してください。<button class="cb" onclick="copyP('p_s11h2')">コピー</button></div>
+
+<h4>Step 3: ポートフォリオREADMEの作成(15min)</h4>
+<div class="prompt" id="p_s11h3">ポートフォリオ用のメインREADME.mdを作成してください。
+
+このREADMEは「AI駆動開発マスターコースの成果物一覧」として機能します。
+
+構成:
+1. タイトルと自己紹介(2-3行)
+2. コース概要(受講したコース名、時間)
+3. プロジェクト一覧(PJ1-3、各1段落+リンク)
+4. 技術スタック一覧(Step 2の結果)
+5. AI駆動開発で得た知見(5項目)
+6. 使用したAI開発ツール比較(使ってみた所感)
+
+GitHubのProfile READMEとしても使える形式にしてください。<button class="cb" onclick="copyP('p_s11h3')">コピー</button></div>
+
+<h4>GitHub READMEの構成テンプレート</h4>
+<p>READMEは「初見の人が30秒でプロジェクトの概要を把握し、3分以内にローカルで動かせる」を基準に構成します。以下のテンプレートをベースに、各PJの内容を埋めてください。</p>
+
+<div class="prompt" id="p_s11_readme"># プロジェクト名
+
+一文でプロジェクトの概要を説明する。何を解決するプロダクトなのか。
+
+## デモ
+
+- 本番URL: https://example.vercel.app
+- デモ動画: (GIFまたはLoom URL)
+
+## スクリーンショット
+
+| ダッシュボード | タスク詳細 |
+|:---:|:---:|
+| ![dashboard](docs/screenshots/dashboard.png) | ![detail](docs/screenshots/detail.png) |
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---------|------|
+| フロントエンド | Next.js 15, TypeScript, Tailwind CSS v4 |
+| バックエンド | Supabase (PostgreSQL, Auth, Realtime) |
+| AI開発ツール | Claude Code, GitHub Copilot, Cursor |
+| テスト | Vitest, Playwright |
+| デプロイ | Vercel |
+
+## セットアップ
+
+```bash
+# 1. クローン
+git clone https://github.com/your-name/project-name.git
+cd project-name
+
+# 2. 依存パッケージのインストール
+npm install
+
+# 3. 環境変数の設定
+cp .env.local.example .env.local
+# .env.local を編集し、Supabase URL / Anon Key を設定
+
+# 4. 開発サーバー起動
+npm run dev
+```
+
+## 主な機能
+
+- 機能A: 一文で説明
+- 機能B: 一文で説明
+- 機能C: 一文で説明
+
+## アーキテクチャ
+
+```mermaid
+graph LR
+  A[Next.js Frontend] --> B[Supabase]
+  B --> C[PostgreSQL]
+  B --> D[Auth]
+  B --> E[Realtime]
+```
+
+## AI駆動開発で使用したツール
+
+- Claude Code: プロジェクト初期構築、大規模リファクタリング
+- GitHub Copilot: 日常のコード補完、テスト生成
+- Cursor: UI実装、スタイリング
+
+## ライセンス
+
+MIT<button class="cb" onclick="copyP('p_s11_readme')">コピー</button></div>
+
+<h4>Step 4: デモの準備(10min)</h4>
+<p>各プロジェクトのデモURLが生きていることを確認してください。デプロイ済みのURLをREADMEに反映し、スクリーンショットを撮影してリポジトリに追加します。</p>
+
+<h4>Step 5: 最終確認(5min)</h4>
+<ul>
+<li>各リポジトリにCLAUDE.md、AGENTS.md、copilot-instructions.mdが配置されているか</li>
+<li>README.mdのリンクが正しいか</li>
+<li>機密情報(.env等)がコミットされていないか</li>
+<li>ライセンスファイルが存在するか</li>
+</ul>
+
+<ul class="checklist">
+<li>PJ1のREADMEを作成/更新した</li>
+<li>PJ2のREADMEを作成/更新した</li>
+<li>PJ3のREADMEを作成/更新した</li>
+<li>技術スタック一覧を整理した</li>
+<li>ポートフォリオREADMEを作成した</li>
+<li>デモURLが生きていることを確認した</li>
+<li>機密情報が含まれていないことを確認した</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Review C (20min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rC"><div class="sec-label review">Review C -- 20min</div><h2>復習C: 全コース振り返りと今後の学習計画</h2>
+
+<p>全16コースの学習を振り返り、今後の成長計画を立てます。ここまで到達した方は、日本語圏でAI駆動開発を体系的に学んだ数少ない実践者の一人です。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 振り返りと学習計画 <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: 16コースの学びを棚卸しし、今後6ヶ月の学習計画を立てる</div>
+
+<h4>Step 1: 16コースの振り返り(10min)</h4>
+<p>各コースで学んだことを1行で要約してください。</p>
+<table class="ct"><thead><tr><th>コース</th><th>テーマ</th><th>学んだこと(自分の言葉で)</th></tr></thead><tbody>
+<tr><td>C01</td><td>生成AI完全入門</td><td></td></tr>
+<tr><td>C02</td><td>Claude基礎</td><td></td></tr>
+<tr><td>C03</td><td>Cowork基礎</td><td></td></tr>
+<tr><td>C04</td><td>GitHub Copilot</td><td></td></tr>
+<tr><td>C05</td><td>Claude Code基礎</td><td></td></tr>
+<tr><td>C06</td><td>Claude Code応用</td><td></td></tr>
+<tr><td>C07</td><td>Codex CLI</td><td></td></tr>
+<tr><td>C08</td><td>Cursor</td><td></td></tr>
+<tr><td>C09</td><td>Dify入門</td><td></td></tr>
+<tr><td>C10</td><td>Dify応用</td><td></td></tr>
+<tr><td>C11</td><td>LangChain/LangGraph</td><td></td></tr>
+<tr><td>C12</td><td>RAG</td><td></td></tr>
+<tr><td>C13</td><td>MCP/A2A</td><td></td></tr>
+<tr><td>C14</td><td>セキュリティ</td><td></td></tr>
+<tr><td>C15</td><td>評価とテスト</td><td></td></tr>
+<tr><td>C16</td><td>統合プロジェクト</td><td></td></tr>
+</tbody></table>
+
+<h4>Step 2: 今後の学習計画(10min)</h4>
+<div class="prompt" id="p_rCh1">AI駆動開発を実務で活用するための6ヶ月学習計画を作成してください。
+
+現在の到達点:
+- 16コース(合計約120時間)のAI駆動開発コースを修了
+- 3つのプロダクションレベルプロジェクトを構築済み
+- Copilot, Claude Code, Codex, Dify, LangGraph, MCP/A2Aを実践経験
+
+今後の方向性(いずれかを選択):
+A. 社内のAI駆動開発リード(チーム導入推進)
+B. AI/LLMエンジニアとしてのキャリア深化
+C. AIプロダクトの起業/個人開発
+
+月ごとの学習テーマ、推奨リソース、達成目標を含めてください。<button class="cb" onclick="copyP('p_rCh1')">コピー</button></div>
+
+<ul class="checklist">
+<li>16コースの振り返りを完了した</li>
+<li>今後6ヶ月の学習計画を立てた</li>
+<li>直近1ヶ月の具体的なアクション項目を3つ決めた</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 参考リンク(全体) -->
+<!-- ============================================================ -->
+<div class="sec">
+<div class="refs"><h4>コース全体の参考リンク</h4><ul>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/memory" target="_blank" rel="noopener">Context Engineering -- Claude Code Memory</a></li>
+<li><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph Documentation</a></li>
+<li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol (MCP)</a></li>
+<li><a href="https://google.github.io/A2A/" target="_blank" rel="noopener">A2A Protocol (Agent-to-Agent)</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK</a></li>
+<li><a href="https://supabase.com/" target="_blank" rel="noopener">Supabase</a></li>
+<li><a href="https://nextjs.org/" target="_blank" rel="noopener">Next.js</a></li>
+<li><a href="https://vercel.com/" target="_blank" rel="noopener">Vercel</a></li>
+</ul></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<div class="finale-banner">
+<h2>全16コース完走、お疲れさまでした。</h2>
+<p>Layer 0の基礎から始まり、Layer 3の統合マスターまで。約120時間の学習を経て、AI駆動開発を体系的に修得した数少ない実践者になりました。ここで得たスキルと3つのプロジェクトは、今後のキャリアの強力な武器になります。あとは、実務で使い倒すだけです。</p>
+</div>
+
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C16 AI駆動開発マスター 統合プロジェクト<br>
+  全11セクション + 復習3回 = 900分(15時間)<br>
+  これがシリーズ最終コースです。
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function dlContextSheet(){const t=`# コンテキストエンジニアリング設計シート\n\n## プロジェクト情報\n- プロジェクト名:\n- 技術スタック:\n- チーム規模:\n\n## Layer 2: プロジェクト設定(CLAUDE.md)\n\n### プロジェクト概要(2文以内)\n\n\n### コーディング規約\n1.\n2.\n3.\n4.\n5.\n\n### テスト方針\n- テストフレームワーク:\n- 最低カバレッジ:\n- テスト種別(単体/結合/E2E):\n\n### 禁止事項(理由つき)\n| 禁止事項 | 理由 |\n|---------|------|\n| | |\n| | |\n| | |\n\n### Git規約\n- ブランチ戦略:\n- コミットメッセージフォーマット:\n- PRルール:\n\n## Layer 3: セッション文脈\n- メモリに保持すべき情報:\n- 自動メモリの活用方針:\n\n## Layer 4: タスク指示テンプレート\n\n### 新機能追加\n\n\n### バグ修正\n\n\n### リファクタリング\n\n\n---\n作成日:\n作成者:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='コンテキストエンジニアリング設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function dlToolConfigSet(){const t=`# ツール横断設定ファイルセット\n\n---\n\n## 1. CLAUDE.md(Claude Code用)\n\n\`\`\`markdown\n# プロジェクト概要\n[ここに記入]\n\n# 技術スタック\n[ここに記入]\n\n# コーディング規約\n- [規約1]\n- [規約2]\n\n# テスト方針\n[ここに記入]\n\n# 禁止事項\n- [禁止事項1] -- [理由]\n- [禁止事項2] -- [理由]\n\`\`\`\n\n---\n\n## 2. AGENTS.md(Codex CLI用)\n\n\`\`\`markdown\n# Project Overview\n[CLAUDE.mdと同じ内容を英語で]\n\n# Coding Standards\n[CLAUDE.mdの規約を転記]\n\n# Sandbox Permissions\n- allow: [\"read\", \"write:src/**\", \"run:npm test\"]\n- deny: [\"run:rm -rf\", \"write:.env\"]\n\`\`\`\n\n---\n\n## 3. copilot-instructions.md(GitHub Copilot用)\n\n\`\`\`markdown\n# Code Completion Guidelines\n\n## Import Order\n1. Node built-ins\n2. External packages\n3. Internal modules\n4. Types\n\n## Naming Conventions\n- Components: PascalCase\n- Functions: camelCase\n- Constants: UPPER_SNAKE_CASE\n- Types/Interfaces: PascalCase with prefix (I for interfaces optional)\n\n## Type Definitions\n- Always use explicit return types for functions\n- Prefer interface over type for object shapes\n- Use readonly where applicable\n\`\`\`\n\n---\n\n作成日:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ツール横断設定ファイルセット.md';a.click();URL.revokeObjectURL(u);}
+
+function dlPJ1Spec(){const t=`# PJ1 タスク管理SaaS -- 要件定義テンプレート\n\n## 1. プロジェクト概要\n- アプリ名:\n- 目的:\n- ターゲットユーザー:\n- 技術スタック: Next.js 15 + TypeScript + Supabase + Tailwind CSS v4\n- デプロイ: Vercel\n\n## 2. 機能要件\n\n### 認証\n- [ ] メール/パスワード認証\n- [ ] ソーシャルログイン(任意)\n- [ ] パスワードリセット\n\n### ダッシュボード\n- [ ] タスク統計サマリー\n- [ ] タスク一覧(ソート可能)\n- [ ] クイック作成\n\n### タスクCRUD\n- [ ] 作成(タイトル、説明、ステータス、優先度、期限)\n- [ ] 読取(詳細ビュー)\n- [ ] 更新(インライン編集)\n- [ ] 削除(確認付き)\n\n### 検索・フィルタ\n- [ ] テキスト検索\n- [ ] ステータスフィルタ\n- [ ] 優先度フィルタ\n- [ ] 期限ソート\n\n### 通知\n- [ ] リアルタイム通知(Supabase Realtime)\n- [ ] 期限アラート\n\n## 3. 非機能要件\n- レスポンス: 200ms以内\n- 同時接続: 100ユーザー\n- アクセシビリティ: WCAG 2.1 AA\n- バックアップ: Supabase自動バックアップ\n\n## 4. 画面一覧\n| 画面 | パス | 説明 |\n|------|------|------|\n| ログイン | /login | |\n| 新規登録 | /signup | |\n| ダッシュボード | /dashboard | |\n| タスク詳細 | /tasks/[id] | |\n\n## 5. DB設計\n### テーブル一覧\n| テーブル名 | 説明 |\n|-----------|------|\n| users | |\n| tasks | |\n| notifications | |\n| activity_logs | |\n\n## 6. API設計\n| エンドポイント | メソッド | 説明 |\n|---------------|---------|------|\n| | | |\n\n---\n作成日:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='PJ1要件定義テンプレート.md';a.click();URL.revokeObjectURL(u);}
+
+function dlPJ2RAG(){const t=`# PJ2 RAGチャットボット -- 設計シート\n\n## 1. プロジェクト概要\n- システム名:\n- 目的:\n- ターゲットユーザー:\n- 技術スタック: LangGraph + LangChain + OpenAI + Chroma + Dify + Slack\n\n## 2. データソース\n| ドキュメント | 形式 | ページ数 | チャンク戦略 |\n|------------|------|---------|-------------|\n| | PDF | | |\n| | Markdown | | |\n| | PDF | | |\n\n## 3. チャンク設計\n| パラメータ | 値 | 理由 |\n|-----------|-----|------|\n| チャンクサイズ | | |\n| オーバーラップ | | |\n| 分割単位 | | |\n\n## 4. LangGraphノード設計\n| ノード | 入力 | 出力 | 条件分岐 |\n|--------|------|------|----------|\n| query_analyzer | | | |\n| retriever | | | |\n| relevance_checker | | | |\n| generator | | | |\n| hallucination_checker | | | |\n| query_rewriter | | | |\n\n## 5. 評価指標\n| 指標 | 目標値 | 測定方法 |\n|------|--------|----------|\n| 回答正確性 | | |\n| ソース引用率 | | |\n| ハルシネーション率 | | |\n| レイテンシ(P95) | | |\n\n## 6. Difyワークフロー設計\n- ワークフロータイプ:\n- ノード構成:\n- API連携:\n\n## 7. Slack連携\n- トリガー:\n- レスポンス形式:\n- エラーハンドリング:\n\n---\n作成日:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='PJ2 RAG設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function dlPJ3Agent(){const t=`# PJ3 マルチエージェント -- 設計シート\n\n## 1. プロジェクト概要\n- システム名:\n- 目的:\n- 技術スタック: MCP + A2A + Claude Agent SDK + Python\n\n## 2. エージェント設計\n\n### リサーチエージェント\n- 役割:\n- MCPツール:\n  - web_search(query, max_results)\n  - scrape_url(url, extract_schema)\n  - company_profile(company_name)\n- 出力形式:\n\n### ドラフトエージェント\n- 役割:\n- MCPツール:\n  - generate_proposal(research_data, template_name)\n  - format_document(content, output_format)\n- 出力形式:\n\n### レビューエージェント\n- 役割:\n- MCPツール:\n  - check_facts(document, sources)\n  - check_grammar(document, language)\n  - overall_review(document, criteria)\n- 出力形式:\n\n## 3. A2A Agent Card\n| フィールド | リサーチ | ドラフト | レビュー |\n|-----------|---------|---------|----------|\n| name | | | |\n| url | | | |\n| capabilities | | | |\n| skills | | | |\n\n## 4. オーケストレーション\n- 実行順序:\n- レビューループ条件:\n  - 合格スコア:\n  - 最大修正回数:\n- タイムアウト:\n  - 各エージェント:\n  - 全体:\n\n## 5. エラーハンドリング\n| エラー種別 | 対処 | リトライ回数 |\n|-----------|------|-------------|\n| 接続失敗 | | |\n| タイムアウト | | |\n| レート制限 | | |\n| 不正出力 | | |\n\n## 6. セキュリティ\n- エージェント間認証:\n- 入力サニタイズ:\n- 出力フィルタ:\n\n---\n作成日:\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='PJ3マルチエージェント設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function dlPortfolioReadme(){const t=`# AI駆動開発マスター -- ポートフォリオ\n\n## 自己紹介\n[名前/ハンドルネーム]\n[一言自己紹介]\n\n## コース概要\nEzoAI GenAI Training Series 全16コース(約120時間)を修了し、\n3つのプロダクションレベルプロジェクトを構築しました。\n\n## プロジェクト一覧\n\n### PJ1: タスク管理SaaS\n- リポジトリ: [URL]\n- デモ: [URL]\n- 技術: Next.js 15 / TypeScript / Supabase / Tailwind CSS / Vercel\n- 概要: [1段落]\n\n### PJ2: RAGチャットボット\n- リポジトリ: [URL]\n- デモ: [URL]\n- 技術: LangGraph / LangChain / Dify / Slack / LangSmith\n- 概要: [1段落]\n\n### PJ3: マルチエージェント営業支援\n- リポジトリ: [URL]\n- デモ: [URL]\n- 技術: MCP / A2A / Claude Agent SDK / Docker\n- 概要: [1段落]\n\n## 技術スタック\n\n| カテゴリ | 技術 |\n|---------|------|\n| フロントエンド | Next.js, React, TypeScript, Tailwind CSS |\n| バックエンド | Supabase, FastAPI, Python |\n| AI/LLM | Claude API, OpenAI API, LangChain, LangGraph |\n| エージェント | MCP, A2A, Claude Agent SDK, Dify |\n| インフラ | Vercel, Docker, GitHub Actions |\n| AI開発ツール | Claude Code, GitHub Copilot, Codex CLI, Cursor |\n\n## AI駆動開発で得た知見\n1.\n2.\n3.\n4.\n5.\n\n## AI開発ツール比較(使ってみた所感)\n| ツール | 得意領域 | 所感 |\n|--------|---------|------|\n| Claude Code | | |\n| GitHub Copilot | | |\n| Codex CLI | | |\n| Cursor | | |\n| Dify | | |\n\n---\nBuilt with AI-Driven Development\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ポートフォリオREADMEテンプレート.md';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

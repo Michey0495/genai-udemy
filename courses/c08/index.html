@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C08 OpenAI Codex応用 自律開発エージェント - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 full-auto</a><a href="#s2">02 AGENTS.md</a><a href="#s3">03 リファクタ</a><a href="#rA">Review A</a><a href="#s4">04 テスト</a><a href="#s5">05 マルチリポ</a><a href="#rB">Review B</a><a href="#s6">06 ツール横断</a><a href="#s7">07 本番適用</a><a href="#s8">08 総合</a><a href="#rC">Review C</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 08 / Layer 2 -- ツール応用</div>
+  <h1><span>OpenAI Codex応用</span> 自律開発エージェント</h1>
+  <p class="lead">Codex CLIの自律実行機能をフル活用した高度な開発ワークフロー。full-autoモードの安全運用、大規模リファクタリング、テスト自動生成、ツール横断ワークフロー、CI/CD統合まで。C06基礎の上に本格的なプロダクション適用力を身につけます。</p>
+  <div class="meta"><span class="tag">中級-上級</span><span class="tag">約10時間(600分)</span><span class="tag">8 Sections + 3 Review</span><span class="tag">ハンズオン比率 65%</span><span class="tag">前提: C06受講済み</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">full-autoモードの設計と安全運用 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s2">AGENTS.md高度設計 -- マルチエージェント指示 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s3">大規模リファクタリング <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li class="review-item"><a href="#rA">復習ハンズオン A -- full-auto + AGENTS.md + リファクタリング <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s4">テスト自動生成と品質保証 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s5">マルチリポジトリ運用 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li class="review-item"><a href="#rB">復習ハンズオン B -- テスト生成 + マルチリポ横断修正 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s6">ツール横断ワークフロー -- Copilot/Claude Code併用 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s7">本番環境への適用 -- CI/CD統合 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s8">総合ハンズオン: 既存プロジェクトのフルリファクタリング <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">110min</span></a></li>
+  <li class="review-item"><a href="#rC">復習ハンズオン C -- 全体振り返り + 改善計画 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">40min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: full-autoモードの設計と安全運用 (55min: 講義30 + ハンズオン25) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 55min(講義30 + ハンズオン25)</div><h2>full-autoモードの設計と安全運用</h2>
+
+<h3>full-autoの仕組み</h3>
+<p>Codex CLIには3つの実行モードがあります。suggest(提案のみ)、auto-edit(ファイル編集を自動承認)、full-auto(全操作を自動実行)。full-autoモードではCodexがサンドボックス内でシェルコマンドの実行からファイル編集までを一気に行います。人間の承認ステップを飛ばすため速度は劇的に向上しますが、その分だけ運用設計が問われます。</p>
+
+<h3>安全性の基盤</h3>
+<p>full-autoが「自由にやりたい放題」にならない理由は、サンドボックスの存在です。</p>
+<ul>
+  <li><strong>ネットワーク隔離</strong> -- 外部への通信を遮断。悪意のあるコードが実行されても情報流出しない</li>
+  <li><strong>ファイルシステム隔離</strong> -- codex.tomlの writable_roots で書き込み可能なディレクトリを明示的に制限</li>
+  <li><strong>プロセス隔離</strong> -- ホストOSへの影響を最小化するコンテナ技術</li>
+</ul>
+
+<div class="prompt" id="p_s1_toml"># codex.toml の例
+[sandbox]
+writable_roots = ["./src", "./tests", "./docs"]
+# ./src, ./tests, ./docs 以外への書き込みは拒否される<button class="cb" onclick="copyP('p_s1_toml')">コピー</button></div>
+
+<h3>それでも必要な注意点</h3>
+<p>サンドボックスがあっても万能ではありません。意図しないファイルの大量削除、src配下の想定外の書き換え、テストコードの上書きといったリスクは残ります。APIコール数が膨れ上がるケースもあるため、トークン消費のモニタリングは欠かせません。</p>
+
+<h3>承認フローの設計</h3>
+<p>すべてのタスクにfull-autoを適用するのは危険です。タスクの性質に応じて実行モードを使い分ける判断基準を持つことが運用の要になります。</p>
+<table class="ct"><thead><tr><th>タスク種別</th><th>推奨モード</th><th>理由</th></tr></thead><tbody>
+<tr><td>テストファイルの新規生成</td><td>full-auto</td><td>既存コードへの影響が小さい。生成後にテスト実行で検証可能</td></tr>
+<tr><td>既存コードのリファクタリング</td><td>auto-edit</td><td>変更差分を確認してからコミットしたい</td></tr>
+<tr><td>設定ファイルの変更</td><td>suggest</td><td>CI/CDやデプロイに直結するため慎重に</td></tr>
+<tr><td>ドキュメント生成</td><td>full-auto</td><td>実行コードに影響しない</td></tr>
+<tr><td>依存パッケージの更新</td><td>suggest</td><td>破壊的変更のリスク。lock fileの確認が必須</td></tr>
+<tr><td>新機能のスキャフォールド</td><td>full-auto</td><td>新規ファイルが中心。既存への影響は少ない</td></tr>
+</tbody></table>
+
+<h3>ロールバック手順</h3>
+<p>full-autoで意図しない変更が起きた場合、gitが最後の砦です。コマンドの引き出しを整理しておきます。</p>
+<div class="prompt" id="p_s1_rollback"># 作業中の変更を一時退避
+git stash
+
+# 特定ファイルだけ元に戻す
+git checkout -- path/to/file.ts
+
+# 直前のコミットを取り消し(変更は残す)
+git reset --soft HEAD~1
+
+# 直前のコミットごと完全に巻き戻す(変更も消える)
+git reset --hard HEAD~1<button class="cb" onclick="copyP('p_s1_rollback')">コピー</button></div>
+
+<div class="box warn"><div class="bt">git reset --hard は最終手段</div>--hard を使うと変更が完全に消えます。まずは git stash や --soft で復旧を試み、それでもダメな場合のみ --hard を検討してください。</div>
+
+<h3>full-auto適用の判断フロー</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart TD
+  A["タスクを受領"] --> B{"既存コードへの\n影響は?"}
+  B -->|大きい| C{"テストは\n存在する?"}
+  B -->|小さい/新規| D["full-auto OK"]
+  C -->|ある| E["auto-edit\n差分確認後コミット"]
+  C -->|ない| F["先にテスト生成\nfull-autoでOK"]
+  F --> E
+  B -->|設定/インフラ| G["suggest\n手動確認必須"]
+</pre><div class="caption">タスクの影響度とテスト有無で実行モードを選択する</div></div>
+
+<h3>監視とログ</h3>
+<p>full-auto実行中はターミナルにリアルタイムでログが流れます。--watchフラグを付けると、Codexが実行した各ステップとその結果を逐一表示します。想定外のファイルに触れていないか、エラーが発生していないかをログで追えるようにしておくのが運用の基本です。</p>
+
+<h3>実行ログの読み方</h3>
+<p>full-autoモードの実行後に「何が行われたか」を把握する方法は複数あります。</p>
+<table class="ct"><thead><tr><th>確認方法</th><th>コマンド / 操作</th><th>わかること</th></tr></thead><tbody>
+<tr><td>ターミナルログ</td><td>実行中のターミナル出力をスクロール</td><td>各ステップの実行順序、成功/失敗、エラーメッセージ</td></tr>
+<tr><td>git diff</td><td><code>git diff</code> / <code>git diff --stat</code></td><td>変更されたファイルの一覧と差分。意図しない変更の発見に使う</td></tr>
+<tr><td>git log</td><td><code>git log --oneline -10</code></td><td>Codexが自動コミットした場合のコミット履歴</td></tr>
+<tr><td>--watchフラグ</td><td><code>codex --watch --approval-mode full-auto "タスク"</code></td><td>リアルタイムで各アクション(ファイル読取、編集、コマンド実行)を逐一表示</td></tr>
+</tbody></table>
+<div class="box tip"><div class="bt">Tips: ログを残す習慣</div>full-autoの実行結果をファイルにリダイレクトしておくと、後から振り返れて便利です。<code>codex --approval-mode full-auto "タスク" 2>&1 | tee codex-log.txt</code> で標準出力とエラー出力の両方をファイルに記録できます。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. full-autoモードの安全性を担保する主な仕組みはどれですか?</p>
+<label><input type="radio" name="q1" value="a">AIが自律的にリスクを判断して実行を停止する</label>
+<label><input type="radio" name="q1" value="b">サンドボックスによるネットワーク隔離とファイルシステム隔離</label>
+<label><input type="radio" name="q1" value="c">管理者のリアルタイム監視が常に必要</label>
+<label><input type="radio" name="q1" value="d">実行速度を意図的に遅くしている</label>
+<div class="ans" id="a1">正解: B。Codexはサンドボックス内で動作し、ネットワーク通信の遮断とwritable_rootsによるファイルシステム制限で安全性を確保しています。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. 設定ファイル(CI/CDやデプロイ関連)の変更に推奨される実行モードは?</p>
+<label><input type="radio" name="q2" value="a">full-auto</label>
+<label><input type="radio" name="q2" value="b">auto-edit</label>
+<label><input type="radio" name="q2" value="c">suggest</label>
+<label><input type="radio" name="q2" value="d">どれでも同じ</label>
+<div class="ans" id="a2">正解: C。設定ファイルの変更はCI/CDやデプロイに直結するため、suggestモードで提案内容を手動確認してから適用するのが安全です。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 01 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 3モード切替とロールバック <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: suggest / auto-edit / full-auto の違いを体感し、ロールバック操作を身につける</div>
+
+<h4>パート1: 同一タスクを3モードで実行(10min)</h4>
+<ol>
+<li>任意のプロジェクトディレクトリで新しいブランチを作成してください</li>
+</ol>
+<div class="prompt" id="p_s1h1">git checkout -b codex-mode-test<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+<ol start="2">
+<li>以下のタスクを3つのモードでそれぞれ実行し、動作の違いを観察してください</li>
+</ol>
+<div class="prompt" id="p_s1h2">codex --approval-mode suggest "README.mdにプロジェクトの概要セクションを追加して"
+
+codex --approval-mode auto-edit "README.mdにプロジェクトの概要セクションを追加して"
+
+codex --approval-mode full-auto "README.mdにプロジェクトの概要セクションを追加して"<button class="cb" onclick="copyP('p_s1h2')">コピー</button></div>
+<ol start="3">
+<li>各モードで「人間が介入するタイミング」がどう変わるかを記録してください</li>
+</ol>
+
+<h4>パート2: ロールバック練習(10min)</h4>
+<ol>
+<li>full-autoで以下を実行し、意図的に大きめの変更を発生させてください</li>
+</ol>
+<div class="prompt" id="p_s1h3">codex --approval-mode full-auto "srcディレクトリ内の全ファイルに日本語コメントを追加して"<button class="cb" onclick="copyP('p_s1h3')">コピー</button></div>
+<ol start="2">
+<li>変更をコミットせず、以下の手順でロールバックしてください
+  <ul>
+  <li>まず git diff で変更箇所を確認</li>
+  <li>git stash で一時退避</li>
+  <li>git stash pop で復元</li>
+  <li>git checkout -- . で全変更を破棄</li>
+  </ul>
+</li>
+</ol>
+
+<h4>パート3: 承認フロー判断シート作成(5min)</h4>
+<ol>
+<li>以下のテンプレートをダウンロードし、自分のプロジェクトの典型タスクを5つ記入してください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadApprovalSheet();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>承認フロー判断シート(.md)</a>
+
+<ul class="checklist">
+<li>3モードの動作の違いを確認した</li>
+<li>git stash / checkout によるロールバックを実行した</li>
+<li>承認フロー判断シートに5タスク記入した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://github.com/openai/codex" target="_blank" rel="noopener">OpenAI Codex CLI -- GitHub</a></li>
+<li><a href="https://platform.openai.com/docs/guides/codex" target="_blank" rel="noopener">Codex CLI Documentation</a></li>
+<li><a href="https://git-scm.com/docs/git-stash" target="_blank" rel="noopener">git stash -- Git公式ドキュメント</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: AGENTS.md高度設計 (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 55min(講義25 + ハンズオン30)</div><h2>AGENTS.md高度設計 -- マルチエージェント指示</h2>
+
+<h3>階層的AGENTS.md</h3>
+<p>AGENTS.mdはプロジェクトルートに1つ置くだけでも効果がありますが、サブディレクトリごとに配置するとCodexの精度が格段に上がります。ルートにはプロジェクト全体の方針、サブディレクトリにはその領域固有のルールを書く。人間のチームで言えば、全社ルールと部門ルールの関係に近い構造です。</p>
+<div class="prompt" id="p_s2_tree">project/
+  AGENTS.md            # プロジェクト全体: コーディング規約、使用言語、テストポリシー
+  src/
+    frontend/
+      AGENTS.md        # フロントエンド固有: React/Next.js, Tailwind, コンポーネント命名規則
+    backend/
+      AGENTS.md        # バックエンド固有: Express/Fastify, DB接続, エラーハンドリング方針
+    shared/
+      AGENTS.md        # 共有ライブラリ: 型定義、ユーティリティの変更ルール
+  tests/
+    AGENTS.md          # テスト固有: テストフレームワーク、カバレッジ基準<button class="cb" onclick="copyP('p_s2_tree')">コピー</button></div>
+
+<h3>ファイルスコープ制御</h3>
+<p>サブディレクトリのAGENTS.mdに「このディレクトリ以下のファイルだけを対象にする」と明記すると、Codexが別ディレクトリのファイルを勝手に触るリスクを抑えられます。マイクロサービス構成やモノレポで特に効果的です。</p>
+<div class="prompt" id="p_s2_scope"># src/frontend/AGENTS.md の例
+
+## スコープ
+このAGENTS.mdは src/frontend/ 配下のファイルのみに適用される。
+src/backend/ や src/shared/ のファイルを直接変更してはならない。
+共有型定義を変更する必要がある場合は、変更提案をコメントとして出力すること。
+
+## 技術スタック
+- React 19 + Next.js 15 (App Router)
+- Tailwind CSS v4
+- 状態管理: Zustand
+- テスト: Vitest + Testing Library<button class="cb" onclick="copyP('p_s2_scope')">コピー</button></div>
+
+<h3>マルチエージェント指示</h3>
+<p>複数のCodexインスタンス(あるいはClaude CodeやCopilot)が同時に同じリポジトリを編集する場面が出てきます。衝突を防ぐために、AGENTS.mdにロック対象ファイルや編集優先順位を定義しておくと混乱が減ります。</p>
+
+<h3>AGENTS.md設計パターン集</h3>
+<div class="cols">
+<div class="col-card"><h4>フロントエンド向け</h4><ul>
+<li>コンポーネントはfunction宣言で書く</li>
+<li>CSSはTailwindユーティリティのみ</li>
+<li>状態管理はZustandかjotaiを使う</li>
+<li>APIコールはカスタムhookに集約</li>
+<li>ページコンポーネントはServer Component</li>
+</ul></div>
+<div class="col-card"><h4>バックエンド向け</h4><ul>
+<li>エラーは必ずtry-catchで捕捉</li>
+<li>DBクエリはパラメータ化する</li>
+<li>環境変数は直接参照せずconfig経由</li>
+<li>ログはpino/winstonを使う</li>
+<li>レスポンスは統一フォーマットで返す</li>
+</ul></div>
+<div class="col-card"><h4>インフラ向け</h4><ul>
+<li>Terraformのstate変更は禁止</li>
+<li>Dockerfileの変更はセキュリティレビュー必須</li>
+<li>環境変数の追加時はREADME更新も行う</li>
+<li>CIパイプラインの変更はdry-runで確認</li>
+</ul></div>
+<div class="col-card"><h4>テスト向け</h4><ul>
+<li>テスト名は日本語で書いて可</li>
+<li>モックは最小限に。実結合テスト推奨</li>
+<li>カバレッジ80%以上を維持</li>
+<li>スナップショットテストは新規追加しない</li>
+</ul></div>
+</div>
+
+<h3>CLAUDE.mdとの差異と互換性</h3>
+<table class="ct"><thead><tr><th>項目</th><th>AGENTS.md (Codex)</th><th>CLAUDE.md (Claude Code)</th></tr></thead><tbody>
+<tr><td>対象ツール</td><td>OpenAI Codex CLI</td><td>Claude Code (Anthropic)</td></tr>
+<tr><td>読み込みタイミング</td><td>Codex起動時にカレントディレクトリから上方探索</td><td>claude起動時にプロジェクトルートを探索</td></tr>
+<tr><td>階層サポート</td><td>サブディレクトリごとに配置可能</td><td>プロジェクトルートの1ファイル(+ .claude/settings.json)</td></tr>
+<tr><td>記法</td><td>Markdown自由記述</td><td>Markdown自由記述</td></tr>
+<tr><td>相互読み込み</td><td>CLAUDE.mdは読まない</td><td>AGENTS.mdは読まない</td></tr>
+<tr><td>互換運用</td><td colspan="2">共通ルールを別ファイル(CODING_RULES.md等)に書き、両方から参照するパターンが実用的</td></tr>
+</tbody></table>
+
+<div class="box tip"><div class="bt">Tips: 共通ルールの切り出し</div>AGENTS.mdとCLAUDE.mdに同じ内容をコピペすると保守が面倒です。CODING_RULES.mdを1つ作り、両方のファイルから「詳細はCODING_RULES.mdを参照」と記述するほうが現実的です。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 02</h4>
+<div class="q"><p>Q3. サブディレクトリにAGENTS.mdを置く主な目的は?</p>
+<label><input type="radio" name="q3" value="a">ファイルサイズを分散させるため</label>
+<label><input type="radio" name="q3" value="b">各領域固有のルールを定義し、Codexの精度を上げるため</label>
+<label><input type="radio" name="q3" value="c">CLAUDE.mdとの互換性を確保するため</label>
+<label><input type="radio" name="q3" value="d">Codexの実行速度を上げるため</label>
+<div class="ans" id="a3">正解: B。ルートに全体方針、サブディレクトリに領域固有のルールを書くことで、Codexがコンテキストを正確に理解し、より適切なコードを生成します。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 02 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 階層的AGENTS.md構築 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: プロジェクト構造に合わせた階層的AGENTS.mdを設計し、スコープ制限の効果を確認する</div>
+
+<h4>パート1: 階層的AGENTS.md作成(15min)</h4>
+<ol>
+<li>以下のテンプレートをダウンロードしてください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadAgentsTemplate();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>AGENTS.md高度テンプレート(階層型)(.md)</a>
+<ol start="2">
+<li>以下のディレクトリ構造を作成し、各階層にAGENTS.mdを配置してください</li>
+</ol>
+<div class="prompt" id="p_s2h1">mkdir -p codex-agents-demo/src/{frontend,backend} codex-agents-demo/tests
+
+# ルートAGENTS.md
+cat > codex-agents-demo/AGENTS.md << 'EOF'
+# プロジェクトルール
+- 言語: TypeScript
+- テスト: 全関数にユニットテストを書くこと
+- コミットメッセージ: Conventional Commits形式
+EOF
+
+# フロントエンド AGENTS.md
+cat > codex-agents-demo/src/frontend/AGENTS.md << 'EOF'
+# フロントエンドルール
+## スコープ
+src/frontend/ 配下のファイルのみ対象。backend/ のファイルを変更してはならない。
+## 技術スタック
+- React 19 + Tailwind CSS v4
+- コンポーネントはfunction宣言
+EOF
+
+# バックエンド AGENTS.md
+cat > codex-agents-demo/src/backend/AGENTS.md << 'EOF'
+# バックエンドルール
+## スコープ
+src/backend/ 配下のファイルのみ対象。frontend/ のファイルを変更してはならない。
+## 技術スタック
+- Express + Prisma
+- エラーは必ずtry-catchで捕捉
+EOF<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>パート2: スコープ制限テスト(10min)</h4>
+<ol>
+<li>frontend/ディレクトリで以下を実行し、backend/のファイルが変更されないか確認してください</li>
+</ol>
+<div class="prompt" id="p_s2h2">cd codex-agents-demo/src/frontend
+codex --approval-mode auto-edit "ボタンコンポーネントを作成して"<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+<ol start="2">
+<li>git diff でfrontend/以外のファイルが変更されていないことを確認</li>
+</ol>
+
+<h4>パート3: AGENTS.md改善をCodexに提案させる(5min)</h4>
+<div class="prompt" id="p_s2h3">codex "このプロジェクトのAGENTS.mdを読んで、改善提案を3つ出して。不足しているルールや曖昧な記述を指摘して。"<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<ul class="checklist">
+<li>ルート + 2つのサブディレクトリにAGENTS.mdを配置した</li>
+<li>スコープ制限が正しく効いていることを確認した</li>
+<li>CodexにAGENTS.mdの改善提案を出させた</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://github.com/openai/codex/blob/main/docs/AGENTS.md" target="_blank" rel="noopener">AGENTS.md仕様 -- Codex公式</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/memory" target="_blank" rel="noopener">CLAUDE.md -- Claude Code Memory Files</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: 大規模リファクタリング (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 60min(講義25 + ハンズオン35)</div><h2>大規模リファクタリング</h2>
+<img src="assets/refactoring-concept.png" alt="リファクタリングの概念図" class="sec-hero-img">
+
+<h3>AIによるリファクタリングが有効な場面</h3>
+<p>人間が嫌がる定型的な修正こそAIの得意領域です。</p>
+<ul>
+  <li><strong>命名統一</strong> -- camelCaseとsnake_caseの混在を一括修正</li>
+  <li><strong>コードスタイル統一</strong> -- セミコロン有無、インデント幅の統一</li>
+  <li><strong>フレームワーク移行</strong> -- Express to Fastify、Options API to Composition API</li>
+  <li><strong>言語変換</strong> -- JavaScript to TypeScript、Python 2 to Python 3</li>
+  <li><strong>非推奨APIの置換</strong> -- ライブラリのバージョンアップに伴うAPI変更</li>
+</ul>
+
+<h3>リファクタリング戦略</h3>
+<p>2つのアプローチがあります。段階的(ファイルを1つずつ処理)と一括(full-autoで一気に実行)。どちらを選ぶかはテストの充実度で決まります。</p>
+<div class="cols">
+<div class="col-card"><h4>段階的リファクタリング</h4><p>ファイル単位で変換しテストを通す。安全だが時間がかかる。テストが不十分なプロジェクト向き。</p></div>
+<div class="col-card"><h4>一括リファクタリング</h4><p>full-autoで全ファイルを一気に変換。速いがリスクが大きい。テストが充実しているプロジェクト向き。</p></div>
+</div>
+
+<h3>安全にリファクタリングするための前提</h3>
+<p>テストがないコードのリファクタリングは、目隠しで走るのに等しい。まずテストを書き、それからリファクタリングに入る。この順番は絶対です。Codexに「まずテストを書いて、その後リファクタして」と一度に指示できるのが、AIリファクタリングの強みでもあります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart LR
+  A["テスト確認"] --> B{"テストは\n十分?"}
+  B -->|No| C["テスト自動生成"]
+  C --> D["ブランチ作成"]
+  B -->|Yes| D
+  D --> E["リファクタリング\n実行"]
+  E --> F["テスト実行"]
+  F --> G{"全テスト\nパス?"}
+  G -->|No| H["差分確認\n修正"]
+  H --> E
+  G -->|Yes| I["コードレビュー"]
+  I --> J["マージ"]
+</pre><div class="caption">テスト確認 → ブランチ作成 → リファクタ → テスト → レビュー → マージの安全フロー</div></div>
+
+<h3>段階的リファクタリングアプローチ</h3>
+<p>一度にすべてを変えると何が壊れたか特定できません。フェーズを分けて、各フェーズでテストを通す運用が安全です。</p>
+<details><summary>Phase 1: 命名統一(影響小)</summary><div class="inner">
+<p>変数名・関数名の表記揺れを統一する。振る舞いは一切変えないので、テストの期待値も変わらない。</p>
+<div class="prompt" id="p_s3_phase1">// Before: snake_case と camelCase が混在
+function get_user_data(user_id) {
+  const user_name = fetchName(user_id)
+  const userEmail = fetchEmail(user_id)
+  return { user_name, userEmail }
+}
+
+// After: camelCase に統一
+function getUserData(userId) {
+  const userName = fetchName(userId)
+  const userEmail = fetchEmail(userId)
+  return { userName, userEmail }
+}<button class="cb" onclick="copyP('p_s3_phase1')">コピー</button></div>
+</div></details>
+
+<details><summary>Phase 2: 関数分割(影響中)</summary><div class="inner">
+<p>50行を超える関数を責務ごとに分割する。入出力は変えないので、既存テストはそのまま通るはず。</p>
+<div class="prompt" id="p_s3_phase2">// Before: 1つの巨大関数
+function processOrder(order) {
+  // バリデーション(20行)
+  // 在庫確認(15行)
+  // 金額計算(15行)
+  // DB保存(10行)
+  // メール送信(10行)
+}
+
+// After: 責務ごとに分割
+function validateOrder(order) { /* ... */ }
+function checkInventory(order) { /* ... */ }
+function calculateTotal(order) { /* ... */ }
+function saveOrder(order) { /* ... */ }
+function sendConfirmation(order) { /* ... */ }
+
+function processOrder(order) {
+  validateOrder(order)
+  checkInventory(order)
+  const total = calculateTotal(order)
+  saveOrder({ ...order, total })
+  sendConfirmation(order)
+}<button class="cb" onclick="copyP('p_s3_phase2')">コピー</button></div>
+</div></details>
+
+<details><summary>Phase 3: パターン適用(影響大)</summary><div class="inner">
+<p>デザインパターンの適用、フレームワーク移行など構造レベルの変更。テストの修正が必要になることが多いため、テストが十分にある状態で着手してください。</p>
+<p>例: コールバック地獄 → async/await変換、Class Component → Function Component、Express → Fastify移行など。</p>
+</div></details>
+
+<div class="box tip"><div class="bt">Tips: ブランチ戦略</div>リファクタリング専用のブランチを必ず切ってください。mainブランチでfull-autoを走らせるのは事故の元です。refactor/naming-convention のように目的が明確なブランチ名をつけましょう。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 03</h4>
+<div class="q"><p>Q4. テストが存在しないレガシーコードをリファクタリングする正しい手順は?</p>
+<label><input type="radio" name="q4" value="a">full-autoで一気にリファクタリングし、動作確認する</label>
+<label><input type="radio" name="q4" value="b">まずテストを生成し、テストが通ることを確認してからリファクタリングする</label>
+<label><input type="radio" name="q4" value="c">リファクタリング後にテストを書く</label>
+<label><input type="radio" name="q4" value="d">テストなしでsuggestモードで少しずつ進める</label>
+<div class="ans" id="a4">正解: B。テストが先。リファクタリング前後で振る舞いが変わっていないことを確認する手段がなければ、安全な変更は保証できません。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 03 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: レガシーコードのリファクタリング <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: テストなしのレガシーコードに対してテスト生成 → リファクタリング → 回帰確認を一連で実行する</div>
+
+<h4>Step 1: サンプルレガシーコードの準備(5min)</h4>
+<a href="#" class="dl" onclick="downloadLegacyCode();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルレガシーコード(.js)</a>
+<ol>
+<li>ダウンロードしたファイルを新しいプロジェクトに配置してください</li>
+<li>Codexにコードの問題点を分析させます</li>
+</ol>
+<div class="prompt" id="p_s3h1">codex "legacy-code.jsを読んで、問題点を一覧にして。命名規則、エラーハンドリング、コード構造の観点で分析して。"<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+
+<h4>Step 2: テスト自動生成(10min)</h4>
+<div class="prompt" id="p_s3h2">codex --approval-mode full-auto "legacy-code.jsの全関数に対するユニットテストをJestで書いて。テストファイル名はlegacy-code.test.jsにして。エッジケースも含めること。"<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+<ol>
+<li>生成されたテストを確認し、npm test で全テストがパスすることを確認</li>
+</ol>
+
+<h4>Step 3: full-autoでリファクタリング(10min)</h4>
+<div class="prompt" id="p_s3h3">codex --approval-mode full-auto "legacy-code.jsを以下の方針でリファクタリングして。
+1. 変数名・関数名をcamelCaseに統一
+2. var を const/let に置換
+3. コールバックをasync/awaitに変換
+4. エラーハンドリングをtry-catchで統一
+5. マジックナンバーを名前付き定数に
+テストが全てパスすることを確認してから完了にして。"<button class="cb" onclick="copyP('p_s3h3')">コピー</button></div>
+
+<h4>Step 4: テスト実行で回帰確認(5min)</h4>
+<div class="prompt" id="p_s3h4">npm test<button class="cb" onclick="copyP('p_s3h4')">コピー</button></div>
+<p>全テストがパスすれば、リファクタリングが既存の振る舞いを壊していないことの証明になります。</p>
+
+<h4>Step 5: diffを確認してレビュー(5min)</h4>
+<div class="prompt" id="p_s3h5">git diff<button class="cb" onclick="copyP('p_s3h5')">コピー</button></div>
+<p>変更差分を確認し、意図しない変更がないかチェックしてください。</p>
+
+<ul class="checklist">
+<li>レガシーコードの問題点を分析させた</li>
+<li>テストを自動生成し、全テストがパスした</li>
+<li>full-autoでリファクタリングを実行した</li>
+<li>テスト再実行で回帰がないことを確認した</li>
+<li>git diffで変更差分を確認した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://martinfowler.com/books/refactoring.html" target="_blank" rel="noopener">Refactoring (Martin Fowler)</a> -- リファクタリングのバイブル</li>
+<li><a href="https://jestjs.io/docs/getting-started" target="_blank" rel="noopener">Jest Getting Started</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン A (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review Hands-on A -- 30min</div><h2>復習ハンズオン A: full-auto + AGENTS.md + リファクタリング一連フロー</h2>
+<p>Section 01-03の内容を統合した実践演習です。一連の流れを通しで実行し、各要素がどう連携するかを体感します。</p>
+
+<div class="handson">
+<div class="hs-title">課題: AGENTS.md付きプロジェクトのfull-autoリファクタリング <span class="hs-time">30min</span></div>
+<div class="hs-goal">成果物: AGENTS.md設計済みプロジェクト + リファクタリング済みコード + テスト結果</div>
+
+<ol>
+<li>新しいプロジェクトディレクトリを作成し、AGENTS.mdを配置してください(5min)</li>
+<li>Section 03で使ったレガシーコードをコピーし、ルートAGENTS.mdに「TypeScript移行」の方針を記載してください(5min)</li>
+<li>Codexにまずテストを生成させてください(5min)</li>
+<li>full-autoモードでJavaScript → TypeScript変換を実行してください(10min)</li>
+</ol>
+<div class="prompt" id="p_rA">codex --approval-mode full-auto "AGENTS.mdの方針に従って、このプロジェクトのJSファイルをTypeScriptに移行して。型定義を追加し、テストもTS化して。全テストがパスすることを確認して。"<button class="cb" onclick="copyP('p_rA')">コピー</button></div>
+<ol start="5">
+<li>結果を確認し、AGENTS.mdの方針がどの程度反映されたか評価してください(5min)</li>
+</ol>
+
+<ul class="checklist">
+<li>AGENTS.mdを設計し配置した</li>
+<li>テスト生成 → TypeScript移行 → テスト再実行の一連フローを完走した</li>
+<li>AGENTS.mdの方針がコードに反映されていることを確認した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: テスト自動生成と品質保証 (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 60min(講義25 + ハンズオン35)</div><h2>テスト自動生成と品質保証</h2>
+
+<h3>テストカバレッジ目標の設定</h3>
+<p>カバレッジは高ければ良いというものではありませんが、低すぎるとリファクタリングの安全網が機能しません。プロジェクトの性質に応じた現実的な目標値を設定する必要があります。</p>
+<ul>
+  <li><strong>行カバレッジ(Line Coverage)</strong> -- コードの何%が実行されたか。最もポピュラー</li>
+  <li><strong>ブランチカバレッジ(Branch Coverage)</strong> -- if/elseの各分岐がテストされたか。行カバレッジより厳格</li>
+  <li><strong>関数カバレッジ(Function Coverage)</strong> -- 各関数が少なくとも1回は呼ばれたか</li>
+</ul>
+
+<h3>テスト種別とAI適性</h3>
+<table class="ct"><thead><tr><th>テスト種別</th><th>対象</th><th>自動化レベル</th><th>AI生成の適性</th><th>注意点</th></tr></thead><tbody>
+<tr><td>ユニットテスト</td><td>関数・メソッド単体</td><td>高</td><td>高 -- Codexが最も得意</td><td>モックの適切性を人間が確認</td></tr>
+<tr><td>統合テスト</td><td>モジュール間連携</td><td>中</td><td>中 -- APIエンドポイント単位なら得意</td><td>環境依存の設定が必要</td></tr>
+<tr><td>E2Eテスト</td><td>ユーザーシナリオ全体</td><td>低</td><td>低 -- ブラウザ操作の再現が困難</td><td>Playwrightのテンプレートを渡すと精度向上</td></tr>
+<tr><td>スナップショット</td><td>UIコンポーネント</td><td>高</td><td>低 -- 初回生成は容易だが保守が困難</td><td>頻繁に壊れるため新規追加は非推奨</td></tr>
+</tbody></table>
+
+<h3>Codexが生成するテストの品質</h3>
+<p>Codexはユニットテストの生成精度が高く、関数のシグネチャと実装を読み取ってhappy pathとエッジケースの両方を出してきます。ただし限界もあります。</p>
+<ul>
+  <li><strong>ビジネスロジックの意図理解</strong> -- 「なぜこの計算式なのか」まではAIが理解できない。仕様書や要件定義をコンテキストに含める必要がある</li>
+  <li><strong>複雑な状態遷移</strong> -- ステートマシンのような複雑な状態管理のテストは、人間が遷移パターンを指定するのが確実</li>
+  <li><strong>外部依存のモック</strong> -- DB接続やAPI呼び出しのモックは生成できるが、モックの粒度が粗い場合がある</li>
+</ul>
+
+<div class="box warn"><div class="bt">AI生成テストの落とし穴</div>AIは「テストがパスする」コードを書きますが、「正しいことをテストしている」かは別問題です。実装をそのままコピーしたような形だけのテストが生成されることがあります。テストが「何を検証しているか」を人間が確認するプロセスは省けません。</div>
+
+<div class="box tip"><div class="bt">AI生成テストの品質チェック5項目</div>
+<ol>
+<li><strong>カバレッジの実質性</strong> -- 行カバレッジ80%以上はあるか。ただし、カバレッジの数字だけでなく、ブランチカバレッジ(if/elseの両方)も確認する。カバレッジが高くても意味のあるassertionがなければ無価値</li>
+<li><strong>エッジケースの網羅</strong> -- null, undefined, 空文字列, 空配列, 0, 負数, 最大値。これらを入力した場合のテストが含まれているか。AIはhappy pathのテストは得意だが、境界値を見落とすことがある</li>
+<li><strong>テストの独立性</strong> -- 各テストが他のテストの実行結果に依存していないか。テストの実行順序を変えても結果が同じか。共有状態(グローバル変数やDB)を使っているテストは要注意</li>
+<li><strong>可読性とテスト名</strong> -- テスト名を読むだけで「何を検証しているか」がわかるか。「test1」「should work」のような曖昧な名前は許容しない。「空文字列を渡したときにバリデーションエラーを返すこと」レベルの具体性が必要</li>
+<li><strong>実行速度</strong> -- 全テストが10秒以内に完了するか。外部APIやDBへの実接続を含むテストがないか。遅いテストはCI/CDのボトルネックになり、やがて誰も実行しなくなる</li>
+</ol>
+</div>
+
+<div class="quiz"><h4>理解度チェック: Section 04</h4>
+<div class="q"><p>Q5. AI生成テストで最も注意すべき点は?</p>
+<label><input type="radio" name="q5" value="a">テスト実行速度が遅い</label>
+<label><input type="radio" name="q5" value="b">テストがパスしても「正しいこと」をテストしているとは限らない</label>
+<label><input type="radio" name="q5" value="c">テストファイルのサイズが大きい</label>
+<label><input type="radio" name="q5" value="d">テストの命名規則が統一されない</label>
+<div class="ans" id="a5">正解: B。AIは実装に沿った形式的なテストを書く傾向があり、ビジネスロジックの「意図」を検証しているかは人間が確認する必要があります。</div>
+<button class="rb" onclick="document.getElementById('a5').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 04 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: テストカバレッジ改善 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: カバレッジ計測 → AI生成テスト追加 → カバレッジ向上を数値で確認する</div>
+
+<h4>Step 1: カバレッジレポートの取得(5min)</h4>
+<div class="prompt" id="p_s4h1"># Jestのカバレッジレポート
+npx jest --coverage
+
+# カバレッジサマリが出力される
+# Statements: XX% | Branches: XX% | Functions: XX% | Lines: XX%<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+
+<h4>Step 2: カバレッジが低い箇所のテスト生成(10min)</h4>
+<div class="prompt" id="p_s4h2">codex --approval-mode full-auto "カバレッジレポートを確認して、カバレッジが80%未満の関数に対してテストを追加して。特にブランチカバレッジが低い箇所を優先。"<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+
+<h4>Step 3: エッジケース追加指示(10min)</h4>
+<div class="prompt" id="p_s4h3">codex --approval-mode full-auto "既存テストにエッジケースを追加して。以下のパターンを含めること:
+- null/undefined入力
+- 空文字列/空配列
+- 境界値(0, 負数, 最大値)
+- 型が異なる入力
+- 非同期処理のタイムアウト"<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+
+<h4>Step 4: テスト実行+カバレッジ再計測(5min)</h4>
+<div class="prompt" id="p_s4h4">npx jest --coverage<button class="cb" onclick="copyP('p_s4h4')">コピー</button></div>
+<p>Step 1と比較してカバレッジがどれだけ向上したか記録してください。</p>
+
+<h4>Step 5: AI生成テストのレビュー(5min)</h4>
+<a href="#" class="dl" onclick="downloadTestStrategy();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>テスト戦略テンプレート(.md)</a>
+<p>以下のチェックリストで生成されたテストをレビューしてください。</p>
+<ul class="checklist">
+<li>テストが「実装のコピー」になっていないか(期待値がハードコードされているか)</li>
+<li>モックの粒度は適切か(過度なモックで実質何もテストしていないケースはないか)</li>
+<li>テスト名が何を検証しているか明確か</li>
+<li>エッジケースが網羅されているか</li>
+</ul>
+
+<ul class="checklist">
+<li>初期カバレッジを計測した</li>
+<li>AI生成テストでカバレッジを向上させた</li>
+<li>エッジケーステストを追加した</li>
+<li>カバレッジの前後比較を記録した</li>
+<li>レビューチェックリストで品質を確認した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://jestjs.io/docs/configuration#collectcoveragefrom-array" target="_blank" rel="noopener">Jest Coverage Configuration</a></li>
+<li><a href="https://testing-library.com/docs/" target="_blank" rel="noopener">Testing Library</a></li>
+<li><a href="https://martinfowler.com/bliki/TestCoverage.html" target="_blank" rel="noopener">TestCoverage (Martin Fowler)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: マルチリポジトリ運用 (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 55min(講義25 + ハンズオン30)</div><h2>マルチリポジトリ運用</h2>
+
+<h3>モノレポでの活用</h3>
+<p>モノレポ(monorepo)では複数のパッケージが1つのリポジトリに同居します。ルートAGENTS.mdでプロジェクト共通ルールを定義し、各パッケージディレクトリにはパッケージ固有のAGENTS.mdを配置する。Section 02で学んだ階層構造がここで活きてきます。</p>
+<div class="prompt" id="p_s5_mono">monorepo/
+  AGENTS.md              # 共通: TypeScript, ESLint, Prettier
+  packages/
+    web/
+      AGENTS.md          # Next.js App Router, Tailwind
+    api/
+      AGENTS.md          # Express, Prisma, OpenAPI
+    shared/
+      AGENTS.md          # 共有型定義, ユーティリティ(変更時は両方のテスト実行)
+    config/
+      AGENTS.md          # ESLint/Prettier/TSConfig(変更は全パッケージに影響)<button class="cb" onclick="copyP('p_s5_mono')">コピー</button></div>
+
+<h3>マイクロサービスでの活用</h3>
+<p>マイクロサービスアーキテクチャでは各サービスが独立したリポジトリを持つ場合が多いですが、API仕様書(OpenAPI/Swagger)を共有コンテキストとしてAGENTS.mdから参照させることで、Codexがサービス間のインターフェースを理解できるようになります。</p>
+
+<h3>リポジトリ横断の変更</h3>
+<p>バックエンドのAPIインターフェースを変更したら、フロントエンドのAPIクライアントも更新が必要です。モノレポであればCodexに「APIの変更に合わせてクライアントも更新して」と指示するだけで、両方のコードを整合性を保って修正できます。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+sequenceDiagram
+  participant Dev as 開発者
+  participant Codex as Codex CLI
+  participant API as api/
+  participant Web as web/
+  participant Shared as shared/
+
+  Dev->>Codex: "ユーザーAPIにemailフィールドを追加して"
+  Codex->>Shared: 型定義を更新(User型にemail追加)
+  Codex->>API: APIエンドポイント更新
+  Codex->>API: バリデーション追加
+  Codex->>Web: APIクライアント更新
+  Codex->>Web: フォームにemailフィールド追加
+  Codex->>Dev: 全ファイルの変更完了
+  Dev->>Dev: テスト実行で整合性確認
+</pre><div class="caption">モノレポでのリポジトリ横断変更フロー</div></div>
+
+<div class="box warn"><div class="bt">依存関係の管理</div>リポジトリ横断の変更では、変更の順序が重要です。共有型定義 → バックエンド → フロントエンドの順で更新しないと、中間状態でビルドエラーが発生します。AGENTS.mdに変更順序を明記しておくと安全です。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 05</h4>
+<div class="q"><p>Q6. モノレポでバックエンドAPIの型定義を変更した場合、最初に更新すべきはどこですか?</p>
+<label><input type="radio" name="q6" value="a">フロントエンドのUIコンポーネント</label>
+<label><input type="radio" name="q6" value="b">テストファイル</label>
+<label><input type="radio" name="q6" value="c">shared/ の共有型定義</label>
+<label><input type="radio" name="q6" value="d">CIパイプラインの設定</label>
+<div class="ans" id="a6">正解: C。共有型定義を先に更新し、それを参照するバックエンド・フロントエンドの順で整合性を保ちながら更新するのが安全な手順です。</div>
+<button class="rb" onclick="document.getElementById('a6').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 05 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: モノレポでのAPI横断変更 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: front/backの2ディレクトリ構成でAPI変更 → フロントエンド自動対応を体験する</div>
+
+<h4>Step 1: モノレポ構造のセットアップ(10min)</h4>
+<div class="prompt" id="p_s5h1">mkdir -p monorepo-demo/{front,back,shared}
+cd monorepo-demo && git init
+
+# shared/types.ts
+cat > shared/types.ts << 'EOF'
+export interface User {
+  id: string;
+  name: string;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  status: number;
+}
+EOF
+
+# back/server.ts(簡易API)
+cat > back/server.ts << 'EOF'
+import { User, ApiResponse } from '../shared/types';
+
+function getUser(id: string): ApiResponse<User> {
+  return {
+    data: { id, name: 'Taro' },
+    status: 200,
+  };
+}
+
+export { getUser };
+EOF
+
+# front/app.ts(フロントエンド)
+cat > front/app.ts << 'EOF'
+import { User, ApiResponse } from '../shared/types';
+
+async function fetchUser(id: string): Promise<User> {
+  const res: ApiResponse<User> = await fetch(`/api/users/${id}`).then(r => r.json());
+  console.log(`User: ${res.data.name}`);
+  return res.data;
+}
+
+export { fetchUser };
+EOF
+
+# AGENTS.md
+cat > AGENTS.md << 'EOF'
+# プロジェクトルール
+- TypeScript strict mode
+- 変更順序: shared/ → back/ → front/
+- 型定義はshared/に集約
+EOF<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+
+<h4>Step 2: API横断変更の実行(15min)</h4>
+<div class="prompt" id="p_s5h2">codex --approval-mode auto-edit "User型にemailフィールド(string)を追加して。AGENTS.mdの変更順序に従って、shared/types.ts → back/server.ts → front/app.tsの順に更新して。フロントエンドではemailも表示するようにして。"<button class="cb" onclick="copyP('p_s5h2')">コピー</button></div>
+
+<h4>Step 3: 整合性の確認(5min)</h4>
+<div class="prompt" id="p_s5h3"># TypeScriptコンパイルで型整合性チェック
+npx tsc --noEmit
+
+# 変更差分の確認
+git diff<button class="cb" onclick="copyP('p_s5h3')">コピー</button></div>
+
+<ul class="checklist">
+<li>monorepo構造を作成しAGENTS.mdを配置した</li>
+<li>API横断変更をCodexで実行した</li>
+<li>TypeScriptコンパイルで整合性を確認した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://turbo.build/" target="_blank" rel="noopener">Turborepo</a> -- モノレポ管理ツール</li>
+<li><a href="https://nx.dev/" target="_blank" rel="noopener">Nx</a> -- モノレポ開発プラットフォーム</li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン B (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review Hands-on B -- 25min</div><h2>復習ハンズオン B: テスト生成 + マルチリポ横断修正</h2>
+<p>Section 04-05の組み合わせ演習です。モノレポ構造で型変更を行い、変更後にテストカバレッジを計測・改善するまでを通しで実行します。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 型変更 → テスト生成 → カバレッジ確認 <span class="hs-time">25min</span></div>
+<div class="hs-goal">成果物: 横断変更済みコード + テストファイル + カバレッジレポート</div>
+
+<ol>
+<li>Section 05で作ったmonorepo-demoを使い、User型にage(number, optional)を追加してください(5min)</li>
+<li>Codexにfull-autoで横断変更を実行させてください(5min)</li>
+<li>全ファイルに対してテストを自動生成してください(10min)</li>
+</ol>
+<div class="prompt" id="p_rB">codex --approval-mode full-auto "shared/, back/, front/ の全ファイルに対してテストを生成して。テストはtests/ディレクトリに配置して。カバレッジ80%以上を目標に。"<button class="cb" onclick="copyP('p_rB')">コピー</button></div>
+<ol start="4">
+<li>カバレッジレポートを取得し、80%を超えているか確認してください(5min)</li>
+</ol>
+
+<ul class="checklist">
+<li>型変更を横断的に実行した</li>
+<li>テストを自動生成した</li>
+<li>カバレッジレポートを確認した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: ツール横断ワークフロー (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 55min(講義25 + ハンズオン30)</div><h2>ツール横断ワークフロー -- Copilot/Claude Code併用</h2>
+
+<h3>3ツールの得意領域</h3>
+<p>Copilot、Codex CLI、Claude Codeはそれぞれ異なる強みを持ちます。1つのツールに固執するより、場面に応じて使い分けたほうが生産性は確実に上がります。</p>
+<table class="ct"><thead><tr><th>ツール</th><th>得意な場面</th><th>苦手な場面</th><th>動作環境</th></tr></thead><tbody>
+<tr><td>GitHub Copilot</td><td>IDE内でのリアルタイム補完、小規模な編集、コードナビゲーション</td><td>大規模なファイル横断変更、自律実行</td><td>VS Code / JetBrains等のIDE</td></tr>
+<tr><td>Codex CLI</td><td>大規模変更、full-auto実行、CI連携、マルチファイル編集</td><td>対話的な設計議論、要件定義</td><td>ターミナル</td></tr>
+<tr><td>Claude Code</td><td>設計議論、複雑な問題分析、ドキュメント生成、コードレビュー</td><td>IDE統合(ターミナルベース)</td><td>ターミナル</td></tr>
+</tbody></table>
+
+<h3>実践的な併用パターン</h3>
+<div class="cols">
+<div class="col-card"><h4>パターン1: IDE → 大規模変更 → レビュー</h4>
+<ol style="font-size:13px;color:var(--text-muted);padding-left:20px;">
+<li>Copilotで日常のコーディング(補完、小修正)</li>
+<li>大規模変更が必要になったらCodex full-autoに切替</li>
+<li>Claude Codeで変更差分をレビュー + 仕上げ</li>
+</ol></div>
+<div class="col-card"><h4>パターン2: 仕様 → 実装 → テスト</h4>
+<ol style="font-size:13px;color:var(--text-muted);padding-left:20px;">
+<li>Claude Codeで仕様書・設計ドキュメントを作成</li>
+<li>Codex full-autoで仕様に基づいた実装を生成</li>
+<li>Copilot Chatでテストの細かい調整</li>
+</ol></div>
+</div>
+
+<h3>ツール間のコンテキスト共有</h3>
+<p>3つのツールは互いの設定ファイルを読みません。共通ルールを別ファイルに切り出し、各ツールの設定ファイルから参照する形が現実的な運用です。</p>
+<table class="ct"><thead><tr><th>ツール</th><th>設定ファイル</th><th>配置場所</th></tr></thead><tbody>
+<tr><td>Codex CLI</td><td>AGENTS.md</td><td>プロジェクトルート + サブディレクトリ</td></tr>
+<tr><td>Claude Code</td><td>CLAUDE.md</td><td>プロジェクトルート</td></tr>
+<tr><td>GitHub Copilot</td><td>.github/copilot-instructions.md</td><td>.github/ディレクトリ</td></tr>
+<tr><td>Cursor</td><td>.cursor/rules/*.mdc</td><td>.cursor/ディレクトリ</td></tr>
+<tr><td>共通ルール</td><td>CODING_RULES.md</td><td>プロジェクトルート(各ツールから参照)</td></tr>
+</tbody></table>
+
+<h3>1日の開発フローにおけるツール使い分け</h3>
+<p>3ツールを時間帯やタスクの性質で使い分けると、それぞれの強みを最大限に引き出せます。</p>
+<table class="ct"><thead><tr><th>時間帯</th><th>タスク</th><th>使用ツール</th><th>理由</th></tr></thead><tbody>
+<tr><td>9:00-12:00</td><td>新機能のコーディング</td><td>Copilot(IDE内)</td><td>リアルタイム補完でコーディング速度を上げる。小さな編集の連続にはIDE内で完結するCopilotが最適</td></tr>
+<tr><td>12:00-13:00</td><td>昼食中にリファクタリング</td><td>Codex full-auto</td><td>人間が離席している間にfull-autoで一括処理。命名統一やTypeScript移行など、大量のファイル変更を自動実行</td></tr>
+<tr><td>13:00-14:00</td><td>リファクタ結果のレビュー</td><td>Claude Code</td><td>Codexが生成した差分をClaude Codeに渡してレビュー。設計上の問題点や見落としを対話的に洗い出す</td></tr>
+<tr><td>14:00-16:00</td><td>テスト生成+バグ修正</td><td>Codex full-auto + Copilot</td><td>テストの骨格はCodex full-autoで生成し、細かい調整はCopilotのインライン補完で仕上げる</td></tr>
+<tr><td>16:00-17:00</td><td>設計議論+ドキュメント</td><td>Claude Code</td><td>翌日の設計方針をClaude Codeと議論。仕様書やADR(Architecture Decision Record)の生成</td></tr>
+</tbody></table>
+<p>ポイントは「考える作業」にClaude Code、「大量処理」にCodex full-auto、「手を動かす作業」にCopilotという棲み分けです。</p>
+
+<div class="box tip"><div class="bt">Tips: 設定ファイルの同期</div>4つの設定ファイルの内容が食い違うと、ツールごとに違うスタイルのコードが出てきます。CODING_RULES.mdに真のルールを書き、各設定ファイルには「CODING_RULES.mdに従うこと」と書くだけにするのが保守の負荷を最小にするコツです。</div>
+
+<!-- Section 06 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: 3ツール設定の一元管理 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: 1プロジェクトに3ツールの設定ファイルを配置し、併用パターンを実践する</div>
+
+<h4>Step 1: 設定ファイルの配置(10min)</h4>
+<a href="#" class="dl" onclick="downloadToolConfig();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>ツール横断設定セット(.md)</a>
+<ol>
+<li>テンプレートをダウンロードし、以下の構造で配置してください</li>
+</ol>
+<div class="prompt" id="p_s6h1">mkdir -p tool-demo/.github
+mkdir -p tool-demo/.claude
+
+# 共通ルール
+cat > tool-demo/CODING_RULES.md << 'EOF'
+# コーディングルール
+- TypeScript strict mode
+- 関数はconst + アロー関数
+- エラーは必ずtry-catchで捕捉
+- コミット: Conventional Commits形式
+EOF
+
+# AGENTS.md(Codex)
+cat > tool-demo/AGENTS.md << 'EOF'
+# Codex用設定
+CODING_RULES.mdに従うこと。
+追加: full-autoでの変更はテスト実行後にコミット。
+EOF
+
+# CLAUDE.md(Claude Code)
+cat > tool-demo/CLAUDE.md << 'EOF'
+# Claude Code用設定
+CODING_RULES.mdに従うこと。
+追加: 設計議論の結果はdocs/に記録。
+EOF
+
+# copilot-instructions.md
+cat > tool-demo/.github/copilot-instructions.md << 'EOF'
+# Copilot用設定
+CODING_RULES.mdに従うこと。
+追加: 補完時にJSDocコメントを含める。
+EOF<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+
+<h4>Step 2: 併用パターンの実践(15min)</h4>
+<ol>
+<li>Claude Codeで簡単な機能の仕様を設計させてください</li>
+</ol>
+<div class="prompt" id="p_s6h2">claude "ユーザー登録機能の仕様を設計して。入力バリデーション、エラーハンドリング、レスポンス形式を定義して。docs/user-registration-spec.mdに出力して。"<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+<ol start="2">
+<li>Codexで仕様に基づいた実装を生成してください</li>
+</ol>
+<div class="prompt" id="p_s6h3">codex --approval-mode full-auto "docs/user-registration-spec.mdの仕様に基づいて、src/user-registration.tsを実装して。テストも生成して。"<button class="cb" onclick="copyP('p_s6h3')">コピー</button></div>
+<ol start="3">
+<li>IDEでCopilotを使って細かい調整を行ってください</li>
+</ol>
+
+<h4>Step 3: ツール評価レポート(5min)</h4>
+<p>各ツールがどの場面で優れていたか、1行ずつ記録してください。</p>
+
+<ul class="checklist">
+<li>3ツールの設定ファイルを1プロジェクトに配置した</li>
+<li>併用パターンで仕様設計 → 実装 → 調整を実行した</li>
+<li>各ツールの得意/苦手を体験した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.github.com/en/copilot" target="_blank" rel="noopener">GitHub Copilot Documentation</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code Documentation</a></li>
+<li><a href="https://platform.openai.com/docs/guides/codex" target="_blank" rel="noopener">Codex CLI Documentation</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: 本番環境への適用 (55min: 講義25 + ハンズオン30) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 55min(講義25 + ハンズオン30)</div><h2>本番環境への適用 -- CI/CD統合、レビュー自動化</h2>
+
+<h3>CI/CDパイプラインでのCodex利用</h3>
+<p>Codex CLIはターミナルで動くため、GitHub Actionsのワークフローに組み込めます。PR作成時に自動レビュー、コード品質チェック、テスト生成の提案をCodexに実行させるパイプラインが構築可能です。</p>
+
+<h3>GitHub ActionsでのCodex実行</h3>
+<div class="prompt" id="p_s7_action"># .github/workflows/codex-review.yml
+name: Codex PR Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex
+      - name: Run Codex Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          codex --approval-mode full-auto \
+            --quiet \
+            "このPRの変更をレビューして。問題点、改善提案、セキュリティリスクをコメントとして出力して。"<button class="cb" onclick="copyP('p_s7_action')">コピー</button></div>
+
+<h3>APIキー管理</h3>
+<p>CI環境でCodexを動かすにはOpenAI APIキーが必要です。リポジトリのSettings > Secrets and variables > ActionsでOPENAI_API_KEYを登録してください。コードに直書きは厳禁。.envファイルをコミットするのも厳禁です。</p>
+
+<h3>コスト管理</h3>
+<p>CI実行ごとにトークンを消費します。PRが頻繁に作られるリポジトリでは、月あたりのAPI費用がかさむ可能性があります。</p>
+<table class="ct"><thead><tr><th>項目</th><th>概算</th><th>対策</th></tr></thead><tbody>
+<tr><td>PR1件あたりのトークン消費</td><td>5,000-50,000 tokens</td><td>レビュー対象をdiff部分に限定</td></tr>
+<tr><td>月あたり想定コスト(PR 100件)</td><td>$5-$50</td><td>予算アラートをOpenAI Dashboardに設定</td></tr>
+<tr><td>full-autoリファクタ(大規模)</td><td>100,000+ tokens</td><td>手動トリガー限定にする</td></tr>
+</tbody></table>
+
+<h3>PRレビュー自動化の設計</h3>
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+flowchart LR
+  A["PR作成"] --> B["GitHub Actions\nトリガー"]
+  B --> C["Codex CLI\nレビュー実行"]
+  C --> D["レビューコメント\n自動投稿"]
+  D --> E{"人間が\n最終判断"}
+  E -->|Approve| F["マージ"]
+  E -->|Request Changes| G["修正"]
+  G --> A
+</pre><div class="caption">AIレビューはあくまで補助。最終判断は人間が行う</div></div>
+
+<div class="box warn"><div class="bt">AIレビューの位置づけ</div>Codexによる自動レビューは人間のレビューを「置き換える」ものではありません。見落としやすいパターン(セキュリティ、パフォーマンス、命名)を事前にキャッチするフィルターとして使い、人間はビジネスロジックとアーキテクチャの判断に集中する設計が健全です。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 07</h4>
+<div class="q"><p>Q7. CI/CDでCodexを使う際にAPIキーを管理する正しい方法は?</p>
+<label><input type="radio" name="q7" value="a">ワークフローファイルに直接記述する</label>
+<label><input type="radio" name="q7" value="b">.envファイルをコミットする</label>
+<label><input type="radio" name="q7" value="c">GitHub Secretsに登録し、${{ secrets.OPENAI_API_KEY }} で参照する</label>
+<label><input type="radio" name="q7" value="d">READMEに記載して共有する</label>
+<div class="ans" id="a7">正解: C。GitHub Secretsはリポジトリ設定画面で登録し、ワークフロー内から環境変数として安全に参照できます。コードや設定ファイルへの直書きは情報漏えいの原因です。</div>
+<button class="rb" onclick="document.getElementById('a7').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 07 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: GitHub Actionsワークフロー構築 <span class="hs-time">30min</span></div>
+<div class="hs-goal">目標: Codex PRレビューのGitHub Actionsワークフローを作成し、動作をシミュレーションする</div>
+
+<h4>Step 1: ワークフローファイル作成(15min)</h4>
+<div class="prompt" id="p_s7h1">mkdir -p .github/workflows
+
+cat > .github/workflows/codex-review.yml << 'EOF'
+name: Codex PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  codex-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex
+
+      - name: Get changed files
+        id: changed
+        run: |
+          echo "files=$(git diff --name-only origin/main...HEAD | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Run Codex Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          codex --approval-mode suggest \
+            --quiet \
+            "以下の変更ファイルをレビューして: ${{ steps.changed.outputs.files }}
+             観点: セキュリティ、パフォーマンス、可読性、テストの十分性
+             出力形式: 問題ごとに[ファイル名:行番号] 問題の説明 を1行ずつ"
+EOF<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+
+<h4>Step 2: シミュレーション(10min)</h4>
+<ol>
+<li>ワークフローファイルをコミットしてください</li>
+<li>新しいブランチを切り、適当なコード変更を加えてPRを作成してください</li>
+<li>GitHub Actionsの実行結果を確認してください(API keyが設定されていない場合はエラーになりますが、ワークフロー自体の構文確認が目的です)</li>
+</ol>
+
+<h4>Step 3: コスト見積もりシート作成(5min)</h4>
+<p>以下の項目を見積もってください。</p>
+<table class="ct"><thead><tr><th>項目</th><th>あなたのプロジェクトの値</th></tr></thead><tbody>
+<tr><td>月あたりのPR数</td><td>________ 件</td></tr>
+<tr><td>PR1件あたりの平均トークン消費(予想)</td><td>________ tokens</td></tr>
+<tr><td>月あたり想定コスト</td><td>$________</td></tr>
+<tr><td>コスト削減策</td><td>________</td></tr>
+</tbody></table>
+
+<ul class="checklist">
+<li>GitHub Actionsワークフローファイルを作成した</li>
+<li>PRレビュー自動化の動作を確認(またはシミュレーション)した</li>
+<li>コスト見積もりを行った</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actions Documentation</a></li>
+<li><a href="https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions" target="_blank" rel="noopener">Using secrets in GitHub Actions</a></li>
+<li><a href="https://platform.openai.com/usage" target="_blank" rel="noopener">OpenAI API Usage Dashboard</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: 総合ハンズオン (110min: 講義10 + 実践100) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 110min(講義10 + 実践100)</div><h2>総合ハンズオン: 既存プロジェクトのフルリファクタリング</h2>
+
+<h3>ゴール</h3>
+<p>このコースで学んだ全要素を組み合わせ、1つのプロジェクトに対してCodexでフルリファクタリング + テスト生成 + ドキュメント作成 + CI/CDワークフロー構築を実行します。Section 01-07の集大成です。</p>
+
+<div class="box note"><div class="bt">プロジェクトの選択</div>自分のプロジェクトがあればそれを使ってください。なければSection 03で使ったサンプルレガシーコードを拡張して使います。重要なのは「実際にCodexで一連のフローを回しきる」体験です。</div>
+
+<div class="handson">
+<div class="hs-title">総合ハンズオン: 10ステップ <span class="hs-time">100min</span></div>
+<div class="hs-goal">成果物: AGENTS.md設計済み + リファクタリング済み + テスト付き + CI/CDワークフロー + ドキュメント</div>
+
+<h4>Step 1: 対象プロジェクト選定(5min)</h4>
+<p>リファクタリング対象のプロジェクトを決め、新しいブランチを作成してください。</p>
+<div class="prompt" id="p_s8h1">git checkout -b full-refactor-$(date +%Y%m%d)<button class="cb" onclick="copyP('p_s8h1')">コピー</button></div>
+
+<h4>Step 2: AGENTS.md設計(10min)</h4>
+<p>プロジェクト構造に合わせてルートAGENTS.md + サブディレクトリAGENTS.mdを作成してください。以下の項目を必ず含めます。</p>
+<ul>
+<li>使用言語・フレームワーク</li>
+<li>コーディング規約</li>
+<li>テストポリシー(カバレッジ目標、テストフレームワーク)</li>
+<li>変更禁止ファイル(あれば)</li>
+</ul>
+
+<h4>Step 3: 現状のテストカバレッジ計測(5min)</h4>
+<div class="prompt" id="p_s8h3">npx jest --coverage 2>/dev/null || echo "テスト未設定 -- Step4でセットアップ"<button class="cb" onclick="copyP('p_s8h3')">コピー</button></div>
+
+<h4>Step 4: テスト自動生成(15min)</h4>
+<div class="prompt" id="p_s8h4">codex --approval-mode full-auto "AGENTS.mdのテストポリシーに従って、全関数にユニットテストを生成して。カバレッジ80%以上を目標に。エッジケースも含めること。テストが全てパスすることを確認して。"<button class="cb" onclick="copyP('p_s8h4')">コピー</button></div>
+
+<h4>Step 5: full-autoでリファクタリング実行(15min)</h4>
+<div class="prompt" id="p_s8h5">codex --approval-mode full-auto "AGENTS.mdの方針に従ってコードをリファクタリングして。
+対象:
+1. 命名規則の統一
+2. var → const/let
+3. エラーハンドリングの統一
+4. 不要なコードの削除
+5. 型安全性の向上(TypeScriptの場合)
+テストが全てパスすることを確認してから完了にして。"<button class="cb" onclick="copyP('p_s8h5')">コピー</button></div>
+
+<h4>Step 6: テスト再実行で回帰確認(10min)</h4>
+<div class="prompt" id="p_s8h6">npx jest --coverage<button class="cb" onclick="copyP('p_s8h6')">コピー</button></div>
+<p>リファクタリング前後でカバレッジが低下していないことを確認してください。テストが失敗した場合はCodexに修正させます。</p>
+
+<h4>Step 7: ドキュメント自動生成(10min)</h4>
+<div class="prompt" id="p_s8h7">codex --approval-mode full-auto "プロジェクトのREADME.mdを生成して。以下を含めること:
+- プロジェクト概要
+- セットアップ手順
+- 主要な関数/モジュールの説明
+- テストの実行方法
+- コントリビューションガイドライン"<button class="cb" onclick="copyP('p_s8h7')">コピー</button></div>
+
+<h4>Step 8: CI/CDワークフロー作成(10min)</h4>
+<div class="prompt" id="p_s8h8">codex --approval-mode full-auto ".github/workflows/ci.ymlを作成して。内容:
+- push/PR時にテスト実行
+- カバレッジレポートの出力
+- Lintチェック(ESLint)
+- Node.js 22を使用"<button class="cb" onclick="copyP('p_s8h8')">コピー</button></div>
+
+<h4>Step 9: ツール横断設定ファイル整備(10min)</h4>
+<div class="prompt" id="p_s8h9">codex --approval-mode full-auto "以下の設定ファイルを作成して:
+1. AGENTS.md -- 既存のものを改善
+2. CLAUDE.md -- Claude Code用(AGENTS.mdと共通ルールを参照)
+3. .github/copilot-instructions.md -- Copilot用
+4. CODING_RULES.md -- 3ツール共通のルールファイル"<button class="cb" onclick="copyP('p_s8h9')">コピー</button></div>
+
+<h4>Step 10: 成果物レビュー(10min)</h4>
+<p>以下の観点で成果物を確認してください。</p>
+<ul class="checklist">
+<li>AGENTS.mdが適切に設計されている</li>
+<li>テストが生成され、全テストがパスする</li>
+<li>リファクタリングで既存の振る舞いが壊れていない</li>
+<li>ドキュメントがプロジェクトの内容を正確に反映している</li>
+<li>CI/CDワークフローが正しい構文で書かれている</li>
+<li>3ツールの設定ファイルが整合性を保っている</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://github.com/openai/codex" target="_blank" rel="noopener">OpenAI Codex CLI</a></li>
+<li><a href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions" target="_blank" rel="noopener">GitHub Actions Workflow Syntax</a></li>
+<li><a href="https://eslint.org/docs/latest/use/getting-started" target="_blank" rel="noopener">ESLint Getting Started</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン C (40min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rC"><div class="sec-label review">Review Hands-on C -- 40min</div><h2>復習ハンズオン C: 全体振り返り + 改善計画</h2>
+<p>総合ハンズオンの成果物をレビューし、今後の改善計画を策定する最終セッションです。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 成果物レビュー + 改善計画策定 <span class="hs-time">40min</span></div>
+<div class="hs-goal">成果物: レビュー結果 + 今後3ヶ月の改善計画</div>
+
+<h4>パート1: 成果物の自己レビュー(15min)</h4>
+<p>以下の観点で総合ハンズオンの成果物を評価してください。</p>
+<table class="ct"><thead><tr><th>観点</th><th>評価(5段階)</th><th>良かった点</th><th>改善点</th></tr></thead><tbody>
+<tr><td>AGENTS.md設計</td><td>____/5</td><td></td><td></td></tr>
+<tr><td>テスト品質</td><td>____/5</td><td></td><td></td></tr>
+<tr><td>リファクタリング品質</td><td>____/5</td><td></td><td></td></tr>
+<tr><td>ドキュメント</td><td>____/5</td><td></td><td></td></tr>
+<tr><td>CI/CD設計</td><td>____/5</td><td></td><td></td></tr>
+<tr><td>ツール横断設定</td><td>____/5</td><td></td><td></td></tr>
+</tbody></table>
+
+<h4>パート2: Codexに改善提案を出させる(10min)</h4>
+<div class="prompt" id="p_rC">codex "このプロジェクト全体を分析して、以下の観点で改善提案を出して。
+1. コード品質: さらに改善できる箇所
+2. テスト: 追加すべきテストケース
+3. セキュリティ: 潜在的なリスク
+4. パフォーマンス: 最適化できる箇所
+5. ドキュメント: 不足している説明
+優先度(高/中/低)をつけて一覧にして。"<button class="cb" onclick="copyP('p_rC')">コピー</button></div>
+
+<h4>パート3: 改善計画の策定(15min)</h4>
+<p>Codexの提案を参考に、今後3ヶ月の改善計画を作成してください。</p>
+<table class="ct"><thead><tr><th>時期</th><th>改善項目</th><th>使用ツール</th><th>期待効果</th></tr></thead><tbody>
+<tr><td>1ヶ月目</td><td></td><td></td><td></td></tr>
+<tr><td>2ヶ月目</td><td></td><td></td><td></td></tr>
+<tr><td>3ヶ月目</td><td></td><td></td><td></td></tr>
+</tbody></table>
+
+<ul class="checklist">
+<li>成果物の自己レビューを完了した</li>
+<li>Codexに改善提案を出させた</li>
+<li>3ヶ月の改善計画を策定した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C08 OpenAI Codex応用 自律開発エージェント<br>
+  全8セクション + 復習3回 = 600分(10時間)<br>
+  前提コース: C06 Codex基礎 / 関連: C07 Claude Code応用
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadApprovalSheet(){const t=`# 承認フロー判断シート\n\n## 基本情報\n- プロジェクト名:\n- 作成者:\n- 作成日:\n\n## 判断基準\n- full-auto: 既存コードへの影響が小さい、テストで検証可能\n- auto-edit: 差分確認が必要だがコマンド実行は自動でOK\n- suggest: 設定/インフラなど慎重な確認が必要\n\n## タスク判定表\n\n| # | タスク内容 | 推奨モード | 理由 | テスト有無 | ロールバック手段 |\n|---|----------|-----------|------|----------|---------------|\n| 1 | | full-auto / auto-edit / suggest | | あり / なし | git stash / reset |\n| 2 | | full-auto / auto-edit / suggest | | あり / なし | |\n| 3 | | full-auto / auto-edit / suggest | | あり / なし | |\n| 4 | | full-auto / auto-edit / suggest | | あり / なし | |\n| 5 | | full-auto / auto-edit / suggest | | あり / なし | |\n\n## ロールバック手順チェックリスト\n- [ ] git stash の使い方を確認した\n- [ ] git checkout -- <file> の使い方を確認した\n- [ ] git reset --soft HEAD~1 の使い方を確認した\n- [ ] 作業前にブランチを切る習慣がある\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='承認フロー判断シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadAgentsTemplate(){const t=`# AGENTS.md 高度テンプレート(階層型)\n\n---\n\n## ルートAGENTS.md (プロジェクトルートに配置)\n\n\`\`\`markdown\n# プロジェクト: [プロジェクト名]\n\n## 言語・フレームワーク\n- TypeScript (strict mode)\n- [フレームワーク名]\n\n## コーディング規約\n- 詳細は CODING_RULES.md を参照\n- 変数: camelCase\n- 定数: UPPER_SNAKE_CASE\n- コンポーネント: PascalCase\n- コミット: Conventional Commits形式\n\n## テストポリシー\n- カバレッジ目標: 80%以上\n- テストフレームワーク: Jest / Vitest\n- 新規関数には必ずユニットテストを書くこと\n\n## 変更禁止\n- .env* ファイル\n- package-lock.json (手動変更禁止)\n- /migrations/ ディレクトリ (専用コマンドで管理)\n\n## マルチエージェント指示\n- 複数のCodexインスタンスが同時作業する場合、shared/ は排他制御対象\n- ロックファイル: .codex-lock に作業中ファイルを記録\n\`\`\`\n\n---\n\n## サブディレクトリAGENTS.md -- フロントエンド用\n\n\`\`\`markdown\n# src/frontend/ ルール\n\n## スコープ\nこのAGENTS.mdは src/frontend/ 配下のファイルのみに適用される。\nsrc/backend/ のファイルを直接変更してはならない。\n\n## 技術スタック\n- React 19 + Next.js 15 (App Router)\n- Tailwind CSS v4\n- 状態管理: Zustand\n\n## コンポーネント規約\n- function宣言を使う(アロー関数はユーティリティのみ)\n- Propsはinterfaceで型定義\n- CSS-in-JSは使わない\n\`\`\`\n\n---\n\n## サブディレクトリAGENTS.md -- バックエンド用\n\n\`\`\`markdown\n# src/backend/ ルール\n\n## スコープ\nこのAGENTS.mdは src/backend/ 配下のファイルのみに適用される。\n\n## 技術スタック\n- Express / Fastify\n- Prisma ORM\n- PostgreSQL\n\n## エラーハンドリング\n- 全エンドポイントでtry-catch必須\n- エラーレスポンスは統一フォーマット: { error: string, code: number }\n- 500エラーの詳細はクライアントに返さない\n\n## セキュリティ\n- SQLクエリはパラメータ化必須\n- ユーザー入力はzodでバリデーション\n- CORSは明示的に設定\n\`\`\`\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='AGENTS.md高度テンプレート(階層型).md';a.click();URL.revokeObjectURL(u);}
+
+function downloadTestStrategy(){const t=`# テスト戦略テンプレート\n\n## プロジェクト情報\n- プロジェクト名:\n- テストフレームワーク: Jest / Vitest / その他\n- 現在のカバレッジ: ____%\n- 目標カバレッジ: ____%\n\n## テスト種別 x 自動化レベル x AI適性\n\n| テスト種別 | 対象 | 自動化レベル | AI生成の適性 | 優先度 | 備考 |\n|-----------|------|------------|------------|--------|------|\n| ユニットテスト | 関数・メソッド | 高 | 高 | 最優先 | Codexが最も得意 |\n| 統合テスト | モジュール間連携 | 中 | 中 | 高 | API単位なら効果的 |\n| E2Eテスト | ユーザーシナリオ | 低 | 低 | 中 | Playwright併用 |\n| スナップショット | UIコンポーネント | 高 | 低 | 低 | 新規追加は非推奨 |\n\n## カバレッジ改善計画\n\n| 対象ファイル/モジュール | 現在のカバレッジ | 目標 | 追加テスト内容 | 担当 |\n|----------------------|---------------|------|-------------|------|\n| | % | % | | |\n| | % | % | | |\n| | % | % | | |\n\n## AI生成テストのレビューチェックリスト\n\n- [ ] テストが実装のコピーになっていないか\n- [ ] 期待値がハードコードされているか(計算式のコピーではないか)\n- [ ] モックの粒度は適切か\n- [ ] テスト名が何を検証しているか明確か\n- [ ] エッジケース(null, 空, 境界値)が含まれているか\n- [ ] 非同期処理のエラーケースがテストされているか\n- [ ] テスト間に依存関係がないか(順序依存していないか)\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='テスト戦略テンプレート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadToolConfig(){const t=`# ツール横断設定セット\n\n3つのAI開発ツール(Codex / Claude Code / Copilot)の設定ファイルテンプレートです。\n共通ルールはCODING_RULES.mdに集約し、各ツール固有の設定のみを個別ファイルに記載します。\n\n---\n\n## 1. CODING_RULES.md (共通ルール -- プロジェクトルート)\n\n\`\`\`markdown\n# コーディングルール\n\n## 言語\n- TypeScript strict mode\n- ESLint + Prettier でフォーマット統一\n\n## 命名規則\n- 変数/関数: camelCase\n- 定数: UPPER_SNAKE_CASE\n- コンポーネント: PascalCase\n- ファイル名: kebab-case\n\n## コミット\n- Conventional Commits形式\n- feat: / fix: / refactor: / test: / docs: / chore:\n\n## テスト\n- 全関数にユニットテスト必須\n- カバレッジ80%以上\n- テストフレームワーク: Jest or Vitest\n\n## セキュリティ\n- .envファイルをコミットしない\n- APIキーをハードコードしない\n- ユーザー入力は必ずバリデーション\n\`\`\`\n\n---\n\n## 2. AGENTS.md (Codex用 -- プロジェクトルート)\n\n\`\`\`markdown\n# Codex CLI設定\n\nCODING_RULES.mdに従うこと。\n\n## Codex固有ルール\n- full-autoでの変更後は必ずテスト実行\n- リファクタリングはブランチを切ってから\n- 設定ファイル(.env, CI/CD)はsuggestモード限定\n\`\`\`\n\n---\n\n## 3. CLAUDE.md (Claude Code用 -- プロジェクトルート)\n\n\`\`\`markdown\n# Claude Code設定\n\nCODING_RULES.mdに従うこと。\n\n## Claude Code固有ルール\n- 設計議論の結果はdocs/に記録\n- 大規模変更の前に計画を提示\n- エラー発生時は原因分析を先に行う\n\`\`\`\n\n---\n\n## 4. .github/copilot-instructions.md (Copilot用)\n\n\`\`\`markdown\n# Copilot設定\n\nCODING_RULES.mdに従うこと。\n\n## Copilot固有ルール\n- 補完時にJSDocコメントを含める\n- any型は使わない\n- console.logは使わない(loggerを使う)\n\`\`\`\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ツール横断設定セット.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadLegacyCode(){const t=`// legacy-code.js -- リファクタリング演習用サンプル\n// このコードには意図的に多数の問題が含まれています\n\nvar user_list = [];\nvar MAX = 100;\n\n// ユーザーを追加する\nfunction add_user(name, age, email) {\n  if (name == '' || name == null || name == undefined) {\n    console.log('名前が空です');\n    return false;\n  }\n  if (age < 0 || age > 150) {\n    console.log('年齢が不正です');\n    return false;\n  }\n  if (user_list.length >= MAX) {\n    console.log('ユーザー数上限');\n    return false;\n  }\n  var user = {\n    id: Math.random().toString(36).substr(2, 9),\n    name: name,\n    age: age,\n    email: email,\n    created_at: new Date(),\n    status: 1  // 1: active, 0: inactive\n  };\n  user_list.push(user);\n  return true;\n}\n\n// ユーザーを検索する\nfunction find_user(query) {\n  var results = [];\n  for (var i = 0; i < user_list.length; i++) {\n    if (user_list[i].name.indexOf(query) !== -1 || user_list[i].email.indexOf(query) !== -1) {\n      results.push(user_list[i]);\n    }\n  }\n  return results;\n}\n\n// ユーザーを削除する\nfunction delete_user(id) {\n  for (var i = 0; i < user_list.length; i++) {\n    if (user_list[i].id == id) {\n      user_list.splice(i, 1);\n      return true;\n    }\n  }\n  return false;\n}\n\n// ユーザー情報を更新する\nfunction update_user(id, data) {\n  for (var i = 0; i < user_list.length; i++) {\n    if (user_list[i].id == id) {\n      if (data.name) user_list[i].name = data.name;\n      if (data.age) user_list[i].age = data.age;\n      if (data.email) user_list[i].email = data.email;\n      if (data.status !== undefined) user_list[i].status = data.status;\n      return user_list[i];\n    }\n  }\n  return null;\n}\n\n// 統計情報を取得する\nfunction get_stats() {\n  var total = user_list.length;\n  var active = 0;\n  var total_age = 0;\n  for (var i = 0; i < user_list.length; i++) {\n    if (user_list[i].status == 1) active++;\n    total_age += user_list[i].age;\n  }\n  return {\n    total: total,\n    active: active,\n    inactive: total - active,\n    avg_age: total > 0 ? total_age / total : 0\n  };\n}\n\n// 非同期でユーザーデータを取得する(コールバック地獄の例)\nfunction fetch_user_data(id, callback) {\n  setTimeout(function() {\n    var user = null;\n    for (var i = 0; i < user_list.length; i++) {\n      if (user_list[i].id == id) {\n        user = user_list[i];\n        break;\n      }\n    }\n    if (user) {\n      setTimeout(function() {\n        // 追加データの取得をシミュレート\n        var extra = { login_count: Math.floor(Math.random() * 100) };\n        callback(null, { user: user, extra: extra });\n      }, 100);\n    } else {\n      callback('ユーザーが見つかりません', null);\n    }\n  }, 100);\n}\n\n// CSVエクスポート\nfunction export_csv() {\n  var csv = 'id,name,age,email,status\\n';\n  for (var i = 0; i < user_list.length; i++) {\n    csv += user_list[i].id + ',' + user_list[i].name + ',' + user_list[i].age + ',' + user_list[i].email + ',' + (user_list[i].status == 1 ? 'active' : 'inactive') + '\\n';\n  }\n  return csv;\n}\n\nmodule.exports = { add_user, find_user, delete_user, update_user, get_stats, fetch_user_data, export_csv, user_list };\n`;const b=new Blob([t],{type:'application/javascript'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='legacy-code.js';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>

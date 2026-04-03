@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C09 Dify実践 AIワークフロー構築 - EzoAI</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --asagi:#00A5BF;--asagi-light:#33C4DA;--asagi-dark:#007A8F;
+  --asagi-subtle:rgba(0,165,191,.06);--asagi-border:rgba(0,165,191,.25);
+  --bg:#0a0a0a;--bg-card:#141414;--bg-hover:#1a1a1a;
+  --text:#e8e8e8;--text-muted:#999;--text-dim:#666;--border:#222;
+  --tip-bg:rgba(0,165,191,.08);--warn-bg:rgba(230,160,40,.08);--warn-border:#b8860b;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;}
+a{color:var(--asagi);text-decoration:none;}a:hover{text-decoration:underline;}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;}
+.hdr img{height:26px;opacity:.9;}
+.hdr .back{color:var(--text-muted);font-size:13px;}.hdr .back:hover{color:var(--asagi);text-decoration:none;}
+.hdr nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;}.hdr nav a{color:var(--text-dim);text-decoration:none;font-size:12px;white-space:nowrap;}.hdr nav a:hover{color:var(--asagi);}
+.hero{padding:80px 40px 56px;text-align:center;background:linear-gradient(180deg,rgba(0,165,191,.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);border:1px solid var(--asagi-border);padding:3px 14px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.3;margin-bottom:12px;}.hero h1 span{color:var(--asagi);}
+.hero .lead{font-size:15px;color:var(--text-muted);max-width:800px;margin:0 auto 20px;}
+.hero .meta{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}.hero .tag{font-size:12px;color:var(--text-muted);border:1px solid var(--border);padding:3px 12px;border-radius:4px;}
+.toc{max-width:960px;margin:48px auto;padding:0 40px;}.toc h2{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.toc ol{list-style:none;counter-reset:sec;}.toc li{counter-increment:sec;}
+.toc li a{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s;}.toc li a:hover{color:var(--asagi);}
+.toc li a::before{content:"Sec " counter(sec,decimal-leading-zero);font-size:11px;font-weight:700;color:var(--asagi);min-width:52px;}
+.toc .review-item a::before{content:"Review";font-size:11px;font-weight:700;color:var(--warn-border);min-width:52px;}
+.sec{max-width:960px;margin:0 auto;padding:64px 40px;border-bottom:1px solid var(--border);}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--asagi);margin-bottom:6px;}
+.sec-label.review{color:var(--warn-border);}
+.sec h2{font-size:26px;font-weight:700;margin-bottom:20px;}.sec h3{font-size:18px;font-weight:700;margin:32px 0 12px;color:var(--asagi-light);}.sec h4{font-size:15px;font-weight:700;margin:24px 0 8px;color:var(--text);}
+.sec p,.sec>ul,.sec>ol{margin-bottom:16px;font-size:15px;color:var(--text-muted);}.sec ul,.sec ol{padding-left:24px;}.sec li{margin-bottom:6px;}.sec strong{color:var(--text);font-weight:600;}
+.sec-hero-img{width:100%;max-width:720px;display:block;margin:24px auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;overflow-x:auto;}
+.mm .caption{font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px;}
+.box{border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:14px;color:var(--text-muted);}
+.box .bt{font-size:13px;font-weight:700;margin-bottom:6px;}
+.box.tip{background:var(--tip-bg);border-left:3px solid var(--asagi);}.box.tip .bt{color:var(--asagi);}
+.box.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);}.box.warn .bt{color:var(--warn-border);}
+.box.note{background:rgba(255,255,255,.03);border-left:3px solid var(--text-dim);}.box.note .bt{color:var(--text);}
+.box ul{margin:8px 0 0;padding-left:20px;}
+.prompt{position:relative;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:16px 52px 16px 20px;margin:16px 0;font-family:"SF Mono","Fira Code",monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:var(--text-muted);line-height:1.65;}
+.prompt .cb{position:absolute;top:8px;right:8px;background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;opacity:.7;transition:opacity .2s;}.prompt .cb:hover{opacity:1;}
+.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.ct th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--asagi-border);color:var(--asagi);font-size:12px;font-weight:600;}
+.ct td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);}.ct tr:hover td{background:rgba(0,165,191,.03);}
+details{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0;}
+details summary{padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);list-style:none;}
+details summary::before{content:"+ ";color:var(--asagi);font-weight:700;}details[open] summary::before{content:"- ";}
+details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}details .inner p{margin-bottom:10px;}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.quiz h4{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--asagi);}
+.quiz .q{margin-bottom:20px;}.quiz .q>p{font-size:14px;color:var(--text);margin-bottom:8px;font-weight:600;}
+.quiz label{display:block;font-size:13px;color:var(--text-muted);padding:7px 14px;border:1px solid var(--border);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:border-color .2s;}
+.quiz label:hover{border-color:var(--asagi-border);}
+.quiz input[type=radio]{margin-right:8px;}
+.quiz .ans{display:none;padding:14px;margin-top:10px;background:var(--tip-bg);border-radius:4px;font-size:13px;color:var(--text-muted);border-left:3px solid var(--asagi);}
+.quiz .rb{background:var(--asagi-dark);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;cursor:pointer;margin-top:8px;transition:background .2s;}.quiz .rb:hover{background:var(--asagi);}
+.dl{display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--asagi-border);color:var(--asagi);padding:9px 20px;border-radius:var(--radius);font-size:13px;cursor:pointer;transition:background .2s;margin:8px 4px 8px 0;text-decoration:none;}
+.dl:hover{background:var(--asagi-dark);color:#fff;text-decoration:none;}
+.dl svg{width:14px;height:14px;fill:currentColor;}
+.refs{margin:32px 0 0;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);}
+.refs h4{font-size:13px;font-weight:700;color:var(--asagi);margin-bottom:10px;}.refs ul{list-style:none;padding:0;}.refs li{margin-bottom:6px;font-size:13px;}.refs a{color:var(--asagi-light);}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}@media(max-width:768px){.cols{grid-template-columns:1fr;}}
+.col-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.col-card h4{margin:0 0 8px;font-size:15px;color:var(--asagi);}.col-card p,.col-card ul{font-size:13px;color:var(--text-muted);}
+.ftr{padding:40px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;}
+.handson{background:rgba(0,165,191,0.04);border:1px solid var(--asagi-border);border-radius:var(--radius);padding:24px;margin:28px 0;}
+.handson .hs-title{font-size:15px;font-weight:700;color:var(--asagi);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.handson .hs-time{font-size:12px;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;}
+.handson .hs-goal{font-size:13px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:4px;}
+.handson ol,.handson ul{font-size:14px;color:var(--text-muted);padding-left:24px;}
+.handson li{margin-bottom:8px;}
+.handson p{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.handson .prompt{margin:12px 0;}
+.handson details{margin:12px 0;}
+.review-sec{border-left:3px solid var(--warn-border);}
+.checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
+@media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <img src="../../assets/logo-white.png" alt="EzoAI">
+  <a href="../../index.html" class="back">Course Catalog</a>
+  <nav><a href="#s1">01 概要</a><a href="#s2">02 環境</a><a href="#s3">03 チャット</a><a href="#rA">Review A</a><a href="#s4">04 WF構築</a><a href="#s5">05 RAG</a><a href="#rB">Review B</a><a href="#s6">06 外部連携</a><a href="#s7">07 分岐</a><a href="#s8">08 エージェント</a><a href="#rC">Review C</a><a href="#s9">09 運用</a><a href="#s10">10 総合</a></nav>
+</header>
+<div class="hero">
+  <div class="badge">Course 09 / Layer 2 -- 技術特化</div>
+  <h1><span>Dify実践</span> AIワークフロー構築</h1>
+  <p class="lead">ノーコード/ローコードでAIワークフローを構築するDifyの実践コース。チャットボット、RAG、外部連携、エージェントモード、本番運用まで。法人向け3日間研修の深さをそのまま凝縮。コードを書かずにAIアプリを作りたい方に最適です。</p>
+  <div class="meta"><span class="tag">初級-中級</span><span class="tag">約12時間(720分)</span><span class="tag">10 Sections + 3 Review</span><span class="tag">ハンズオン比率 65%</span></div>
+</div>
+
+<div class="toc"><h2>目次</h2><ol>
+  <li><a href="#s1">AIワークフローとは <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s2">環境構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">50min</span></a></li>
+  <li><a href="#s3">チャットボット構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li class="review-item"><a href="#rA">復習ハンズオン A -- カスタムチャットボット <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">25min</span></a></li>
+  <li><a href="#s4">ワークフロー構築 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">65min</span></a></li>
+  <li><a href="#s5">RAG実装 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">65min</span></a></li>
+  <li class="review-item"><a href="#rB">復習ハンズオン B -- RAG付きワークフロー <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s6">外部連携 <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li><a href="#s7">条件分岐と高度なワークフロー <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">55min</span></a></li>
+  <li><a href="#s8">エージェントモード <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">60min</span></a></li>
+  <li class="review-item"><a href="#rC">復習ハンズオン C -- 統合ワークフロー <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">30min</span></a></li>
+  <li><a href="#s9">本番運用とセキュリティ <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">45min</span></a></li>
+  <li><a href="#s10">総合ハンズオン <span style="color:var(--text-dim);font-size:12px;margin-left:auto;">130min</span></a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<!-- Section 01: AIワークフローとは (50min: 講義30 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s1"><div class="sec-label">Section 01 -- 50min(講義30 + ハンズオン20)</div><h2>AIワークフローとは</h2>
+
+<h3>AIワークフローの概念</h3>
+<p>業務の中で「問い合わせを受けて、分類して、回答を生成して、記録する」といった一連の流れがあるとき、各ステップにAIを組み込んで自動化する仕組みがAIワークフローです。個々のAI処理を「ノード」として定義し、それをつなげてパイプラインにする。手作業で順番にこなしていた処理が、入力ひとつで一気に完了する世界を目指します。</p>
+
+<h3>Difyとは</h3>
+<p>Difyはオープンソースの LLM アプリケーション開発プラットフォームです。GUIのドラッグ&ドロップ操作でAIアプリケーションを組み立てられます。コードを1行も書かずにチャットボット、RAG検索、マルチステップワークフロー、エージェントを構築可能。セルフホストすればデータを完全にコントロールでき、クラウド版なら即日利用開始できます。</p>
+
+<h3>Difyの4つのアプリタイプ</h3>
+<table class="ct"><thead><tr><th>アプリタイプ</th><th>用途</th><th>特徴</th></tr></thead><tbody>
+<tr><td>チャットボット</td><td>対話型QA、カスタマーサポート</td><td>会話履歴を保持。ナレッジベース連携可</td></tr>
+<tr><td>テキスト生成</td><td>翻訳、要約、文書作成</td><td>単発の入出力。APIコール向き</td></tr>
+<tr><td>ワークフロー</td><td>複数ステップの自動処理</td><td>ノードをつないでパイプライン構築</td></tr>
+<tr><td>エージェント</td><td>自律的なタスク実行</td><td>ツールを選択・実行して問題解決</td></tr>
+</tbody></table>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["ユーザー入力"] --> B["Difyアプリ"]
+  B --> C["LLM<br/>(GPT/Claude/Gemini)"]
+  C --> D["ツール / API"]
+  C --> E["ナレッジベース"]
+  D --> F["出力"]
+  E --> F
+</pre><div class="caption">Difyの基本アーキテクチャ。LLMを中心にツールとナレッジベースが接続される</div></div>
+
+<img src="assets/dify-home.png" alt="Difyダッシュボード画面" class="sec-hero-img" style="max-width:640px;">
+<p class="caption">Difyのダッシュボード。アプリの作成・管理をGUIで行える</p>
+
+<h3>競合プラットフォーム比較</h3>
+<table class="ct"><thead><tr><th>プラットフォーム</th><th>ライセンス</th><th>ノーコード</th><th>RAG</th><th>エージェント</th><th>セルフホスト</th></tr></thead><tbody>
+<tr><td>Dify</td><td>Apache 2.0</td><td>対応</td><td>対応</td><td>対応</td><td>対応</td></tr>
+<tr><td>LangFlow</td><td>MIT</td><td>対応</td><td>対応</td><td>限定的</td><td>対応</td></tr>
+<tr><td>Flowise</td><td>Apache 2.0</td><td>対応</td><td>対応</td><td>限定的</td><td>対応</td></tr>
+<tr><td>n8n</td><td>Sustainable Use</td><td>対応</td><td>プラグイン</td><td>限定的</td><td>対応</td></tr>
+</tbody></table>
+<p>Difyの強みはRAGとエージェント機能が最初から統合されている点にあります。LangFlowはLangChainとの親和性が高く、n8nは非AIのワークフロー自動化に強い。使い分ける場面はありますが、AI特化のアプリ構築ならDifyが最も完成度が高い選択肢です。</p>
+
+<div class="box tip"><div class="bt">Tips: なぜ今Difyなのか</div>2025年後半からGitHub Star数が急増し、2026年にはセルフホスト型LLMプラットフォームの事実上の標準になりつつあります。日本語ドキュメントも整備が進み、国内企業の導入事例が増えています。</div>
+
+<div class="quiz"><h4>理解度チェック: Section 01</h4>
+<div class="q"><p>Q1. Difyの4つのアプリタイプのうち、複数のAI処理をノードとしてつなげて自動化するのはどれですか?</p>
+<label><input type="radio" name="q1" value="a">チャットボット</label>
+<label><input type="radio" name="q1" value="b">テキスト生成</label>
+<label><input type="radio" name="q1" value="c">ワークフロー</label>
+<label><input type="radio" name="q1" value="d">エージェント</label>
+<div class="ans" id="a1">正解: C。ワークフローは複数のノードをGUI上でつないでパイプラインを構築するアプリタイプです。エージェントも複数処理を行いますが、こちらはAIが自律的にツールを選択する方式。</div>
+<button class="rb" onclick="document.getElementById('a1').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q2. Difyをセルフホストする最大のメリットは?</p>
+<label><input type="radio" name="q2" value="a">無料で使えること</label>
+<label><input type="radio" name="q2" value="b">データが外部に出ず完全にコントロールできること</label>
+<label><input type="radio" name="q2" value="c">UIがきれいなこと</label>
+<label><input type="radio" name="q2" value="d">モデルの学習ができること</label>
+<div class="ans" id="a2">正解: B。社内の機密データを外部サーバーに送信せず、自社インフラ上でデータを完全管理できます。</div>
+<button class="rb" onclick="document.getElementById('a2').style.display='block'">答えを見る</button></div></div>
+
+<!-- Section 01 ハンズオン -->
+<div class="handson">
+<div class="hs-title">ハンズオン: Difyアカウント作成と初めてのチャットアプリ <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: Difyクラウド版にアカウントを作成し、最初のチャットアプリを動かす</div>
+
+<h4>パート1: アカウント作成(5min)</h4>
+<ol>
+<li><a href="https://cloud.dify.ai/" target="_blank" rel="noopener">cloud.dify.ai</a> にアクセスしてください</li>
+<li>GitHubまたはGoogleアカウントでサインアップしてください</li>
+<li>ダッシュボードが表示されたら成功です</li>
+</ol>
+
+<h4>パート2: 初めてのチャットアプリ(15min)</h4>
+<ol>
+<li>ダッシュボード左上の「アプリを作成」をクリックしてください</li>
+<li>「チャットボット」を選択し、アプリ名を「はじめてのDifyアプリ」と入力してください</li>
+<li>「オーケストレーション」画面が開きます。左側の「モデル」でGPT-4o-miniまたはClaude 3.5 Sonnetを選択してください</li>
+<li>「プロンプト」欄に以下を入力してください</li>
+</ol>
+<div class="prompt" id="p_s1h1">あなたは親切なAIアシスタントです。
+ユーザーの質問に対して、わかりやすく簡潔に回答してください。
+日本語で回答してください。<button class="cb" onclick="copyP('p_s1h1')">コピー</button></div>
+<ol start="5">
+<li>右上の「プレビュー」をクリックし、チャットウィンドウに「DifyとLangChainの違いを教えてください」と入力してください</li>
+<li>AIが回答を返すことを確認してください</li>
+<li>「公開」ボタンをクリックし、公開URLを取得してください</li>
+</ol>
+
+<details><summary>期待される結果</summary><div class="inner">
+<p>アプリが動作し、チャットウィンドウでAIと対話できる状態になります。公開URLを開くと、Difyのデフォルトチャット画面が表示されます。ここまでの作業でコードは一切書いていません。この手軽さがDifyの最大の強みです。</p>
+</div></details>
+
+<div class="box tip"><div class="bt">Tips</div>クラウド版の無料枠にはメッセージ数の上限があります。研修中は節約のためGPT-4o-miniを使い、本番用途では性能の高いモデルに切り替える運用がおすすめです。</div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://dify.ai/" target="_blank" rel="noopener">Dify公式サイト</a></li>
+<li><a href="https://docs.dify.ai/" target="_blank" rel="noopener">Difyドキュメント</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 02: 環境構築 (50min: 講義25 + ハンズオン25) -->
+<!-- ============================================================ -->
+<div class="sec" id="s2"><div class="sec-label">Section 02 -- 50min(講義25 + ハンズオン25)</div><h2>環境構築</h2>
+
+<h3>クラウド版とセルフホスト版</h3>
+<div class="cols">
+<div class="col-card"><h4>クラウド版 (cloud.dify.ai)</h4>
+<ul>
+<li>即利用可能、セットアップ不要</li>
+<li>無料枠あり(メッセージ数制限)</li>
+<li>Dify社のサーバーにデータが保存される</li>
+<li>個人利用・プロトタイプに最適</li>
+</ul></div>
+<div class="col-card"><h4>セルフホスト版 (Docker Compose)</h4>
+<ul>
+<li>データが外部に一切出ない</li>
+<li>カスタマイズが自由</li>
+<li>コスト管理しやすい(API従量課金のみ)</li>
+<li>法人本番環境に推奨</li>
+</ul></div>
+</div>
+
+<h3>セルフホスト版の必要スペック</h3>
+<table class="ct"><thead><tr><th>項目</th><th>最小要件</th><th>推奨</th></tr></thead><tbody>
+<tr><td>OS</td><td>Linux / macOS / Windows (WSL2)</td><td>Linux (Ubuntu 22.04+)</td></tr>
+<tr><td>Docker Desktop</td><td>24.0以上</td><td>最新版</td></tr>
+<tr><td>メモリ</td><td>4GB以上</td><td>8GB以上</td></tr>
+<tr><td>ディスク</td><td>10GB以上</td><td>20GB以上</td></tr>
+<tr><td>API キー</td><td>OpenAI or Anthropic</td><td>複数プロバイダー推奨</td></tr>
+</tbody></table>
+
+<h3>環境変数の設定</h3>
+<p>セルフホスト版では <code>.env</code> ファイルでAPIキーやデータベース設定を管理します。OpenAIやAnthropicのAPIキーはDifyの管理画面からも設定できますが、<code>.env</code>に記述すればデフォルト値として機能します。</p>
+
+<div class="box warn"><div class="bt">APIキーの扱い</div>APIキーは絶対にGitリポジトリにコミットしないでください。<code>.env</code> は <code>.gitignore</code> に必ず追加します。チームで共有する場合は <code>.env.example</code>(値を空にしたテンプレート)を用意してください。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: Docker Composeでローカルセットアップ <span class="hs-time">25min</span></div>
+<div class="hs-goal">目標: 自分のPCにDifyをインストールし、ローカルで動作確認する</div>
+
+<h4>ステップ1: リポジトリのクローン(3min)</h4>
+<div class="prompt" id="p_s2h1"># Difyのリポジトリをクローン
+git clone https://github.com/langgenius/dify.git
+cd dify/docker<button class="cb" onclick="copyP('p_s2h1')">コピー</button></div>
+
+<h4>ステップ2: 環境変数の設定(5min)</h4>
+<div class="prompt" id="p_s2h2"># 環境変数テンプレートをコピー
+cp .env.example .env
+
+# .env を編集（お好みのエディタで）
+# 最低限、以下を設定してください:
+# - SECRET_KEY: ランダムな文字列（openssl rand -hex 32 で生成）
+# - OPENAI_API_KEY: OpenAIのAPIキー（Dify管理画面からも設定可能）<button class="cb" onclick="copyP('p_s2h2')">コピー</button></div>
+
+<h4>ステップ3: Docker Compose起動(10min)</h4>
+<div class="prompt" id="p_s2h3"># コンテナの起動（初回はイメージのダウンロードに数分かかります）
+docker compose up -d
+
+# 起動状態を確認
+docker compose ps
+
+# 全コンテナが "running" であることを確認してください<button class="cb" onclick="copyP('p_s2h3')">コピー</button></div>
+
+<h4>ステップ4: 動作確認(5min)</h4>
+<ol>
+<li>ブラウザで <code>http://localhost/install</code> にアクセスしてください</li>
+<li>管理者アカウント(メール/パスワード)を設定してください</li>
+<li>ダッシュボードが表示されたら成功です</li>
+<li>「設定」→「モデルプロバイダー」でOpenAIまたはAnthropicのAPIキーを登録してください</li>
+</ol>
+
+<h4>Docker Compose起動時のよくあるエラーと対処法</h4>
+
+<details><summary>ポート競合: "Bind for 0.0.0.0:80 failed: port is already allocated"</summary><div class="inner">
+<p>ポート80が他のアプリケーション(Apache, nginx等)に使われています。</p>
+<ol>
+<li>競合プロセスを確認: <code>lsof -i :80</code> (Mac/Linux) / <code>netstat -ano | findstr :80</code> (Windows)</li>
+<li>競合プロセスを停止するか、Difyのポートを変更してください</li>
+<li><code>.env</code> ファイルで <code>NGINX_PORT=8080</code> に変更し、<code>docker compose up -d</code> で再起動</li>
+<li>ブラウザからは <code>http://localhost:8080</code> でアクセスします</li>
+</ol>
+</div></details>
+
+<details><summary>メモリ不足: "Container exited with code 137" / OOMKilled</summary><div class="inner">
+<p>Docker Desktopに割り当てられたメモリが足りません。Difyは複数のコンテナ(API, Web, Worker, DB, Redis等)を同時に起動するため、最低4GB必要です。</p>
+<ol>
+<li>Docker Desktop > Settings > Resources > Memory を4GB以上(推奨8GB)に変更</li>
+<li>Docker Desktopを再起動</li>
+<li><code>docker compose down</code> → <code>docker compose up -d</code> で再起動</li>
+</ol>
+<p>PCのRAMが8GB以下の場合、セルフホスト版は厳しい環境です。クラウド版( cloud.dify.ai )の利用を検討してください。</p>
+</div></details>
+
+<details><summary>APIキー未設定: "Model provider not configured" / モデルが選択できない</summary><div class="inner">
+<p>LLMプロバイダーのAPIキーが未設定の状態です。Difyはモデルを内蔵していないため、外部のLLM APIキーが必須です。</p>
+<ol>
+<li>Dify管理画面にログイン</li>
+<li>右上のアカウントメニュー > 「設定」をクリック</li>
+<li>「モデルプロバイダー」で OpenAI または Anthropic を選択</li>
+<li>APIキーを入力して「保存」</li>
+</ol>
+<p><code>.env</code> に <code>OPENAI_API_KEY=sk-xxx</code> を直接書く方法もありますが、管理画面から設定する方が安全で管理しやすいです。</p>
+</div></details>
+
+<h4>ステップ5: 停止と再開(2min)</h4>
+<div class="prompt" id="p_s2h4"># Difyを停止（データは保持される）
+docker compose down
+
+# Difyを再開
+docker compose up -d
+
+# データも含めて完全に削除する場合（注意）
+# docker compose down -v<button class="cb" onclick="copyP('p_s2h4')">コピー</button></div>
+
+<div class="box tip"><div class="bt">Tips</div>クラウド版で先に進め、セルフホスト版は後から構築する順番でも問題ありません。研修ではクラウド版を推奨しますが、本番運用ではセルフホストが望ましい場面が多くなります。</div>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.dify.ai/getting-started/install-self-hosted/docker-compose" target="_blank" rel="noopener">Dify セルフホスト構築ガイド (Docker Compose)</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 03: チャットボット構築 (55min: 講義20 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s3"><div class="sec-label">Section 03 -- 55min(講義20 + ハンズオン35)</div><h2>チャットボット構築</h2>
+
+<h3>チャットボットの構成要素</h3>
+<p>Difyのチャットボットは4つの要素で成り立っています。LLMモデルの選択、システムプロンプト(AIの振る舞いを定義する指示書)、変数(ユーザー入力のパラメータ化)、コンテキスト(ナレッジベースからの補足情報)。この4つを調整するだけで、汎用チャットから業務特化型アシスタントまで自在に作り分けられます。</p>
+
+<h3>3種類のチャットボット</h3>
+<div class="cols">
+<div class="col-card"><h4>1. 基本応答型</h4><p>シンプルなQA。システムプロンプトで役割と回答ルールを定義するだけ。プロトタイプや社内テスト用途に向いています。</p></div>
+<div class="col-card"><h4>2. ペルソナ設定型</h4><p>カスタマーサポート担当者やITヘルプデスク等、特定の人格を設定。回答トーン、禁止事項、エスカレーション条件まで細かく制御します。</p></div>
+</div>
+<div class="col-card" style="max-width:960px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:0 0 20px;"><h4 style="margin:0 0 8px;font-size:15px;color:var(--asagi);">3. コンテキスト付き型</h4><p style="font-size:13px;color:var(--text-muted);">ファイル添付やナレッジベースを利用して、社内文書に基づく回答を生成。RAG(Sec05)と組み合わせて本領を発揮します。</p></div>
+
+<div class="box tip"><div class="bt">Tips: モデル選択の指針</div>コスト優先ならGPT-4o-mini、回答品質優先ならClaude 3.5 SonnetかGPT-4o。日本語の自然さはClaudeが安定しています。Difyでは1つのアプリ内で複数モデルを試してA/Bテストが可能です。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 3種のチャットボットを順に構築 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: 基本応答型、ペルソナ設定型、コンテキスト付き型の3種を構築し、回答品質の差を体感する</div>
+
+<h4>演習1: 基本応答型チャットボット(10min)</h4>
+<ol>
+<li>Difyダッシュボードで「アプリを作成」→「チャットボット」を選択してください</li>
+<li>アプリ名を「基本QAボット」に設定してください</li>
+<li>以下のシステムプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s3h1">あなたは汎用AIアシスタントです。
+ユーザーの質問に正確かつ簡潔に回答してください。
+回答は日本語で200文字以内にまとめてください。
+わからないことは「確認が必要です」と正直に答えてください。<button class="cb" onclick="copyP('p_s3h1')">コピー</button></div>
+<ol start="4">
+<li>プレビューで「Pythonの特徴を教えてください」と質問し、回答を確認してください</li>
+</ol>
+
+<h4>演習2: ペルソナ設定型チャットボット(12min)</h4>
+<ol>
+<li>新しいチャットボットを作成し、アプリ名を「CSサポートボット」に設定してください</li>
+<li>以下のシステムプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s3h2">あなたはSaaS製品「SmartTask Pro」のカスタマーサポート担当です。
+
+【回答ルール】
+- 敬語で丁寧に対応する
+- 回答は300文字以内
+- 手順がある場合は番号付きリストで示す
+- 回答の最後に「他にご質問はございますか?」を付ける
+
+【対応可能な範囲】
+- アカウント設定、ログイン、プラン変更
+- 機能の使い方、トラブルシューティング
+- 請求・支払いに関する一般的な質問
+
+【禁止事項】
+- 競合製品の比較や推奨
+- 返金判断（「担当部署にエスカレーションいたします」と返す）
+- 技術的なバグ修正の約束
+
+【エスカレーション】
+対応不可の質問: 「申し訳ございません。この件は専門チームにおつなぎいたします。サポート窓口 support@example.com までご連絡ください。」<button class="cb" onclick="copyP('p_s3h2')">コピー</button></div>
+<ol start="3">
+<li>プレビューで以下の質問を試してください
+  <ul>
+  <li>「パスワードを変更したいです」(通常対応)</li>
+  <li>「他社製品と比べてどうですか?」(禁止事項に抵触)</li>
+  <li>「返金してほしいです」(エスカレーション)</li>
+  </ul>
+</li>
+</ol>
+
+<h4>演習3: コンテキスト付き型チャットボット(13min)</h4>
+<ol>
+<li>新しいチャットボットを作成し、アプリ名を「社内FAQボット」に設定してください</li>
+<li>「変数」セクションで、テキストエリア変数 <code>context</code> を追加してください</li>
+<li>以下のシステムプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s3h3">あなたは社内ヘルプデスクのアシスタントです。
+以下のコンテキスト情報に基づいて回答してください。
+
+【コンテキスト】
+{{context}}
+
+【回答ルール】
+- コンテキストに記載のある内容のみ回答する
+- コンテキストにない情報を推測で回答しない
+- 該当する情報がない場合は「お手数ですがヘルプデスク(内線: 1234)へお問い合わせください」と回答する
+- 回答の根拠となるコンテキストの該当箇所を引用する<button class="cb" onclick="copyP('p_s3h3')">コピー</button></div>
+<ol start="4">
+<li>プレビューで、context欄に社内ルール(例: 「有給休暇は年間20日付与。申請は3営業日前までにシステムから。」)を入力し、関連する質問を試してください</li>
+<li>コンテキストにない質問をして、適切にエスカレーションするか確認してください</li>
+</ol>
+
+<details><summary>3種類の比較ポイント</summary><div class="inner">
+<p>基本応答型は汎用的だが回答がぶれやすい。ペルソナ設定型は回答のトーンと範囲が安定する。コンテキスト付き型はハルシネーションを大幅に抑制できるが、コンテキストの品質に回答が依存します。実務では2と3を組み合わせるケースが多くなります。</p>
+</div></details>
+
+<ul class="checklist">
+<li>基本応答型チャットボットを作成した</li>
+<li>ペルソナ設定型で禁止事項/エスカレーションが機能することを確認した</li>
+<li>コンテキスト付き型でコンテキスト外の質問が適切に処理されることを確認した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン A (25min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rA"><div class="sec-label review">Review Hands-on A -- 25min</div><h2>復習ハンズオン A: カスタムチャットボット</h2>
+<p>Section 01-03の知識を組み合わせ、自分の業務に合ったチャットボットを完成させます。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 自分の業務向けチャットボットを完成させる <span class="hs-time">25min</span></div>
+<div class="hs-goal">成果物: 業務特化型チャットボット(ペルソナ設定+コンテキスト付き)</div>
+
+<h4>手順</h4>
+<ol>
+<li>自分の業務で最も頻繁に受ける質問パターンを3つ書き出してください(3min)</li>
+<li>Difyで新しいチャットボットを作成し、以下の要素を設定してください(12min)
+  <ul>
+  <li>業務に合ったシステムプロンプト(Sec03のペルソナ設定型をベースに)</li>
+  <li>禁止事項とエスカレーション条件</li>
+  <li>回答のトーンと長さ</li>
+  </ul>
+</li>
+<li>書き出した3つの質問パターンでテストしてください(5min)</li>
+<li>テスト結果を見てプロンプトを1回以上改善してください(5min)</li>
+</ol>
+
+<details><summary>ヒント: プロンプト改善の観点</summary><div class="inner">
+<p>回答が長すぎる場合は文字数制限を追加。専門用語が多すぎる場合は「専門用語は使わず平易な表現で」と指定。的外れな回答が出る場合は具体例(Few-shot)をプロンプト末尾に追加すると安定します。</p>
+</div></details>
+
+<ul class="checklist">
+<li>業務の質問パターンを3つ書き出した</li>
+<li>ペルソナ設定+禁止事項+エスカレーション条件を含むプロンプトを作成した</li>
+<li>3つの質問でテストし、回答品質を確認した</li>
+<li>プロンプトを1回以上改善した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 04: ワークフロー構築 (65min: 講義25 + ハンズオン40) -->
+<!-- ============================================================ -->
+<div class="sec" id="s4"><div class="sec-label">Section 04 -- 65min(講義25 + ハンズオン40)</div><h2>ワークフロー構築</h2>
+<img src="assets/workflow-builder.png" alt="Difyワークフロービルダー" class="sec-hero-img">
+
+<h3>ワークフローの基本構造</h3>
+<p>Difyのワークフローは「トリガー(開始ノード)→処理ノード群→出力(終了ノード)」で構成されます。各ノードが1つの処理を担当し、ノード間は変数でデータを受け渡す。GUIのキャンバス上でノードをドラッグ&ドロップして接続するだけで、プログラミング不要のパイプラインが完成します。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["開始<br/>(ユーザー入力)"] --> B["LLMノード<br/>(テキスト生成)"]
+  B --> C["テンプレート<br/>(フォーマット)"]
+  C --> D["条件分岐<br/>(IF/ELSE)"]
+  D -->|条件A| E["LLMノード2<br/>(詳細回答)"]
+  D -->|条件B| F["HTTPリクエスト<br/>(外部API)"]
+  E --> G["終了<br/>(出力)"]
+  F --> G
+</pre><div class="caption">5ノードのサンプルワークフロー。条件分岐で処理を振り分ける</div></div>
+
+<h3>ノードの種類と役割</h3>
+<table class="ct"><thead><tr><th>ノード</th><th>役割</th><th>主な用途</th></tr></thead><tbody>
+<tr><td>開始 / 入力</td><td>ワークフローのエントリーポイント</td><td>ユーザー入力の受け取り、変数定義</td></tr>
+<tr><td>LLM</td><td>LLMにプロンプトを送信して回答を取得</td><td>テキスト生成、分類、要約、翻訳</td></tr>
+<tr><td>テンプレート</td><td>Jinja2テンプレートで出力を整形</td><td>フォーマット制御、変数の埋め込み</td></tr>
+<tr><td>条件分岐</td><td>IF/ELSEで処理を振り分け</td><td>質問カテゴリ別の分岐、閾値判定</td></tr>
+<tr><td>HTTP リクエスト</td><td>外部APIへリクエスト送信</td><td>Slack通知、Google Sheets書込み</td></tr>
+<tr><td>コード</td><td>Python/JavaScriptコードを実行</td><td>データ加工、計算、JSON解析</td></tr>
+<tr><td>変数割当</td><td>変数の値を設定・更新</td><td>フラグ管理、カウンター</td></tr>
+<tr><td>終了 / 出力</td><td>ワークフローの出力を返す</td><td>最終結果の返却</td></tr>
+</tbody></table>
+
+<h3>ワークフローのデバッグ方法</h3>
+<div class="box tip"><div class="bt">Tips: ワークフローデバッグの3つの手法</div>
+<ol>
+<li><strong>テスト実行(Run)</strong> -- ワークフロー編集画面右上の「実行」ボタンで全体をテスト実行できます。入力値を指定して実行すると、各ノードの処理結果がリアルタイムで表示されます。まずはこれで全体の流れを確認してください</li>
+<li><strong>ノードごとの入出力確認</strong> -- テスト実行後、各ノードをクリックすると「入力」タブと「出力」タブが表示されます。期待した値がノード間で正しく受け渡されているかをここで確認します。変数名の参照ミス(typo)はここで発見できることが多い</li>
+<li><strong>実行ログの確認</strong> -- ダッシュボードの「ログ」セクションに過去の実行履歴が残ります。各実行の入力、各ノードの処理時間、出力、エラー情報が記録されるので、本番稼働後のトラブルシューティングに使えます。特にLLMノードの応答内容とトークン消費量はここで把握してください</li>
+</ol>
+</div>
+
+<h3>ノード間の変数接続</h3>
+<p>各ノードの出力は次のノードの入力として参照できます。LLMノードの出力を <code>{{llm_node.text}}</code> のように変数名で取得し、テンプレートノードや条件分岐ノードで利用する。この「変数のバケツリレー」がワークフローのデータフローを構成します。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: ワークフローを段階的に構築 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: 4つのワークフローを順に構築し、ノードの使い方を体得する</div>
+
+<h4>演習1: 最小ワークフロー(10min)</h4>
+<ol>
+<li>Difyで「アプリを作成」→「ワークフロー」を選択してください</li>
+<li>キャンバスに「開始」「LLM」「終了」の3ノードを配置してください</li>
+<li>「開始」ノードにテキスト入力変数 <code>user_input</code> を追加してください</li>
+<li>「LLM」ノードに以下のプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s4h1">以下の質問に日本語で簡潔に回答してください。
+
+質問: {{#start.user_input#}}<button class="cb" onclick="copyP('p_s4h1')">コピー</button></div>
+<ol start="5">
+<li>「終了」ノードでLLMの出力を返すように設定し、テスト実行してください</li>
+</ol>
+
+<h4>演習2: テンプレートノードで出力フォーマット制御(10min)</h4>
+<ol>
+<li>演習1のワークフローを複製してください</li>
+<li>LLMノードと終了ノードの間に「テンプレート」ノードを追加してください</li>
+<li>テンプレートに以下のJinja2コードを設定してください</li>
+</ol>
+<div class="prompt" id="p_s4h2">## 回答レポート
+
+**質問:** {{user_input}}
+
+**AI回答:**
+{{llm_output}}
+
+**生成日時:** {{ now() }}
+**注意:** この回答はAIによる自動生成です。重要な判断に使用する前に事実確認をお願いします。<button class="cb" onclick="copyP('p_s4h2')">コピー</button></div>
+<ol start="4">
+<li>テスト実行し、フォーマットが適用された出力を確認してください</li>
+</ol>
+
+<h4>演習3: 条件分岐で応答を切替(10min)</h4>
+<ol>
+<li>新しいワークフローを作成してください</li>
+<li>開始 → LLM(質問分類)→ 条件分岐 → LLM(技術回答)/LLM(一般回答)→ 終了 の構成を作成してください</li>
+<li>最初のLLMで「質問が技術的かどうか」を判定させてください</li>
+</ol>
+<div class="prompt" id="p_s4h3">以下の質問が「技術的な質問」か「一般的な質問」かを判定してください。
+「技術的」か「一般的」のどちらか一言で回答してください。
+
+質問: {{#start.user_input#}}<button class="cb" onclick="copyP('p_s4h3')">コピー</button></div>
+<ol start="4">
+<li>条件分岐ノードでLLMの出力に「技術」が含まれるかどうかで分岐させてください</li>
+<li>それぞれの分岐先に異なるプロンプトのLLMノードを配置し、テスト実行してください</li>
+</ol>
+
+<h4>演習4: コードノードでデータ加工(10min)</h4>
+<ol>
+<li>新しいワークフローを作成してください</li>
+<li>開始 → コードノード → LLM → 終了 の構成を作成してください</li>
+<li>コードノードにPythonで以下の処理を設定してください</li>
+</ol>
+<div class="prompt" id="p_s4h4">def main(user_input: str) -> dict:
+    # 入力テキストの基本統計を計算
+    char_count = len(user_input)
+    word_count = len(user_input.split())
+    line_count = user_input.count('\n') + 1
+
+    return {
+        "original_text": user_input,
+        "stats": f"文字数: {char_count}, 単語数: {word_count}, 行数: {line_count}"
+    }<button class="cb" onclick="copyP('p_s4h4')">コピー</button></div>
+<ol start="4">
+<li>LLMノードでコードの出力(統計情報)を含めて回答を生成してください</li>
+<li>テスト実行し、コードノードとLLMノードの連携を確認してください</li>
+</ol>
+
+<details><summary>期待される結果</summary><div class="inner">
+<p>演習1で基本構造を把握し、演習2でフォーマット制御、演習3で分岐処理、演習4でコード連携を体験します。この4パターンがワークフロー構築の基本型です。これらを組み合わせれば、ほとんどの業務自動化に対応できます。</p>
+</div></details>
+
+<ul class="checklist">
+<li>最小ワークフロー(3ノード)が動作した</li>
+<li>テンプレートノードでフォーマット制御ができた</li>
+<li>条件分岐で質問内容に応じた処理切替ができた</li>
+<li>コードノードでPythonによるデータ加工ができた</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 05: RAG実装 (65min: 講義25 + ハンズオン40) -->
+<!-- ============================================================ -->
+<div class="sec" id="s5"><div class="sec-label">Section 05 -- 65min(講義25 + ハンズオン40)</div><h2>RAG実装</h2>
+
+<h3>RAGの仕組み</h3>
+<p>RAG(Retrieval-Augmented Generation)は「検索してから生成する」手法です。ユーザーの質問を受け取ったら、まずナレッジベースから関連する文書チャンクを検索し、その文脈をLLMに渡して回答を生成する。LLM単体ではカットオフ以降の情報や社内固有の情報に答えられませんが、RAGなら最新かつ正確な情報源に基づく回答が可能になります。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph LR
+  A["ユーザーの質問"] --> B["Embedding<br/>(ベクトル化)"]
+  B --> C["ベクトル検索<br/>(類似チャンク取得)"]
+  C --> D["文脈付与<br/>(質問+検索結果)"]
+  D --> E["LLM<br/>(回答生成)"]
+  E --> F["回答"]
+</pre><div class="caption">RAGの処理フロー。検索結果を文脈としてLLMに渡す</div></div>
+
+<h3>Difyのナレッジベース</h3>
+<p>Difyは「ナレッジ」機能でRAGを実現します。PDF、テキスト、Markdown、Webページ、Notionからドキュメントをインポートし、自動的にチャンク分割とベクトル化を行います。ナレッジベースはアプリ間で共有可能で、1つの文書セットを複数のチャットボットやワークフローから参照できます。</p>
+
+<h3>チャンク戦略</h3>
+<table class="ct"><thead><tr><th>戦略</th><th>チャンクサイズ</th><th>適する文書</th><th>注意点</th></tr></thead><tbody>
+<tr><td>自動分割</td><td>Difyが自動判定</td><td>汎用。まずこれで試す</td><td>精度が低い場合はカスタムへ</td></tr>
+<tr><td>カスタム分割</td><td>500-1000トークン</td><td>FAQ、マニュアル</td><td>小さすぎると文脈が不足</td></tr>
+<tr><td>カスタム分割</td><td>1000-2000トークン</td><td>論文、報告書</td><td>大きすぎると検索精度が低下</td></tr>
+</tbody></table>
+
+<h3>検索モードとチューニング</h3>
+<div class="cols">
+<div class="col-card"><h4>ベクトル検索</h4><p>意味的な類似度で検索。「有休の申請方法」と「休暇を取るには」を同義と判定できる。デフォルトで推奨。</p></div>
+<div class="col-card"><h4>全文検索</h4><p>キーワード一致で検索。固有名詞や型番など、正確な文字列一致が必要な場合に強い。</p></div>
+</div>
+<p>ハイブリッド検索はベクトル検索と全文検索を組み合わせたモードで、両方のスコアを統合してランキングします。多くの場合、ハイブリッドが最も安定した検索精度を出します。</p>
+
+<h3>文書タイプ別チャンクサイズガイドライン</h3>
+<p>チャンクサイズは文書の性質で使い分けます。小さすぎると文脈が失われ、大きすぎると検索精度が下がる。以下の目安で始め、検索テストの結果を見ながら調整してください。</p>
+<table class="ct"><thead><tr><th>文書タイプ</th><th>推奨チャンクサイズ</th><th>オーバーラップ</th><th>理由</th></tr></thead><tbody>
+<tr><td>FAQ / Q&A型</td><td>256-512 トークン</td><td>0-50 トークン</td><td>1つのQ&Aが1チャンクに収まるのが理想。質問と回答がセットで検索される</td></tr>
+<tr><td>マニュアル / 手順書</td><td>512-1024 トークン</td><td>50-100 トークン</td><td>手順の前後関係が重要。オーバーラップを設定して文脈の断絶を防ぐ</td></tr>
+<tr><td>契約書 / 法的文書</td><td>1024-2048 トークン</td><td>100-200 トークン</td><td>条項が長く、前後の条項を参照しないと意味が通らない場合がある</td></tr>
+<tr><td>論文 / レポート</td><td>512-1024 トークン</td><td>100 トークン</td><td>段落単位で分割し、図表の説明文が本文と分離しないように注意</td></tr>
+<tr><td>議事録 / メモ</td><td>256-512 トークン</td><td>50 トークン</td><td>発言単位やアジェンダ項目単位で分割すると検索精度が上がる</td></tr>
+</tbody></table>
+
+<h3>検索スコア閾値の設定指針</h3>
+<table class="ct"><thead><tr><th>閾値</th><th>効果</th><th>適した場面</th></tr></thead><tbody>
+<tr><td>0.3 以下(低め)</td><td>多くのチャンクがヒットする。漏れは少ないがノイズが多い</td><td>網羅性を重視したい場面(法務文書の検索、コンプライアンスチェック)</td></tr>
+<tr><td>0.5 前後(標準)</td><td>バランス型。まずはこの値で始める</td><td>一般的なFAQ、マニュアル検索</td></tr>
+<tr><td>0.7 以上(高め)</td><td>高精度だがヒットしない質問が増える</td><td>正確性が最優先の場面(医療情報、技術仕様の回答)</td></tr>
+</tbody></table>
+<p>閾値を高く設定しすぎて「該当する情報が見つかりませんでした」が頻発する場合は、まず閾値を下げ、それでもダメならチャンク分割やEmbeddingモデルの見直しを検討してください。</p>
+
+<div class="box tip"><div class="bt">Tips: Top-KとScore閾値</div>Top-K は検索結果の上位何件をLLMに渡すかの設定(デフォルト3〜5)。Score閾値は類似度がこの値以下の結果を除外します(デフォルト0.5前後)。Top-Kを増やすと網羅性が上がる反面、ノイズも増加。閾値を上げると精度が上がるが、該当なしになりやすい。トレードオフを意識してチューニングしてください。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: RAG付きチャットボットの構築 <span class="hs-time">40min</span></div>
+<div class="hs-goal">目標: PDFからナレッジベースを作成し、RAG付きチャットボットで検索精度を体験する</div>
+
+<h4>演習1: ナレッジベース作成(10min)</h4>
+<ol>
+<li>以下のサンプルFAQデータをダウンロードしてください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadFAQ();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプルFAQデータ(.txt)をダウンロード</a>
+<ol start="2">
+<li>Difyダッシュボードの「ナレッジ」→「ナレッジを作成」をクリックしてください</li>
+<li>ダウンロードしたファイルをアップロードしてください</li>
+<li>チャンク設定は「自動」のままで「保存して処理」をクリックしてください</li>
+<li>処理完了後、チャンク一覧を確認してください</li>
+</ol>
+
+<h4>演習2: チャンク設定の調整(10min)</h4>
+<ol>
+<li>ナレッジの「設定」でチャンク方法を「カスタム」に変更してください</li>
+<li>チャンクサイズを500トークン、オーバーラップを50トークンに設定してください</li>
+<li>再処理を実行し、チャンク数の変化を確認してください</li>
+<li>「検索テスト」機能で「有給休暇の申請方法は?」と検索し、該当チャンクが上位に来ることを確認してください</li>
+</ol>
+
+<h4>演習3: RAG付きチャットボット構築(10min)</h4>
+<ol>
+<li>新しいチャットボットを作成してください</li>
+<li>「コンテキスト」セクションで先ほど作成したナレッジベースを追加してください</li>
+<li>以下のシステムプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s5h1">あなたは社内FAQアシスタントです。
+以下のコンテキスト情報に基づいて回答してください。
+
+【回答ルール】
+- コンテキストに記載のある情報のみを使って回答する
+- 推測や一般知識での補足はしない
+- 該当する情報が見つからない場合は「FAQに該当する情報がありませんでした。総務部(内線: 1234)にお問い合わせください。」と回答する
+- 回答の末尾に参照元のQ&A番号を記載する<button class="cb" onclick="copyP('p_s5h1')">コピー</button></div>
+<ol start="4">
+<li>プレビューで5つの質問を試し、回答の正確性を確認してください</li>
+</ol>
+
+<h4>演習4: 検索精度チューニング(10min)</h4>
+<ol>
+<li>チャットボットの「コンテキスト」設定でTop-Kを3→5に変更してテスト</li>
+<li>Score閾値を0.3→0.7に変更してテスト</li>
+<li>検索モードを「ベクトル検索」→「ハイブリッド」に変更してテスト</li>
+<li>各設定での回答品質の変化を記録してください</li>
+</ol>
+
+<details><summary>チューニング結果の目安</summary><div class="inner">
+<p>Top-Kを増やすと「質問に直接関係ない情報も含まれるが、漏れが減る」。Score閾値を上げると「精度は上がるが、閾値未満のチャンクが除外されて回答できない質問が増える」。ハイブリッドはキーワード一致と意味検索の両方を活用するため、FAQ系の文書ではベクトル単体より安定する傾向があります。</p>
+</div></details>
+
+<ul class="checklist">
+<li>ナレッジベースをPDF/テキストから作成した</li>
+<li>チャンクサイズを変更して再処理を試した</li>
+<li>RAG付きチャットボットで質問に正確に回答できた</li>
+<li>Top-K、Score閾値、検索モードを変更して精度の変化を確認した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.dify.ai/guides/knowledge-base" target="_blank" rel="noopener">Dify ナレッジベース ドキュメント</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン B (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rB"><div class="sec-label review">Review Hands-on B -- 30min</div><h2>復習ハンズオン B: RAG付きワークフロー</h2>
+<p>Section 04-05の知識を組み合わせ、「質問 → ナレッジ検索 → LLM回答 → フォーマット出力」のワークフローを構築します。</p>
+
+<div class="handson">
+<div class="hs-title">課題: RAG付きワークフローの統合構築 <span class="hs-time">30min</span></div>
+<div class="hs-goal">成果物: ナレッジベース検索→LLM回答→テンプレートフォーマットの一気通貫ワークフロー</div>
+
+<h4>手順</h4>
+<ol>
+<li>Difyで新しいワークフローを作成してください(2min)</li>
+<li>以下の構成でノードを配置してください(15min)
+  <ul>
+  <li>開始ノード: テキスト入力変数 <code>question</code></li>
+  <li>ナレッジ検索ノード: Sec05で作成したナレッジベースを接続</li>
+  <li>LLMノード: 検索結果を文脈として質問に回答</li>
+  <li>テンプレートノード: 回答をレポート形式にフォーマット</li>
+  <li>終了ノード: フォーマット済み回答を出力</li>
+  </ul>
+</li>
+<li>テンプレートノードに以下を設定してください</li>
+</ol>
+<div class="prompt" id="p_rB">## FAQ回答レポート
+
+**質問:** {{question}}
+
+**回答:**
+{{llm_answer}}
+
+**検索ヒット数:** {{search_count}}件
+
+---
+このレポートはAIが自動生成しました。内容の正確性は確認の上ご利用ください。<button class="cb" onclick="copyP('p_rB')">コピー</button></div>
+<ol start="4">
+<li>5つの質問でテスト実行してください(8min)</li>
+<li>うち1つは「ナレッジベースに存在しない質問」を投げ、適切に処理されるか確認してください(5min)</li>
+</ol>
+
+<ul class="checklist">
+<li>4ノード以上のワークフローを構築した</li>
+<li>ナレッジベース検索とLLM回答が連携している</li>
+<li>テンプレートでフォーマット制御ができている</li>
+<li>存在しない質問に対して適切なフォールバックが動作した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 06: 外部連携 (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s6"><div class="sec-label">Section 06 -- 60min(講義25 + ハンズオン35)</div><h2>外部連携</h2>
+
+<h3>Difyの3つの外部連携方式</h3>
+<div class="cols">
+<div class="col-card"><h4>Webhook</h4><p>外部サービスからDifyを呼び出す / Difyから外部に通知する仕組み。LINE BotやSlack Botの構築で使用します。</p></div>
+<div class="col-card"><h4>HTTP Requestノード</h4><p>ワークフロー内から外部APIにリクエストを送信。Google Sheets API、Slack API、社内APIなど任意のREST APIを呼び出せます。</p></div>
+</div>
+<div class="col-card" style="max-width:960px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:0 0 20px;"><h4 style="margin:0 0 8px;font-size:15px;color:var(--asagi);">Dify API</h4><p style="font-size:13px;color:var(--text-muted);">Dify自体がAPIを公開しており、外部プログラムからチャット実行やワークフロー実行を呼び出せます。curlやPythonスクリプトで統合可能。</p></div>
+
+<h3>連携パターン</h3>
+<table class="ct"><thead><tr><th>パターン</th><th>方向</th><th>仕組み</th><th>用途例</th></tr></thead><tbody>
+<tr><td>LINE → Dify → 回答</td><td>外部 → Dify</td><td>Webhook受信</td><td>LINE Bot経由のFAQ回答</td></tr>
+<tr><td>Dify → Slack通知</td><td>Dify → 外部</td><td>HTTP Request / Webhook送信</td><td>処理完了通知、アラート</td></tr>
+<tr><td>Dify → Google Sheets</td><td>Dify → 外部</td><td>HTTP Request (Sheets API)</td><td>回答ログの自動記録</td></tr>
+<tr><td>外部アプリ → Dify API</td><td>外部 → Dify</td><td>REST API</td><td>自社アプリへのAI統合</td></tr>
+</tbody></table>
+
+<h3>API認証とセキュリティ</h3>
+<p>Dify APIではAPIキーによる認証が必須です。キーは「設定」→「APIキー」で生成でき、漏洩した場合は即座にローテーション(再生成)してください。外部APIを呼び出す際も、APIキーをハードコードせずDifyの「環境変数」機能を使って管理することを推奨します。</p>
+
+<div class="box warn"><div class="bt">レート制限に注意</div>Dify APIにはレート制限があります(クラウド版のデフォルトは100リクエスト/分程度)。大量のリクエストを送る場合はキューイングやリトライロジックの実装を検討してください。</div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 外部連携の実践 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: Dify APIを使った外部連携と、HTTP Requestノードによる外部API呼出しを体験する</div>
+
+<h4>演習1: Dify APIでチャットを実行(10min)</h4>
+<ol>
+<li>Sec03で作成したチャットボットの「APIアクセス」画面を開いてください</li>
+<li>APIキーを生成してください</li>
+<li>以下のcurlコマンドでチャットを実行してください(APIキーとURLは自分のものに置き換え)</li>
+</ol>
+<div class="prompt" id="p_s6h1">curl -X POST 'https://api.dify.ai/v1/chat-messages' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "inputs": {},
+    "query": "パスワードを変更する方法を教えてください",
+    "response_mode": "blocking",
+    "user": "test-user-001"
+  }'<button class="cb" onclick="copyP('p_s6h1')">コピー</button></div>
+<ol start="4">
+<li>JSON形式の応答が返ることを確認してください</li>
+<li><code>response_mode</code> を <code>"streaming"</code> に変更し、ストリーミング応答を確認してください</li>
+</ol>
+
+<h4>演習2: HTTP Requestノードで外部API呼出し(10min)</h4>
+<ol>
+<li>Sec04で作成したワークフローを複製してください</li>
+<li>LLMノードの後にHTTP Requestノードを追加してください</li>
+<li>テスト用の公開API(JSONPlaceholder)を使います</li>
+</ol>
+<div class="prompt" id="p_s6h2">URL: https://jsonplaceholder.typicode.com/posts/1
+メソッド: GET
+ヘッダー: なし<button class="cb" onclick="copyP('p_s6h2')">コピー</button></div>
+<ol start="4">
+<li>HTTP Requestの結果をテンプレートノードで整形して出力してください</li>
+<li>テスト実行し、外部APIのデータがワークフロー内で取得・加工されることを確認してください</li>
+</ol>
+
+<h4>演習3: Webhook受信の設定(10min)</h4>
+<ol>
+<li>Difyの「APIアクセス」画面でWebhook URLを確認してください</li>
+<li>curl または <a href="https://webhook.site/" target="_blank" rel="noopener">webhook.site</a> を使ってWebhookの送受信をテストしてください</li>
+<li>送信側のペイロード形式とDify側の受信データの対応を確認してください</li>
+</ol>
+
+<h4>演習4: 連携テスト(5min)</h4>
+<ol>
+<li>演習1-3で構築した連携が正常に動作していることを確認してください</li>
+<li>エラーが発生した場合はDifyのログを確認し、原因を特定してください</li>
+</ol>
+
+<ul class="checklist">
+<li>Dify APIでcurlからチャットを実行できた</li>
+<li>HTTP Requestノードで外部APIを呼び出せた</li>
+<li>Webhookの送受信を確認した</li>
+<li>エラー時のログ確認方法を把握した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.dify.ai/guides/application-publishing/developing-with-apis" target="_blank" rel="noopener">Dify API開発ガイド</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 07: 条件分岐と高度なワークフロー (55min: 講義20 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s7"><div class="sec-label">Section 07 -- 55min(講義20 + ハンズオン35)</div><h2>条件分岐と高度なワークフロー</h2>
+
+<h3>質問分類 → 分岐 → 専門回答</h3>
+<p>ユーザーの質問を最初のLLMで「カテゴリ分類」し、その結果に応じて専門的なLLMノードに振り分ける設計パターンです。カスタマーサポートで「技術質問」「料金質問」「一般質問」を自動振り分けする場面を想像してください。各分岐先のLLMには専門のプロンプトとナレッジベースを設定できるため、汎用プロンプト1本で対応するより回答精度が大幅に向上します。</p>
+
+<h3>マルチステップ処理</h3>
+<p>1つの入力を複数のLLMで段階的に処理する手法です。例えば「長文の要約 → 英語翻訳 → 校正」という3段階。各ステップに専門のプロンプトを設定し、前段の出力を次段の入力にする。Sec04のワークフローノード連結の応用版です。</p>
+
+<h3>イテレーション(ループ処理)</h3>
+<p>Difyのイテレーションノードは、リスト型データの各要素に対して同じ処理を繰り返します。10個のFAQ質問を一括生成する、5つの文書を順に要約する、といった場面で活用します。</p>
+
+<h3>エラーハンドリング</h3>
+<p>ワークフロー実行中にLLMの応答が空だったり、HTTP Requestが失敗した場合の代替フローを設計する必要があります。条件分岐でエラー判定を行い、リトライやフォールバック応答に分岐させます。</p>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 高度なワークフロー構築 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: 質問分類、マルチステップ処理、エラーハンドリングを実装する</div>
+
+<h4>演習1: 質問を3カテゴリに自動分類(15min)</h4>
+<ol>
+<li>新しいワークフローを作成してください</li>
+<li>以下の構成でノードを配置してください
+  <ul>
+  <li>開始 → LLM(分類) → 条件分岐 → 3つのLLM(各カテゴリ専用) → 終了</li>
+  </ul>
+</li>
+<li>分類用LLMに以下のプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s7h1">以下の質問を3つのカテゴリのいずれかに分類してください。
+カテゴリ名のみを出力してください。
+
+カテゴリ:
+- 技術: ソフトウェア、ハードウェア、設定、エラーに関する質問
+- 料金: プラン、請求、支払い、解約に関する質問
+- 一般: その他すべての質問
+
+質問: {{#start.user_input#}}<button class="cb" onclick="copyP('p_s7h1')">コピー</button></div>
+<ol start="4">
+<li>条件分岐ノードで、分類結果に応じて3つのLLMに振り分けてください</li>
+<li>各LLMに専門的なプロンプトを設定し、テスト実行してください</li>
+</ol>
+
+<h4>演習2: マルチステップ処理(10min)</h4>
+<ol>
+<li>新しいワークフローを作成してください</li>
+<li>以下の3段階パイプラインを構築してください
+  <ul>
+  <li>LLM1: 入力テキストを200文字に要約</li>
+  <li>LLM2: 要約を英語に翻訳</li>
+  <li>LLM3: 翻訳の文法チェックと校正</li>
+  </ul>
+</li>
+<li>各ステップの出力が次のステップに正しく渡されることを確認してください</li>
+<li>日本語の長文を入力し、最終出力が校正済みの英訳になることを確認してください</li>
+</ol>
+
+<h4>演習3: エラーハンドリング付きワークフロー(10min)</h4>
+<ol>
+<li>演習1のワークフローを複製してください</li>
+<li>分類LLMの出力が「技術」「料金」「一般」のいずれでもない場合の条件分岐を追加してください</li>
+<li>エラー時のフォールバックとして「申し訳ありません。質問を分類できませんでした。もう一度、具体的にお聞かせください。」を返す終了ノードを追加してください</li>
+<li>意図的に分類しにくい質問(例: 「あああ」)を投げてフォールバックが動作することを確認してください</li>
+</ol>
+
+<ul class="checklist">
+<li>3カテゴリの質問分類が正しく動作した</li>
+<li>要約→翻訳→校正の3段階パイプラインが動作した</li>
+<li>エラーハンドリングのフォールバックが動作した</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 08: エージェントモード (60min: 講義25 + ハンズオン35) -->
+<!-- ============================================================ -->
+<div class="sec" id="s8"><div class="sec-label">Section 08 -- 60min(講義25 + ハンズオン35)</div><h2>エージェントモード</h2>
+
+<h3>エージェントモードとは</h3>
+<p>ワークフローはあらかじめ人間がノードの順序を設計しますが、エージェントモードではAIが「どのツールをどの順番で使うか」を自律的に判断します。「今週のAIニュースを調べて要約して」と指示すると、AI自身がWeb検索ツールを選択→検索結果を取得→要約を生成、という一連の手順を自動で実行します。</p>
+
+<h3>ビルトインツール</h3>
+<table class="ct"><thead><tr><th>ツール</th><th>機能</th><th>用途例</th></tr></thead><tbody>
+<tr><td>Web検索</td><td>インターネット上の情報を検索</td><td>リアルタイム情報の取得</td></tr>
+<tr><td>計算機</td><td>数値計算</td><td>見積もり、統計計算</td></tr>
+<tr><td>コード実行</td><td>Python/JSコードを動的に実行</td><td>データ加工、CSV解析</td></tr>
+<tr><td>画像生成</td><td>DALL-E等での画像生成</td><td>アイキャッチ、イラスト</td></tr>
+<tr><td>Wikipedia</td><td>Wikipedia記事の検索・取得</td><td>事実確認、背景調査</td></tr>
+</tbody></table>
+
+<h3>カスタムツール</h3>
+<p>OpenAPI(Swagger)仕様でAPIを定義し、Difyに「カスタムツール」として登録できます。社内APIや独自サービスのAPIをツール化すれば、エージェントが自律的にそれらを呼び出してタスクを遂行します。JSON Schemaでパラメータを定義するだけでDifyが自動的にツール呼出しのインターフェースを生成します。</p>
+
+<h3>カスタムツールのOpenAPI仕様書の書き方</h3>
+<p>カスタムツールの定義に必要なOpenAPI(Swagger)仕様の最小構成例です。この形式でJSONを書いてDifyに登録すれば、エージェントがAPIを呼び出せるようになります。</p>
+<div class="prompt" id="p_s8_openapi">{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "社内在庫API",
+    "version": "1.0.0",
+    "description": "社内の在庫管理システムから商品情報を取得するAPI"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1"
+    }
+  ],
+  "paths": {
+    "/products/{productId}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "商品IDから在庫情報を取得する",
+        "description": "商品の名前、在庫数、価格、最終入荷日を返す。在庫確認や発注判断に使用する。",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "商品ID (例: PROD-001)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "商品情報",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "stock": { "type": "integer" },
+                    "price": { "type": "number" },
+                    "lastRestocked": { "type": "string", "format": "date" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}<button class="cb" onclick="copyP('p_s8_openapi')">コピー</button></div>
+<p>descriptionフィールドが特に重要です。LLMはdescriptionを読んで「このツールをいつ使うか」を判断します。「在庫を確認したいときに使う」「商品の価格を調べたいときに使う」など、利用場面を具体的に書いてください。</p>
+
+<h3>推論戦略の比較</h3>
+<div class="cols">
+<div class="col-card"><h4>Function Calling</h4><p>LLMのFunction Calling機能を使ってツールを選択。GPT-4o、Claude 3.5以降が対応。呼出しが正確でレイテンシが低い。</p></div>
+<div class="col-card"><h4>ReAct</h4><p>Reasoning + Acting。思考(Thought) → 行動(Action) → 観察(Observation)のループで問題を解く。Function Calling非対応のモデルでも使用可能。</p></div>
+</div>
+
+<div class="box tip"><div class="bt">Tips: エージェントの適用判断</div>エージェントは万能ではありません。処理の順序が固定的で予測可能ならワークフローの方が安定します。「何をすべきかが事前に決まっていない」タスク、例えば調査・分析・問題解決のように状況に応じて手順が変わる場面でエージェントが真価を発揮します。</p></div>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: エージェント構築 <span class="hs-time">35min</span></div>
+<div class="hs-goal">目標: ビルトインツール/カスタムツールを使ったエージェントを構築する</div>
+
+<h4>演習1: ビルトインツールを使ったエージェント(10min)</h4>
+<ol>
+<li>Difyで「アプリを作成」→「エージェント」を選択してください</li>
+<li>以下のシステムプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s8h1">あなたは万能リサーチアシスタントです。
+ユーザーの質問に対して、利用可能なツールを駆使して正確な情報を提供してください。
+
+【行動ルール】
+- まず質問の意図を理解する
+- 必要なツールを選択して情報を収集する
+- 収集した情報を日本語で簡潔にまとめる
+- 情報源を明記する<button class="cb" onclick="copyP('p_s8h1')">コピー</button></div>
+<ol start="3">
+<li>「ツール」セクションでWeb検索と計算機を有効にしてください</li>
+<li>プレビューで「日本の人口と面積から人口密度を計算してください」と質問してください</li>
+<li>エージェントがWeb検索→計算機の順でツールを使うことを確認してください</li>
+</ol>
+
+<h4>演習2: Web検索ツール付きリサーチエージェント(10min)</h4>
+<ol>
+<li>演習1のエージェントのプロンプトを強化してください</li>
+</ol>
+<div class="prompt" id="p_s8h2">あなたは技術リサーチャーです。
+ユーザーから調査テーマを受け取り、以下の手順で調査レポートを作成してください。
+
+1. Web検索で最新情報を3件以上収集する
+2. 収集した情報を整理して要約する
+3. 信頼性の高い情報と不確かな情報を区別する
+4. 以下のフォーマットでレポートを出力する
+
+【レポートフォーマット】
+テーマ: [調査テーマ]
+調査日: [今日の日付]
+要約: [3行以内]
+詳細:
+- ポイント1: ...
+- ポイント2: ...
+- ポイント3: ...
+情報源: [URLリスト]
+信頼度: 高/中/低<button class="cb" onclick="copyP('p_s8h2')">コピー</button></div>
+<ol start="2">
+<li>「2026年のノーコードAIプラットフォームのトレンドを調査してください」と質問し、レポートが生成されることを確認してください</li>
+</ol>
+
+<h4>演習3: カスタムツール(OpenAPI)の定義と接続(15min)</h4>
+<ol>
+<li>以下のサンプルOpenAPI定義をダウンロードしてください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadOpenAPI();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>エージェントツール定義サンプル(.json)をダウンロード</a>
+<ol start="2">
+<li>Difyの「ツール」→「カスタムツール」→「作成」で、ダウンロードしたJSONをペーストしてください</li>
+<li>テスト用APIとして JSONPlaceholder のエンドポイントを使います</li>
+<li>エージェントの「ツール」にカスタムツールを追加してください</li>
+<li>「投稿ID 1の内容を取得してください」と質問し、エージェントがカスタムツールを呼び出すことを確認してください</li>
+</ol>
+
+<details><summary>カスタムツールが呼び出されない場合</summary><div class="inner">
+<p>ツールの description が不十分だとLLMがツールを選択しません。descriptionに「この情報が必要な場合に使う」「投稿データを取得する際に使用」など、具体的な用途を明記してください。また、パラメータのdescriptionも充実させると精度が上がります。</p>
+</div></details>
+
+<ul class="checklist">
+<li>ビルトインツール(Web検索+計算機)を使ったエージェントが動作した</li>
+<li>リサーチエージェントがレポートフォーマットで出力した</li>
+<li>カスタムツール(OpenAPI)を定義してエージェントに接続した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.dify.ai/guides/application-design/agent" target="_blank" rel="noopener">Dify エージェント ドキュメント</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- 復習ハンズオン C (30min) -->
+<!-- ============================================================ -->
+<div class="sec review-sec" id="rC"><div class="sec-label review">Review Hands-on C -- 30min</div><h2>復習ハンズオン C: 統合ワークフロー</h2>
+<p>Section 06-08の知識を組み合わせ、外部連携+条件分岐+エージェント機能の統合ワークフローを構築します。</p>
+
+<div class="handson">
+<div class="hs-title">課題: 外部連携+分岐+エージェントの統合ワークフロー <span class="hs-time">30min</span></div>
+<div class="hs-goal">成果物: 質問分類→カテゴリ別処理→エージェントフォールバック→HTTP通知の統合ワークフロー</div>
+
+<h4>手順</h4>
+<ol>
+<li>新しいワークフローを作成し、以下の構成を構築してください(20min)
+  <ul>
+  <li>開始: テキスト入力</li>
+  <li>LLM(分類): 「FAQ」「技術調査」「その他」に分類</li>
+  <li>条件分岐: 分類結果で振り分け</li>
+  <li>FAQ分岐: ナレッジベース検索 → LLM回答</li>
+  <li>技術調査分岐: エージェントモード(Web検索ツール)で調査</li>
+  <li>その他分岐: 汎用LLMで回答</li>
+  <li>テンプレート: 共通フォーマットで出力整形</li>
+  <li>HTTP Request: 処理完了通知(webhook.siteにPOST)</li>
+  <li>終了: フォーマット済み回答を返す</li>
+  </ul>
+</li>
+<li>3種類の質問でテスト実行してください(10min)
+  <ul>
+  <li>FAQ質問: 「有給休暇の申請方法は?」</li>
+  <li>技術調査: 「Difyの最新バージョンの新機能を調べてください」</li>
+  <li>一般質問: 「お疲れ様です」</li>
+  </ul>
+</li>
+</ol>
+
+<details><summary>構成のヒント</summary><div class="inner">
+<p>ノード数が多いので、まずFAQ分岐だけ動作させ、次に技術調査分岐を追加、最後にHTTP通知を追加する段階的アプローチがおすすめです。全体を一度に作ろうとするとデバッグが困難になります。</p>
+</div></details>
+
+<ul class="checklist">
+<li>質問分類→3分岐の条件分岐が動作した</li>
+<li>FAQ分岐でナレッジベース検索が機能した</li>
+<li>技術調査分岐でWeb検索エージェントが動作した</li>
+<li>HTTP Requestでの外部通知が送信された</li>
+<li>テンプレートで統一フォーマットの出力が生成された</li>
+</ul>
+</div></div>
+
+<!-- ============================================================ -->
+<!-- Section 09: 本番運用とセキュリティ (45min: 講義25 + ハンズオン20) -->
+<!-- ============================================================ -->
+<div class="sec" id="s9"><div class="sec-label">Section 09 -- 45min(講義25 + ハンズオン20)</div><h2>本番運用とセキュリティ</h2>
+
+<h3>監視とログ</h3>
+<p>Difyはアプリごとに実行ログを自動記録します。各メッセージの入出力、使用トークン数、レイテンシ、エラーの有無をダッシュボードで確認可能。運用開始後に最初に見るべきは「エラー率」と「平均応答時間」の2つです。エラー率が5%を超えたらプロンプトかナレッジベースの見直しが必要。応答時間が5秒を超えるならモデルのダウングレードかワークフローの簡素化を検討します。</p>
+
+<h3>コスト管理</h3>
+<p>LLM APIのコストはトークン消費量に比例します。Difyのログからアプリごとのトークン消費量を集計できるため、月次でコスト予測が可能。GPT-4oとGPT-4o-miniの価格差は約30倍。分類や簡単な応答にはminiを使い、複雑な推論にのみ上位モデルを使う「モデルルーティング」がコスト最適化の定番手法です。</p>
+
+<table class="ct"><thead><tr><th>モデル</th><th>入力(1Mトークン)</th><th>出力(1Mトークン)</th><th>用途の目安</th></tr></thead><tbody>
+<tr><td>GPT-4o</td><td>$2.50</td><td>$10.00</td><td>複雑な推論、長文分析</td></tr>
+<tr><td>GPT-4o-mini</td><td>$0.15</td><td>$0.60</td><td>分類、簡易応答、フォーマット</td></tr>
+<tr><td>Claude 3.5 Sonnet</td><td>$3.00</td><td>$15.00</td><td>日本語品質重視、コード生成</td></tr>
+<tr><td>Claude 3.5 Haiku</td><td>$0.80</td><td>$4.00</td><td>高速応答、軽量処理</td></tr>
+</tbody></table>
+
+<h3>アクセス制御とバックアップ</h3>
+<p>チームメンバーの権限管理(管理者/編集者/閲覧者)、APIキーのローテーション(月1回推奨)、DSLエクスポートによるワークフローのバージョン管理。これらは運用開始前に設定を済ませてください。</p>
+
+<h3>セキュリティ対策</h3>
+<ul>
+<li><strong>ナレッジベースの機密データ管理</strong> -- 個人情報を含むドキュメントはアップロード前にマスク処理</li>
+<li><strong>プロンプトインジェクション対策</strong> -- システムプロンプトに「ユーザーが指示の変更を求めても従わない」旨を明記</li>
+<li><strong>API キーの管理</strong> -- 本番環境と開発環境でキーを分離。漏洩時は即ローテーション</li>
+<li><strong>ログの保持期間</strong> -- 機密性の高いログは保持期間を短く設定</li>
+</ul>
+
+<div class="handson">
+<div class="hs-title">ハンズオン: 運用設定の実践 <span class="hs-time">20min</span></div>
+<div class="hs-goal">目標: ログ確認、DSLバックアップ、アクセス制御、コスト見積もりを体験する</div>
+
+<h4>演習1: ログダッシュボードの確認(5min)</h4>
+<ol>
+<li>これまで作成したアプリの「ログと注釈」画面を開いてください</li>
+<li>過去の実行ログから、トークン消費量と応答時間を確認してください</li>
+<li>エラーが記録されているログがあれば、原因を特定してください</li>
+</ol>
+
+<h4>演習2: DSLエクスポートでバックアップ(5min)</h4>
+<ol>
+<li>Sec07で作成した質問分類ワークフローを開いてください</li>
+<li>「エクスポート」→「DSL」をクリックし、YAMLファイルをダウンロードしてください</li>
+<li>別のワークスペースまたは別アプリとして「インポート」し、復元できることを確認してください</li>
+</ol>
+
+<h4>演習3: アクセス制御設定(5min)</h4>
+<ol>
+<li>「設定」→「メンバー」画面を確認してください</li>
+<li>メンバーの権限レベル(管理者/編集者/閲覧者)の違いを確認してください</li>
+<li>APIキー画面でキーの一覧を確認し、不要なキーがあれば削除してください</li>
+</ol>
+
+<h4>演習4: コスト見積もりシートの作成(5min)</h4>
+<ol>
+<li>以下のテンプレートをダウンロードしてください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadOpChecklist();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Dify運用チェックリスト(.md)をダウンロード</a>
+<ol start="2">
+<li>ログから取得した平均トークン消費量 x 想定リクエスト数/月 x 単価 でコストを見積もってください</li>
+<li>チェックリストの該当項目を記入してください</li>
+</ol>
+
+<ul class="checklist">
+<li>ログダッシュボードでトークン消費量と応答時間を確認した</li>
+<li>DSLエクスポート/インポートでバックアップ・復元を確認した</li>
+<li>アクセス制御の設定画面を確認した</li>
+<li>月間コスト見積もりを計算した</li>
+</ul>
+</div>
+
+<div class="refs"><h4>参考リンク</h4><ul>
+<li><a href="https://docs.dify.ai/guides/monitoring" target="_blank" rel="noopener">Dify 監視・ログ ドキュメント</a></li>
+</ul></div></div>
+
+<!-- ============================================================ -->
+<!-- Section 10: 総合ハンズオン (130min: 講義10 + 実践120) -->
+<!-- ============================================================ -->
+<div class="sec" id="s10"><div class="sec-label">Section 10 -- 130min(講義10 + 実践120)</div><h2>総合ハンズオン: 社内FAQ RAGチャットボット + Slack連携</h2>
+<p>このコースで学んだすべてを統合し、実務で即利用できる社内FAQシステムを構築します。ナレッジベースによるRAG検索、質問分類と分岐、エージェントモードのフォールバック、外部連携、監視設定まで。持ち帰れる「本番稼働レベルの成果物」を目指してください。</p>
+
+<div class="mm"><pre class="mermaid">
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#00A5BF','primaryBorderColor':'#007A8F','primaryTextColor':'#e8e8e8','lineColor':'#00A5BF','secondaryColor':'#1a1a1a','background':'#141414','mainBkg':'#1a1a1a','nodeBorder':'#00A5BF'}}}%%
+graph TD
+  A["ユーザー質問<br/>(Slack/LINE/Web)"] --> B["質問分類<br/>(LLM)"]
+  B -->|FAQ| C["ナレッジベース<br/>検索(RAG)"]
+  B -->|技術調査| D["エージェント<br/>(Web検索)"]
+  B -->|回答不可| E["エスカレーション<br/>(人間へ転送)"]
+  C --> F["LLM回答生成"]
+  D --> F
+  E --> G["通知<br/>(Slack/メール)"]
+  F --> H["回答品質チェック"]
+  H -->|OK| I["ユーザーに回答"]
+  H -->|NG| E
+  I --> J["ログ記録"]
+  G --> J
+</pre><div class="caption">総合ハンズオンの全体アーキテクチャ</div></div>
+
+<div class="handson">
+<div class="hs-title">総合演習: 10ステップで本番レベルのFAQシステムを構築 <span class="hs-time">120min</span></div>
+<div class="hs-goal">成果物: 社内FAQ RAGチャットボット + 質問分類 + エージェントフォールバック + 外部連携 + 監視設定</div>
+
+<h4>Step 1: 要件定義(10min)</h4>
+<p>以下の項目を決めてください。</p>
+<ul>
+<li>FAQ対象: どの部門/業務のFAQか(例: 総務部の社内ルール)</li>
+<li>利用者: 誰が使うか(例: 全社員、新入社員)</li>
+<li>想定質問: 頻出質問を5つ書き出す</li>
+<li>回答できない場合の対応: 誰にエスカレーションするか</li>
+</ul>
+<a href="#" class="dl" onclick="downloadDesignSheet();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>ワークフロー設計シート(.md)をダウンロード</a>
+
+<h4>Step 2: FAQナレッジベース作成(15min)</h4>
+<ol>
+<li>サンプルFAQデータ(Sec05でダウンロード済み)を使用してください。自分の業務のFAQがあればそちらを優先</li>
+<li>Difyの「ナレッジ」でナレッジベースを作成してください</li>
+<li>チャンク設定をカスタムに変更し、チャンクサイズ500、オーバーラップ50で設定してください</li>
+<li>検索テストで5つの質問を試し、適切なチャンクがヒットすることを確認してください</li>
+</ol>
+
+<h4>Step 3: RAGチャットボット構築(15min)</h4>
+<ol>
+<li>チャットボットを作成し、Step 2のナレッジベースをコンテキストに追加してください</li>
+<li>以下のシステムプロンプトを設定してください</li>
+</ol>
+<div class="prompt" id="p_s10h1">あなたは社内FAQアシスタントです。
+
+【基本ルール】
+- コンテキスト情報に基づいて正確に回答する
+- 推測や一般知識での補足はしない
+- 敬語で丁寧に対応する
+- 回答は300文字以内で簡潔に
+- 該当情報がない場合は正直に伝え、問い合わせ先を案内する
+
+【回答フォーマット】
+回答: [具体的な回答]
+参照: [参照元のQ&A番号や文書名]
+
+【エスカレーション】
+回答できない場合: 「申し訳ございません。こちらの件はFAQに該当する情報がございませんでした。お手数ですが、[問い合わせ先]までお問い合わせください。」<button class="cb" onclick="copyP('p_s10h1')">コピー</button></div>
+<ol start="3">
+<li>5つのテスト質問で回答品質を確認してください</li>
+</ol>
+
+<h4>Step 4: 質問分類と分岐ワークフロー追加(15min)</h4>
+<ol>
+<li>ワークフローアプリとして再構築してください(チャットボットからワークフローへ移行)</li>
+<li>開始 → LLM(分類) → 条件分岐(FAQ/技術調査/一般/不明)→ 各処理ノード → テンプレート → 終了 の構成を作成してください</li>
+<li>FAQ分岐にはナレッジベース検索+LLM回答を配置してください</li>
+</ol>
+
+<h4>Step 5: エスカレーションフロー(10min)</h4>
+<ol>
+<li>条件分岐の「不明」カテゴリと、FAQ検索でヒットなしの場合のフォールバックを構築してください</li>
+<li>エスカレーション時にHTTP Requestノードで通知を送る設定を追加してください(webhook.siteでテスト)</li>
+</ol>
+
+<h4>Step 6: エージェントモードでWeb検索フォールバック(10min)</h4>
+<ol>
+<li>「技術調査」分岐にエージェントモード(Web検索ツール)を配置してください</li>
+<li>ナレッジベースで回答できない技術質問をWeb検索で補完する設計にしてください</li>
+</ol>
+
+<h4>Step 7: Slack/LINE連携設定(15min)</h4>
+<ol>
+<li>Dify APIのエンドポイントとAPIキーを確認してください</li>
+<li>curl でAPI経由のチャットが動作することを確認してください</li>
+<li>Slack Incoming Webhook のURLをHTTP Requestノードに設定し、回答をSlackに通知する構成を作ってください(Slack未使用の場合はwebhook.siteで代替)</li>
+</ol>
+
+<h4>Step 8: テスト(10min)</h4>
+<p>以下の10質問で精度チェックを行ってください。</p>
+<ol>
+<li>有給休暇の申請方法は?(FAQ)</li>
+<li>リモートワークのルールを教えてください(FAQ)</li>
+<li>経費精算の締め日は?(FAQ)</li>
+<li>Difyの最新バージョンの新機能は?(技術調査)</li>
+<li>お疲れ様です(一般)</li>
+<li>社長の名前を教えてください(FAQ - 存在しない情報)</li>
+<li>パスワードを忘れました(FAQ)</li>
+<li>LangChainとDifyの違いは?(技術調査)</li>
+<li>あああ(不明 - エスカレーション)</li>
+<li>来週の天気は?(一般 - FAQに無い)</li>
+</ol>
+
+<h4>Step 9: 監視・ログ設定(10min)</h4>
+<ol>
+<li>アプリのログダッシュボードを確認してください</li>
+<li>Step 8のテスト実行のログから、トークン消費量と応答時間を確認してください</li>
+<li>エラーが発生したログを確認し、原因を特定してください</li>
+</ol>
+
+<h4>Step 10: ドキュメント整備(10min)</h4>
+<ol>
+<li>以下のテンプレートに成果物をまとめてください</li>
+</ol>
+<a href="#" class="dl" onclick="downloadRAGChecklist();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>RAGチューニングチェックリスト(.md)をダウンロード</a>
+<a href="#" class="dl" onclick="downloadAPITemplate();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>API連携設定テンプレート(.md)をダウンロード</a>
+<p>記録すべき項目:</p>
+<ul>
+<li>アプリ名とURL</li>
+<li>使用モデルとコスト見積もり</li>
+<li>ナレッジベースの構成(文書数、チャンク設定)</li>
+<li>テスト結果(10問中の正答率)</li>
+<li>改善点と今後の計画</li>
+</ul>
+
+<ul class="checklist">
+<li>要件定義を完了した</li>
+<li>FAQナレッジベースを作成した</li>
+<li>RAGチャットボットが正確に回答する</li>
+<li>質問分類と分岐ワークフローが動作する</li>
+<li>エスカレーションフローが動作する</li>
+<li>エージェントモードのフォールバックが動作する</li>
+<li>外部連携(API/Webhook)が動作する</li>
+<li>10問テストで正答率を計測した</li>
+<li>ログダッシュボードを確認した</li>
+<li>成果物ドキュメントを作成した</li>
+</ul>
+</div>
+
+<div class="box tip"><div class="bt">Tips: 研修後の運用</div>この成果物はそのまま社内で運用開始できます。週1回ナレッジベースのFAQを更新し、月1回ログを分析して回答品質を改善するサイクルを回すことで、継続的に精度が向上します。最初から完璧を目指す必要はありません。使いながら育てるのが正攻法です。</div>
+
+<div class="quiz"><h4>最終チェック</h4>
+<div class="q"><p>Q3. RAGの検索精度を上げるために最初に調整すべき設定は?</p>
+<label><input type="radio" name="q3" value="a">LLMのモデルサイズ</label>
+<label><input type="radio" name="q3" value="b">チャンクサイズとTop-Kの値</label>
+<label><input type="radio" name="q3" value="c">UIのデザイン</label>
+<label><input type="radio" name="q3" value="d">サーバーのCPU数</label>
+<div class="ans" id="a3">正解: B。チャンクサイズが大きすぎると検索精度が落ち、小さすぎると文脈が不足します。Top-Kとの組み合わせで最適値を探ってください。</div>
+<button class="rb" onclick="document.getElementById('a3').style.display='block'">答えを見る</button></div>
+<div class="q"><p>Q4. エージェントモードとワークフローの使い分けで正しいのは?</p>
+<label><input type="radio" name="q4" value="a">エージェントの方が常に優れている</label>
+<label><input type="radio" name="q4" value="b">処理順序が固定的ならワークフロー、状況に応じて判断が必要ならエージェント</label>
+<label><input type="radio" name="q4" value="c">ワークフローの方が常に安定している</label>
+<label><input type="radio" name="q4" value="d">違いはない</label>
+<div class="ans" id="a4">正解: B。ワークフローは事前設計された処理を確実に実行し、エージェントはタスクの不確実性が高い場面で自律的に判断します。</div>
+<button class="rb" onclick="document.getElementById('a4').style.display='block'">答えを見る</button></div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Footer -->
+<!-- ============================================================ -->
+<footer class="ftr">
+  <a href="../../index.html" style="color:var(--asagi);">Course Catalog に戻る</a><br><br>
+  EzoAI GenAI Training Series -- C09 Dify実践 AIワークフロー構築<br>
+  全10セクション + 復習3回 = 720分(12時間)<br>
+  次の推奨コース: C10 n8n実践 / C12 RAG構築
+</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#00A5BF',primaryBorderColor:'#007A8F',primaryTextColor:'#e8e8e8',lineColor:'#00A5BF',secondaryColor:'#1a1a1a',tertiaryColor:'#141414',background:'#141414',mainBkg:'#1a1a1a',nodeBorder:'#00A5BF',clusterBkg:'#111',clusterBorder:'#333',edgeLabelBackground:'#141414',fontFamily:'"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif'},flowchart:{curve:'basis',padding:20}});
+
+function copyP(id){const el=document.getElementById(id);const btn=el.querySelector('.cb');const t=el.textContent.replace('コピー','').replace('Copied','').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='コピー',1500);});}
+
+function downloadDesignSheet(){const t=`# ワークフロー設計シート\n\n## 基本情報\n- プロジェクト名:\n- 作成者:\n- 作成日:\n- 使用プラットフォーム: Dify (クラウド版 / セルフホスト版)\n\n## 1. 対象業務\n- 業務名:\n- 現状の課題:\n- 自動化したい処理:\n\n## 2. ワークフロー設計\n\n### トリガー\n- 入力方式: チャット / API / Webhook\n- 入力パラメータ:\n  1.\n  2.\n  3.\n\n### 処理フロー\n| # | ノード種類 | 処理内容 | 入力変数 | 出力変数 |\n|---|----------|---------|---------|----------|\n| 1 | 開始 | | | |\n| 2 | | | | |\n| 3 | | | | |\n| 4 | | | | |\n| 5 | 終了 | | | |\n\n### 条件分岐\n- 分岐条件1:\n  - True → ノード #:\n  - False → ノード #:\n\n### エラーハンドリング\n- LLM応答なし:\n- HTTP Request失敗:\n- ナレッジ検索ヒットなし:\n\n## 3. 使用モデル\n| ノード | モデル | 理由 |\n|--------|-------|------|\n| | | |\n\n## 4. テスト計画\n| # | テスト入力 | 期待する出力 | 結果 |\n|---|----------|------------|------|\n| 1 | | | |\n| 2 | | | |\n| 3 | | | |\n\n## 5. コスト見積もり\n- 想定リクエスト数/月:\n- 平均トークン消費/リクエスト:\n- 月間コスト見積もり:\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ワークフロー設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadRAGChecklist(){const t=`# RAGチューニングチェックリスト\n\n## ナレッジベース設定\n- [ ] ドキュメント形式: PDF / テキスト / Markdown / Web\n- [ ] チャンク方法: 自動 / カスタム\n- [ ] チャンクサイズ: ______ トークン\n- [ ] オーバーラップ: ______ トークン\n- [ ] Embeddingモデル:\n\n## 検索設定\n- [ ] 検索モード: ベクトル検索 / 全文検索 / ハイブリッド\n- [ ] Top-K: ______\n- [ ] Score閾値: ______\n- [ ] Re-ranking: 有効 / 無効\n\n## テスト結果\n| # | 質問 | 検索ヒット | 回答正確性 | 改善点 |\n|---|------|----------|----------|--------|\n| 1 | | 件 | 正/誤 | |\n| 2 | | 件 | 正/誤 | |\n| 3 | | 件 | 正/誤 | |\n| 4 | | 件 | 正/誤 | |\n| 5 | | 件 | 正/誤 | |\n\n## チューニング履歴\n| 日付 | 変更内容 | 結果 |\n|------|---------|------|\n| | | |\n\n## 改善TODO\n- [ ]\n- [ ]\n- [ ]\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='RAGチューニングチェックリスト.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadAPITemplate(){const t=`# API連携設定テンプレート\n\n## Dify API設定\n- エンドポイント:\n- APIキー: (※ここに直接記載しないこと)\n- レスポンスモード: blocking / streaming\n\n## 外部API連携\n\n### 連携先1\n- サービス名:\n- エンドポイント:\n- 認証方式: APIキー / OAuth / Bearer Token\n- HTTPメソッド: GET / POST / PUT / DELETE\n- ヘッダー:\n  - Content-Type: application/json\n  - Authorization: Bearer ______\n- リクエストボディ(テンプレート):\n\`\`\`json\n{\n  "key": "value"\n}\n\`\`\`\n- 期待するレスポンス:\n\`\`\`json\n{\n  "result": "..."\n}\n\`\`\`\n\n### 連携先2\n- サービス名:\n- エンドポイント:\n- 認証方式:\n\n## Webhook設定\n- 受信URL:\n- ペイロード形式:\n- 認証:\n\n## セキュリティ\n- [ ] APIキーは環境変数で管理\n- [ ] 本番/開発環境でキーを分離\n- [ ] レート制限を確認\n- [ ] エラーハンドリングを実装\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='API連携設定テンプレート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadFAQ(){const t=`社内FAQ データベース（サンプル）\n=====================================\n\nQ1. 有給休暇の申請方法は？\nA1. 社内ポータルの「勤怠管理」→「休暇申請」から申請してください。取得希望日の3営業日前までに申請が必要です。上長の承認後、人事部で処理されます。緊急の場合は上長に直接連絡の上、事後申請も可能です。\n\nQ2. リモートワークのルールを教えてください。\nA2. 週3日まで在宅勤務が可能です。事前に上長の承認を得てください。勤務開始時と終了時にSlackの#attendanceチャンネルで報告が必要です。機密情報を扱う業務は原則オフィスで行ってください。\n\nQ3. 経費精算の締め日はいつですか？\nA3. 毎月25日が締め日です。25日までに経費精算システムから申請し、領収書の原本を経理部に提出してください。25日が休日の場合は前営業日が締め日となります。翌月15日に給与と一緒に振り込まれます。\n\nQ4. 社内Wi-Fiのパスワードは？\nA4. 社内Wi-Fi「COMPANY-SECURE」のパスワードは毎月1日に更新されます。最新のパスワードは社内ポータルの「IT情報」ページで確認してください。ゲスト用Wi-Fi「COMPANY-GUEST」は受付でパスワードをお伝えしています。\n\nQ5. 名刺の発注方法は？\nA5. 社内ポータルの「総務申請」→「名刺発注」から申請してください。デザインテンプレートを選択し、記載情報を入力します。通常5営業日で届きます。急ぎの場合は総務部（内線: 1234）にご連絡ください。\n\nQ6. 会議室の予約方法は？\nA6. Googleカレンダーで会議室リソースを選択して予約してください。大会議室（30名）は2週間前から、小会議室（8名）は1週間前から予約可能です。30分前までにキャンセルしない場合、ペナルティとして次回予約が制限されます。\n\nQ7. 健康診断の受診方法は？\nA7. 毎年6月に全社員対象の健康診断を実施します。日程と会場は5月中に人事部からメールで案内されます。指定日に受診できない場合は、提携医療機関で個別受診も可能です。費用は会社負担です。\n\nQ8. 退職届の提出方法は？\nA8. 退職希望日の1ヶ月前までに、直属の上長に口頭で伝えた上で、社内ポータルの「人事申請」→「退職届」から提出してください。人事部との面談が設定されます。有給休暇の残日数確認もお忘れなく。\n\nQ9. 社員証を紛失した場合は？\nA9. 速やかに総務部（内線: 1234）に連絡してください。紛失届を提出し、仮社員証が発行されます。再発行には1週間程度かかり、再発行手数料2,000円が給与から控除されます。セキュリティ上、紛失社員証は即時無効化されます。\n\nQ10. 通勤手当の申請方法は？\nA10. 入社時または転居時に、社内ポータルの「人事申請」→「通勤経路申請」から申請してください。最も経済的な経路で計算されます。自転車通勤の場合は月額5,000円が支給されます。変更がない場合、年次の再申請は不要です。\n\nQ11. 社内研修の受講方法は？\nA11. 社内ポータルの「研修・教育」ページで開催中の研修一覧を確認し、申し込みフォームから登録してください。業務時間内の受講は上長の承認が必要です。外部研修の費用補助は年間10万円まで、事前申請制です。\n\nQ12. PCの不具合・故障時の対応は？\nA12. IT部門ヘルプデスク（内線: 5678）に連絡してください。リモートサポートで解決できない場合は代替機を貸し出します。修理には3-5営業日かかります。データバックアップは日次で自動実行されていますが、ローカル保存のファイルは対象外です。\n\nQ13. 慶弔見舞金の申請方法は？\nA13. 社内ポータルの「総務申請」→「慶弔見舞金」から申請してください。結婚祝金30,000円、出産祝金20,000円、弔慰金は関係に応じて10,000-50,000円です。申請期限は事由発生から1ヶ月以内です。\n\nQ14. 社内サークル活動について教えてください。\nA14. 現在、フットサル、ランニング、ボードゲーム、プログラミング勉強会の4サークルが活動中です。参加希望は各サークルのSlackチャンネルで連絡してください。新規サークルの設立は5名以上のメンバーが集まれば総務部に申請できます。活動費は年間5万円まで会社補助があります。\n\nQ15. 副業は認められていますか？\nA15. 事前申請制で副業が認められています。「人事申請」→「副業届」から申請し、人事部の審査を受けてください。競業避止義務に抵触するもの、本業に支障をきたすものは許可されません。許可後も半年ごとに更新申請が必要です。\n\nQ16. 社用携帯の貸与条件は？\nA16. 営業部、カスタマーサポート部の社員は原則全員に貸与されます。その他の部署は業務上の必要性を上長が判断し、IT部門に申請してください。私的利用は禁止です。紛失時は即座にIT部門に連絡し、リモートワイプを実施します。\n\nQ17. 育児休業の取得方法は？\nA17. 出産予定日の1ヶ月前までに人事部に申請してください。最長2年間取得可能です。男性社員も取得できます。育休中の社会保険料は免除されます。復帰後は原則として休業前と同等の職位・職種に配属されます。短時間勤務制度（子が3歳まで）との併用も可能です。\n\nQ18. 社内の喫煙ルールは？\nA18. 建物内は全面禁煙です。喫煙は1階東側の屋外喫煙所のみで可能です。喫煙時間は1回10分以内、1日3回までを目安としてください。電子タバコも同様のルールが適用されます。\n\nQ19. 災害時の対応手順は？\nA19. 地震発生時はまず身の安全を確保し、揺れが収まったら避難経路に従って1階ロビーに集合してください。安否確認は社内ポータルの「安否確認」ボタンまたはメールで報告してください。在宅勤務中の場合は上長にSlackで状況を報告してください。\n\nQ20. 年末調整の手続きは？\nA20. 毎年11月に人事部から案内メールが届きます。社内ポータルの「年末調整」フォームに、生命保険料控除証明書、住宅ローン控除証明書等の情報を入力してください。提出期限は12月10日です。不明点は経理部（内線: 3456）にお問い合わせください。\n\nQ21. 社員旅行について教えてください。\nA21. 年1回、秋頃に社員旅行を実施しています。参加は任意です。費用は会社が全額負担します。行き先は社員アンケートで決定します。不参加の場合、代替の特別休暇1日が付与されます。\n\nQ22. テレワーク手当はありますか？\nA22. リモートワーク実施者には月額5,000円のテレワーク手当が支給されます。申請は不要で、リモートワーク実績に基づいて自動計算されます。別途、在宅勤務環境整備のための一時金（入社時30,000円）も支給されます。\n\nQ23. 社内表彰制度について教えてください。\nA23. 四半期ごとにMVP表彰（個人）とベストチーム表彰を実施しています。推薦は全社員が可能で、社内ポータルの「表彰推薦」から申請してください。受賞者には表彰状と副賞（商品券30,000円分）が贈られます。\n\nQ24. フレックスタイム制の利用方法は？\nA24. コアタイムは10:00-15:00です。フレキシブルタイムは7:00-10:00および15:00-22:00です。1日の標準労働時間は8時間、月間の所定労働時間は暦日に応じて変動します。コアタイム中の離席は上長に事前連絡してください。\n\nQ25. 社内図書の貸し出しは？\nA25. 3階ライブラリーコーナーで技術書・ビジネス書の貸し出しを行っています。1人3冊まで、2週間以内に返却してください。新規購入リクエストは社内ポータルの「図書リクエスト」から。月間予算は部署あたり20,000円です。\n\nQ26. 異動・転勤の希望を出す方法は？\nA26. 年2回（4月・10月）の人事異動に向けて、「キャリア希望調査」が実施されます。社内ポータルの「キャリア申告」フォームから希望を提出してください。提出時期は異動の2ヶ月前です。希望が必ず通るわけではありませんが、可能な限り考慮されます。\n\nQ27. 社員食堂の利用時間は？\nA27. 社員食堂は11:30-14:00の間で利用できます。日替わりランチ（500円）、カレー（400円）、うどん/そば（350円）が定番メニューです。支払いは社員証のICカード機能で行います。アレルギー対応メニューもあります（事前に食堂スタッフに相談）。\n\nQ28. 資格取得支援制度はありますか？\nA28. 会社が推奨する資格に合格した場合、受験料を全額補助します。推奨資格リストは社内ポータルの「資格支援」ページで確認してください。一部の高難度資格（例: 情報処理安全確保支援士）は合格時に報奨金50,000円が支給されます。\n\nQ29. 社内のコンプライアンス相談窓口は？\nA29. コンプライアンス相談窓口はコンプライアンス部（内線: 7890）です。匿名での相談も可能です。外部窓口として弁護士事務所のホットライン（0120-XXX-XXX）も利用できます。相談者のプライバシーは厳格に保護されます。報復行為は厳しく処分されます。\n\nQ30. インターンシップの受入れ手続きは？\nA30. インターン受入れを希望する部署は、人事部に3ヶ月前までに申請してください。受入期間は2週間-3ヶ月、時給1,200円、交通費支給です。NDAの締結が必須です。指導担当者の任命と業務計画書の提出が求められます。\n\nQ31. 社用車の利用方法は？\nA31. 社用車は総務部で管理しています。利用希望日の3営業日前までに社内ポータルの「車両予約」から申請してください。運転には社内の安全運転講習（年1回）の受講が必須です。事故時は即座に警察→総務部に連絡してください。\n\nQ32. メンタルヘルス相談はどこに？\nA32. 産業医による相談は毎週水曜日14:00-17:00（要予約）。外部EAPサービスは24時間対応（0120-XXX-XXX）。いずれも完全秘密厳守です。上長を通さず直接申し込めます。5回まで無料で利用可能です。\n\nQ33. 出張の申請方法は？\nA33. 出張の1週間前までに社内ポータルの「出張申請」から申請してください。交通費・宿泊費は規定に基づき実費精算です。日当は日帰り2,000円、宿泊3,000円です。海外出張は2週間前までの申請が必要で、部門長の承認が必要です。\n\nQ34. パスワードを忘れた場合は？\nA34. 社内システムのパスワードリセットはIT部門ヘルプデスク（内線: 5678）に連絡してください。本人確認の上、仮パスワードを発行します。初回ログイン時に必ず変更してください。パスワードは8文字以上、英数記号混在が必要です。90日ごとに変更を求められます。\n\nQ35. 社内の印刷・コピー機の使い方は？\nA35. 各フロアの複合機は社員証で認証して使用します。カラー印刷は1枚20円、モノクロは5円が部署に課金されます。大量印刷（100枚以上）は事前に上長の承認を得てください。両面印刷・集約印刷の活用にご協力ください。\n\nQ36. 時間外労働（残業）のルールは？\nA36. 残業には事前に上長の承認が必要です。社内ポータルの「残業申請」から申請してください。月45時間、年360時間を上限とします。22:00以降の深夜残業は原則禁止で、やむを得ない場合は部門長の承認が必要です。\n\nQ37. 社員割引制度はありますか？\nA37. 提携企業の商品・サービスを社員割引で利用できます。対象リストは社内ポータルの「福利厚生」ページで確認してください。スポーツジム（月額30%OFF）、映画館（500円引き）、旅行サイト（最大10%OFF）などがあります。\n\nQ38. 社内のセキュリティルールは？\nA38. USBメモリの使用は原則禁止です。データの持ち出しはクラウドストレージ（承認済みサービスのみ）を使用してください。離席時はPCをロック（Windows: Win+L、Mac: Ctrl+Command+Q）してください。不審なメールは開かずIT部門に転送してください。\n\nQ39. 社内のドレスコードは？\nA39. 基本はビジネスカジュアルです。お客様対応がある日はスーツ着用を推奨します。カジュアルフライデー（毎週金曜日）はジーンズ・スニーカーも可です。工場見学時は安全靴の着用が必須です。\n\nQ40. 社内メールの署名テンプレートは？\nA40. 社内ポータルの「テンプレート」ページに日本語・英語の署名テンプレートがあります。役職名の英語表記は人事部にご確認ください。署名には必ず会社名、部署名、氏名、電話番号、メールアドレスを含めてください。\n\nQ41. 社内システムへのVPN接続方法は？\nA41. リモートワーク時は必ずVPN接続してください。接続手順: (1) IT部門から配布されたVPNクライアントを起動 (2) 社員ID・パスワードで認証 (3) 「接続」をクリック。接続できない場合はIT部門ヘルプデスク（内線: 5678）にお問い合わせください。\n\nQ42. 社内の情報共有ツールは何を使っていますか？\nA42. チャット: Slack、ドキュメント: Google Workspace（Docs/Sheets/Slides）、プロジェクト管理: Jira、ファイル共有: Google Drive。個人のLINEやDropbox等の非公認ツールでの業務情報共有は禁止です。\n\nQ43. 介護休業の取得方法は？\nA43. 対象家族1人につき通算93日まで取得可能です。3回まで分割取得ができます。人事部に2週間前までに申請してください。介護休業給付金（給与の67%）が雇用保険から支給されます。短時間勤務制度との併用も可能です。\n\nQ44. 社内の清掃・美化ルールは？\nA44. 毎日17:30-17:45は自席周りの整理整頓タイムです。共有スペース（会議室、休憩室）は使用後に必ず原状回復してください。冷蔵庫の私物は金曜日中に持ち帰ってください。月1回の大掃除（月末金曜日）は全社員参加です。\n\nQ45. 社内報への投稿方法は？\nA45. 社内報は四半期ごとに発行しています。投稿は社内ポータルの「社内報投稿」フォームから。テーマは業務紹介、趣味の話題、部署間交流レポートなど自由です。掲載者には図書カード1,000円分が贈呈されます。\n\nQ46. 来客対応の手順は？\nA46. (1) 受付でお客様の会社名・氏名を確認 (2) 担当者に内線で連絡 (3) 入館証を発行 (4) 担当者がロビーまでお迎え。会議室への案内後、お茶の手配は各フロアの給湯室から。お客様退出時は入館証を回収してください。\n\nQ47. 社内のゴミ分別ルールは？\nA47. 可燃ゴミ（緑のゴミ箱）、不燃ゴミ（青）、ペットボトル（黄）、缶/瓶（赤）に分別してください。機密書類はシュレッダー処理必須です。大型廃棄物（椅子、机等）は総務部に連絡してください。\n\nQ48. 新しいソフトウェアのインストール申請は？\nA48. 業務に必要なソフトウェアのインストールはIT部門の承認が必要です。社内ポータルの「ソフトウェア申請」から申請してください。セキュリティ審査に3-5営業日かかります。フリーソフトの無断インストールは禁止です。\n\nQ49. 社員持株会について教えてください。\nA49. 月額1,000円から（1,000円単位）拠出可能です。会社から10%の奨励金が付与されます。入会・退会・拠出額変更は四半期ごと（1月/4月/7月/10月）に受け付けています。詳細は経理部にお問い合わせください。\n\nQ50. 退職金制度はどうなっていますか？\nA50. 勤続3年以上の社員に退職金が支給されます。確定拠出年金（DC）制度を採用しており、会社拠出と個人拠出の合計が退職金の原資となります。詳細は人事部の「退職金制度説明資料」をご確認ください。個人拠出額の変更は年1回可能です。\n`;const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='サンプルFAQデータ.txt';a.click();URL.revokeObjectURL(u);}
+
+function downloadOpenAPI(){const t=JSON.stringify({"openapi":"3.0.0","info":{"title":"JSONPlaceholder API","description":"テスト用の公開REST API。投稿、コメント、ユーザー情報を取得できます。","version":"1.0.0"},"servers":[{"url":"https://jsonplaceholder.typicode.com"}],"paths":{"/posts/{id}":{"get":{"operationId":"getPost","summary":"投稿を取得する","description":"指定されたIDの投稿（タイトルと本文）を取得します。投稿データが必要な場合にこのツールを使用してください。","parameters":[{"name":"id","in":"path","required":true,"description":"投稿のID（1-100）","schema":{"type":"integer","minimum":1,"maximum":100}}],"responses":{"200":{"description":"投稿データ","content":{"application/json":{"schema":{"type":"object","properties":{"userId":{"type":"integer"},"id":{"type":"integer"},"title":{"type":"string"},"body":{"type":"string"}}}}}}}}},"/users/{id}":{"get":{"operationId":"getUser","summary":"ユーザー情報を取得する","description":"指定されたIDのユーザー情報（名前、メール、会社名）を取得します。ユーザーの詳細が必要な場合にこのツールを使用してください。","parameters":[{"name":"id","in":"path","required":true,"description":"ユーザーのID（1-10）","schema":{"type":"integer","minimum":1,"maximum":10}}],"responses":{"200":{"description":"ユーザーデータ","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"integer"},"name":{"type":"string"},"email":{"type":"string"},"company":{"type":"object","properties":{"name":{"type":"string"}}}}}}}}}}}},"/posts":{"get":{"operationId":"listPosts","summary":"投稿一覧を取得する","description":"全投稿のリストを取得します。特定ユーザーの投稿のみ取得する場合はuserIdパラメータを指定してください。","parameters":[{"name":"userId","in":"query","required":false,"description":"ユーザーIDでフィルタ","schema":{"type":"integer"}}],"responses":{"200":{"description":"投稿リスト"}}}}}}},null,2);const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='エージェントツール定義サンプル.json';a.click();URL.revokeObjectURL(u);}
+
+function downloadOpChecklist(){const t=`# Dify運用チェックリスト\n\n## 日次チェック\n- [ ] アプリが正常に応答しているか確認\n- [ ] エラー率が5%以下であることを確認\n- [ ] 平均応答時間が5秒以内であることを確認\n\n## 週次チェック\n- [ ] ナレッジベースのFAQ内容に更新が必要か確認\n- [ ] ユーザーからのフィードバックを確認\n- [ ] エスカレーションされた質問の傾向を分析\n- [ ] トークン消費量の推移を確認\n\n## 月次チェック\n- [ ] APIキーのローテーション\n- [ ] コスト実績の確認と予算との比較\n- [ ] DSLバックアップの実施\n- [ ] チームメンバーの権限レビュー\n- [ ] プロンプトの改善（回答品質の低い質問パターンを改善）\n\n## コスト見積もり\n\n| 項目 | 数値 |\n|------|------|\n| 月間想定リクエスト数 | ______ 件 |\n| 平均入力トークン/リクエスト | ______ tokens |\n| 平均出力トークン/リクエスト | ______ tokens |\n| 使用モデル | ______ |\n| 入力単価(/1M tokens) | $ ______ |\n| 出力単価(/1M tokens) | $ ______ |\n| 月間入力コスト | $ ______ |\n| 月間出力コスト | $ ______ |\n| 月間合計コスト | $ ______ |\n| 年間見積もり | $ ______ |\n\n## セキュリティチェック\n- [ ] ナレッジベースに個人情報が含まれていないか\n- [ ] システムプロンプトにインジェクション対策が含まれているか\n- [ ] 本番/開発環境のAPIキーが分離されているか\n- [ ] ログの保持期間が適切に設定されているか\n- [ ] アクセス権限が最小権限の原則に従っているか\n\n## 改善履歴\n| 日付 | 改善内容 | 効果 |\n|------|---------|------|\n| | | |\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Dify運用チェックリスト.md';a.click();URL.revokeObjectURL(u);}
+</script>
+</body>
+</html>
