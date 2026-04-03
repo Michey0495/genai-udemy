@@ -112,12 +112,18 @@
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 28px;
+    padding: 0;
     transition: border-color .2s, background .2s;
     cursor: default;
     position: relative;
     overflow: hidden;
   }
+  .course-thumb {
+    width: 100%; aspect-ratio: 750/422;
+    object-fit: cover; display: block;
+    border-bottom: 1px solid var(--border);
+  }
+  .course-body { padding: 20px 24px 24px; }
   .course-card:hover {
     border-color: var(--asagi-border);
     background: var(--bg-card-hover);
@@ -434,26 +440,29 @@ graph LR
 
     <!-- C01 -->
     <div class="course-card">
-      <div class="course-id">COURSE 01</div>
-      <h3>生成AI完全入門 2026</h3>
-      <div class="sub">全コースの入口。セキュリティ+トレンドを最初から組み込む</div>
-      <div class="course-meta">
-        <span class="meta-tag level">全レベル</span>
-        <span class="meta-tag">10h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c01.png" alt="Course 01" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 01</div>
+        <h3>生成AI完全入門 2026</h3>
+        <div class="sub">全コースの入口。セキュリティ+トレンドを最初から組み込む</div>
+        <div class="course-meta">
+          <span class="meta-tag level">全レベル</span>
+          <span class="meta-tag">10h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>生成AIの仕組みと限界(LLM原理、Transformer、ハルシネーション)</li>
+          <li>トレンドキャッチアップ 2026(モデル進化の系譜、マルチモーダル、エージェント)</li>
+          <li>主要ツール比較と選び方(ChatGPT / Claude / Gemini / Copilot / Codex)</li>
+          <li>プロンプトの基本(指示の型3つ、Few-shot、CoT、構造化出力)</li>
+          <li>ビジネス活用パターン(文書作成、要約、分析、翻訳)</li>
+          <li>セキュリティ/ガバナンス基礎(4大リスク、情報漏えい、社内ルール設計)</li>
+          <li>生成AI資格ロードマップ(G検定、生成AIパスポート、AWS AI等)</li>
+          <li>ミニプロジェクト: 業務改善提案書をAIで作成+リスク評価シート</li>
+        </ul>
+        <div class="course-diff">他コースにないセキュリティ+トレンドの初期組込み。「使い方」の前に「使う覚悟」を作る</div>
+        <a href="courses/c01/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>生成AIの仕組みと限界(LLM原理、Transformer、ハルシネーション)</li>
-        <li>トレンドキャッチアップ 2026(モデル進化の系譜、マルチモーダル、エージェント)</li>
-        <li>主要ツール比較と選び方(ChatGPT / Claude / Gemini / Copilot / Codex)</li>
-        <li>プロンプトの基本(指示の型3つ、Few-shot、CoT、構造化出力)</li>
-        <li>ビジネス活用パターン(文書作成、要約、分析、翻訳)</li>
-        <li>セキュリティ/ガバナンス基礎(4大リスク、情報漏えい、社内ルール設計)</li>
-        <li>生成AI資格ロードマップ(G検定、生成AIパスポート、AWS AI等)</li>
-        <li>ミニプロジェクト: 業務改善提案書をAIで作成+リスク評価シート</li>
-      </ul>
-      <div class="course-diff">他コースにないセキュリティ+トレンドの初期組込み。「使い方」の前に「使う覚悟」を作る</div>
-      <a href="courses/c01/index.html" class="course-link">教材を開く</a>
     </div>
 
   </div>
@@ -469,122 +478,137 @@ graph LR
 
     <!-- C02 -->
     <div class="course-card">
-      <div class="course-id">COURSE 02</div>
-      <h3>Claude基礎</h3>
-      <div class="sub">claude.ai完全ガイド</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c02.png" alt="Course 02" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 02</div>
+        <h3>Claude基礎</h3>
+        <div class="sub">claude.ai完全ガイド</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>Claudeとは(Anthropicの思想、Constitutional AI、他LLMとの違い)</li>
+          <li>claude.ai基本操作(会話、ファイル添付、画像認識、PDF分析)</li>
+          <li>Claude Projects(プロジェクト作成、カスタム指示、ナレッジベース)</li>
+          <li>Claude Artifacts(コード生成、ドキュメント作成、インタラクティブ成果物)</li>
+          <li>長文処理と分析(200Kトークン活用、書籍丸ごと要約)</li>
+          <li>Claude API入門(APIキー取得、SDK、基本的なAPI呼び出し)</li>
+          <li>セキュリティとデータの扱い(データポリシー、Enterprise vs Pro)</li>
+          <li>トレンド(Claude 4.x系の進化、モデル使い分け)</li>
+        </ul>
+        <div class="course-diff">claude.ai特化の日本語コースがほぼ存在しない。API入門まで橋渡し</div>
+        <a href="courses/c02/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>Claudeとは(Anthropicの思想、Constitutional AI、他LLMとの違い)</li>
-        <li>claude.ai基本操作(会話、ファイル添付、画像認識、PDF分析)</li>
-        <li>Claude Projects(プロジェクト作成、カスタム指示、ナレッジベース)</li>
-        <li>Claude Artifacts(コード生成、ドキュメント作成、インタラクティブ成果物)</li>
-        <li>長文処理と分析(200Kトークン活用、書籍丸ごと要約)</li>
-        <li>Claude API入門(APIキー取得、SDK、基本的なAPI呼び出し)</li>
-        <li>セキュリティとデータの扱い(データポリシー、Enterprise vs Pro)</li>
-        <li>トレンド(Claude 4.x系の進化、モデル使い分け)</li>
-      </ul>
-      <div class="course-diff">claude.ai特化の日本語コースがほぼ存在しない。API入門まで橋渡し</div>
-      <a href="courses/c02/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C03 -->
     <div class="course-card">
-      <div class="course-id">COURSE 03</div>
-      <h3>Cowork基礎</h3>
-      <div class="sub">AIとの協働術</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c03.png" alt="Course 03" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 03</div>
+        <h3>Cowork基礎</h3>
+        <div class="sub">AIとの協働術</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>AI協働の大原則(AIは代替ではなく思考の補助)</li>
+          <li>タスク分解の技術(AI向きタスクと人間向きタスクの分離)</li>
+          <li>AIへの委譲と品質管理(出力の検証フレームワーク)</li>
+          <li>チームでのAI活用(共有プロンプト、ナレッジ管理)</li>
+          <li>AI活用の心理的障壁を越える(法人研修で実証済みのアプローチ)</li>
+          <li>業務別AI協働パターン(企画/営業/マーケ/人事/経理/開発)</li>
+          <li>セキュリティとガバナンス(チーム利用時のリスク管理)</li>
+          <li>トレンド(Agentic Workflowが協働をどう変えるか)</li>
+        </ul>
+        <div class="course-diff">ツール操作ではなく「協働の設計」を教える。これ単体で受講する価値がある</div>
+        <a href="courses/c03/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>AI協働の大原則(AIは代替ではなく思考の補助)</li>
-        <li>タスク分解の技術(AI向きタスクと人間向きタスクの分離)</li>
-        <li>AIへの委譲と品質管理(出力の検証フレームワーク)</li>
-        <li>チームでのAI活用(共有プロンプト、ナレッジ管理)</li>
-        <li>AI活用の心理的障壁を越える(法人研修で実証済みのアプローチ)</li>
-        <li>業務別AI協働パターン(企画/営業/マーケ/人事/経理/開発)</li>
-        <li>セキュリティとガバナンス(チーム利用時のリスク管理)</li>
-        <li>トレンド(Agentic Workflowが協働をどう変えるか)</li>
-      </ul>
-      <div class="course-diff">ツール操作ではなく「協働の設計」を教える。これ単体で受講する価値がある</div>
-      <a href="courses/c03/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C04 -->
     <div class="course-card">
-      <div class="course-id">COURSE 04</div>
-      <h3>Claude Code基礎</h3>
-      <div class="sub">ターミナルAI開発入門</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c04.png" alt="Course 04" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 04</div>
+        <h3>Claude Code基礎</h3>
+        <div class="sub">ターミナルAI開発入門</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>Claude Codeとは(CLIベースAI開発、GUIとの違い)</li>
+          <li>インストールと初期設定(Mac/Windows/Linux)</li>
+          <li>基本操作(ファイル読み書き、コード生成、検索、Bash実行)</li>
+          <li>CLAUDE.mdの設計(プロジェクトルール定義、AI行動制御)</li>
+          <li>コマンドとスキル(スラッシュコマンド、カスタムコマンド作成)</li>
+          <li>MCP連携入門(MCPサーバー接続、外部ツール統合)</li>
+          <li>セキュリティ(権限モデル、機密情報の取り扱い)</li>
+          <li>トレンド(Claude Code進化、IDE統合、Agent SDK)</li>
+        </ul>
+        <div class="course-diff">Claude Code特化の日本語コースは皆無。公式ドキュメントすら英語のみ</div>
+        <a href="courses/c04/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>Claude Codeとは(CLIベースAI開発、GUIとの違い)</li>
-        <li>インストールと初期設定(Mac/Windows/Linux)</li>
-        <li>基本操作(ファイル読み書き、コード生成、検索、Bash実行)</li>
-        <li>CLAUDE.mdの設計(プロジェクトルール定義、AI行動制御)</li>
-        <li>コマンドとスキル(スラッシュコマンド、カスタムコマンド作成)</li>
-        <li>MCP連携入門(MCPサーバー接続、外部ツール統合)</li>
-        <li>セキュリティ(権限モデル、機密情報の取り扱い)</li>
-        <li>トレンド(Claude Code進化、IDE統合、Agent SDK)</li>
-      </ul>
-      <div class="course-diff">Claude Code特化の日本語コースは皆無。公式ドキュメントすら英語のみ</div>
-      <a href="courses/c04/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C05 -->
     <div class="course-card">
-      <div class="course-id">COURSE 05</div>
-      <h3>GitHub Copilot基礎</h3>
-      <div class="sub">AI駆動開発の入口</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c05.png" alt="Course 05" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 05</div>
+        <h3>GitHub Copilot基礎</h3>
+        <div class="sub">AI駆動開発の入口</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>GitHub Copilotとは(仕組み、料金、プラン比較)</li>
+          <li>セットアップ(VSCode拡張、初期設定)</li>
+          <li>コード補完(インラインサジェスト、Tab受入れ、判断基準)</li>
+          <li>Copilot Chat(質問、コード説明、リファクタリング)</li>
+          <li>インラインチャット(選択範囲への指示、部分修正)</li>
+          <li>コメントドリブン開発(コメントを先に書く型)</li>
+          <li>セキュリティ(ライセンス問題、社内ポリシー設定)</li>
+          <li>トレンド(Agent Mode、Workspace、Multi-file editing)</li>
+        </ul>
+        <div class="course-diff">心理的ハードルを下げる設計。法人研修で実証した因果関係体験型</div>
+        <a href="courses/c05/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>GitHub Copilotとは(仕組み、料金、プラン比較)</li>
-        <li>セットアップ(VSCode拡張、初期設定)</li>
-        <li>コード補完(インラインサジェスト、Tab受入れ、判断基準)</li>
-        <li>Copilot Chat(質問、コード説明、リファクタリング)</li>
-        <li>インラインチャット(選択範囲への指示、部分修正)</li>
-        <li>コメントドリブン開発(コメントを先に書く型)</li>
-        <li>セキュリティ(ライセンス問題、社内ポリシー設定)</li>
-        <li>トレンド(Agent Mode、Workspace、Multi-file editing)</li>
-      </ul>
-      <div class="course-diff">心理的ハードルを下げる設計。法人研修で実証した因果関係体験型</div>
-      <a href="courses/c05/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C06 -->
     <div class="course-card">
-      <div class="course-id">COURSE 06</div>
-      <h3>OpenAI Codex基礎</h3>
-      <div class="sub">CLIエージェント入門</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c06.png" alt="Course 06" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 06</div>
+        <h3>OpenAI Codex基礎</h3>
+        <div class="sub">CLIエージェント入門</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>OpenAI Codexとは(CLIエージェント、GPT-4o/o3連携)</li>
+          <li>インストールと初期設定(Node.js環境、設定ファイル)</li>
+          <li>基本操作(自然言語で指示、ファイル操作、コード生成)</li>
+          <li>自律実行モード(suggest / auto-edit / full-auto)</li>
+          <li>プロジェクト構成の指示(AGENTS.md、codex.toml)</li>
+          <li>Copilot/Claude Codeとの使い分け(得意領域比較)</li>
+          <li>セキュリティ(サンドボックス、ネットワーク制御)</li>
+          <li>トレンド(OpenAI Agent Platform、Codex進化)</li>
+        </ul>
+        <div class="course-diff">Codex CLI特化の日本語コースは存在しない</div>
+        <a href="courses/c06/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>OpenAI Codexとは(CLIエージェント、GPT-4o/o3連携)</li>
-        <li>インストールと初期設定(Node.js環境、設定ファイル)</li>
-        <li>基本操作(自然言語で指示、ファイル操作、コード生成)</li>
-        <li>自律実行モード(suggest / auto-edit / full-auto)</li>
-        <li>プロジェクト構成の指示(AGENTS.md、codex.toml)</li>
-        <li>Copilot/Claude Codeとの使い分け(得意領域比較)</li>
-        <li>セキュリティ(サンドボックス、ネットワーク制御)</li>
-        <li>トレンド(OpenAI Agent Platform、Codex進化)</li>
-      </ul>
-      <div class="course-diff">Codex CLI特化の日本語コースは存在しない</div>
-      <a href="courses/c06/index.html" class="course-link">教材を開く</a>
     </div>
 
   </div>
@@ -600,195 +624,219 @@ graph LR
 
     <!-- C07 -->
     <div class="course-card">
-      <div class="course-id">COURSE 07</div>
-      <h3>Claude Code応用</h3>
-      <div class="sub">プロダクション開発</div>
-      <div class="course-meta">
-        <span class="meta-tag level">中級-上級</span>
-        <span class="meta-tag">12h</span>
-        <span class="meta-tag">9 Sections</span>
+      <img src="assets/thumbnails/c07.png" alt="Course 07" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 07</div>
+        <h3>Claude Code応用</h3>
+        <div class="sub">プロダクション開発</div>
+        <div class="course-meta">
+          <span class="meta-tag level">中級-上級</span>
+          <span class="meta-tag">12h</span>
+          <span class="meta-tag">9 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>コンテキストエンジニアリング(CLAUDE.md設計論、3層コンテキスト)</li>
+          <li>カスタムスキル開発(ファイル構造、フロントマター)</li>
+          <li>フック開発(PreToolUse / PostToolUse / Stop)</li>
+          <li>エージェント/サブエージェント(並列実行、worktree分離)</li>
+          <li>MCP統合(カスタムツール、リソース公開)</li>
+          <li>仕様駆動開発(メモ→仕様書→CLAUDE.md→実装→テスト)</li>
+          <li>チーム開発(settings.json共有、レビュー自動化)</li>
+          <li>CI/CD統合(GitHub Actions連携)</li>
+          <li>パフォーマンスとコスト最適化</li>
+        </ul>
+        <div class="course-diff">スキル/フック/エージェント開発まで扱う日本語コースは存在しない</div>
+        <a href="courses/c07/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>コンテキストエンジニアリング(CLAUDE.md設計論、3層コンテキスト)</li>
-        <li>カスタムスキル開発(ファイル構造、フロントマター)</li>
-        <li>フック開発(PreToolUse / PostToolUse / Stop)</li>
-        <li>エージェント/サブエージェント(並列実行、worktree分離)</li>
-        <li>MCP統合(カスタムツール、リソース公開)</li>
-        <li>仕様駆動開発(メモ→仕様書→CLAUDE.md→実装→テスト)</li>
-        <li>チーム開発(settings.json共有、レビュー自動化)</li>
-        <li>CI/CD統合(GitHub Actions連携)</li>
-        <li>パフォーマンスとコスト最適化</li>
-      </ul>
-      <div class="course-diff">スキル/フック/エージェント開発まで扱う日本語コースは存在しない</div>
-      <a href="courses/c07/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C08 -->
     <div class="course-card">
-      <div class="course-id">COURSE 08</div>
-      <h3>OpenAI Codex応用</h3>
-      <div class="sub">自律開発エージェント</div>
-      <div class="course-meta">
-        <span class="meta-tag level">中級-上級</span>
-        <span class="meta-tag">10h</span>
-        <span class="meta-tag">7 Sections</span>
+      <img src="assets/thumbnails/c08.png" alt="Course 08" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 08</div>
+        <h3>OpenAI Codex応用</h3>
+        <div class="sub">自律開発エージェント</div>
+        <div class="course-meta">
+          <span class="meta-tag level">中級-上級</span>
+          <span class="meta-tag">10h</span>
+          <span class="meta-tag">7 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>full-autoモードの設計と安全運用</li>
+          <li>AGENTS.md高度設計(マルチエージェント指示)</li>
+          <li>大規模リファクタリング(レガシーコード変換)</li>
+          <li>テスト自動生成と品質保証</li>
+          <li>マルチリポジトリ運用</li>
+          <li>ツール横断ワークフロー(Copilot / Claude Code併用)</li>
+          <li>本番環境への適用(CI/CD統合、コードレビュー自動化)</li>
+        </ul>
+        <div class="course-diff">Codex応用に特化した教材は日英ともに未成熟</div>
+        <a href="courses/c08/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>full-autoモードの設計と安全運用</li>
-        <li>AGENTS.md高度設計(マルチエージェント指示)</li>
-        <li>大規模リファクタリング(レガシーコード変換)</li>
-        <li>テスト自動生成と品質保証</li>
-        <li>マルチリポジトリ運用</li>
-        <li>ツール横断ワークフロー(Copilot / Claude Code併用)</li>
-        <li>本番環境への適用(CI/CD統合、コードレビュー自動化)</li>
-      </ul>
-      <div class="course-diff">Codex応用に特化した教材は日英ともに未成熟</div>
-      <a href="courses/c08/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C09 -->
     <div class="course-card">
-      <div class="course-id">COURSE 09</div>
-      <h3>Dify実践</h3>
-      <div class="sub">AIワークフロー構築</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">12h</span>
-        <span class="meta-tag">9 Sections</span>
+      <img src="assets/thumbnails/c09.png" alt="Course 09" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 09</div>
+        <h3>Dify実践</h3>
+        <div class="sub">AIワークフロー構築</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">12h</span>
+          <span class="meta-tag">9 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>AIワークフローとは(エージェント基礎、Dify概要)</li>
+          <li>環境構築(クラウド版 / セルフホスト版)</li>
+          <li>チャットボット構築(シンプル応答、変数、コンテキスト)</li>
+          <li>ワークフロー構築(トリガー→LLM処理→出力)</li>
+          <li>RAG実装(ナレッジベース構築、検索精度チューニング)</li>
+          <li>外部連携(Webhook、HTTP Request、LINE/Slack)</li>
+          <li>条件分岐と高度なワークフロー</li>
+          <li>エージェントモード(ツール呼び出し、自律タスク実行)</li>
+          <li>本番運用とセキュリティ</li>
+        </ul>
+        <div class="course-diff">法人向け3日間研修の深さをそのまま活かす</div>
+        <a href="courses/c09/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>AIワークフローとは(エージェント基礎、Dify概要)</li>
-        <li>環境構築(クラウド版 / セルフホスト版)</li>
-        <li>チャットボット構築(シンプル応答、変数、コンテキスト)</li>
-        <li>ワークフロー構築(トリガー→LLM処理→出力)</li>
-        <li>RAG実装(ナレッジベース構築、検索精度チューニング)</li>
-        <li>外部連携(Webhook、HTTP Request、LINE/Slack)</li>
-        <li>条件分岐と高度なワークフロー</li>
-        <li>エージェントモード(ツール呼び出し、自律タスク実行)</li>
-        <li>本番運用とセキュリティ</li>
-      </ul>
-      <div class="course-diff">法人向け3日間研修の深さをそのまま活かす</div>
-      <a href="courses/c09/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C10 -->
     <div class="course-card">
-      <div class="course-id">COURSE 10</div>
-      <h3>Vibe Coding入門</h3>
-      <div class="sub">非エンジニアのためのアプリ開発</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級</span>
-        <span class="meta-tag">10h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c10.png" alt="Course 10" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 10</div>
+        <h3>Vibe Coding入門</h3>
+        <div class="sub">非エンジニアのためのアプリ開発</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級</span>
+          <span class="meta-tag">10h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>Vibe Codingとは(AIに自然言語で指示してアプリを作る)</li>
+          <li>ツール選択とセットアップ(Cursor / Claude Code / Codex)</li>
+          <li>はじめてのアプリ(メモ帳を自然言語だけで作る体験)</li>
+          <li>要件の言語化(ビジネスアイデア→要件→AI指示)</li>
+          <li>HTMLプロトタイプ生成(30分でモックアップ)</li>
+          <li>データベース連携(簡単なCRUDアプリ)</li>
+          <li>デプロイ(Vercel / Netlifyで公開)</li>
+          <li>ベンダーコントロール(プロトタイプで仕様を詰める)</li>
+        </ul>
+        <div class="course-diff">ベンダーコントロールまで踏み込む。作って終わりではない</div>
+        <a href="courses/c10/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>Vibe Codingとは(AIに自然言語で指示してアプリを作る)</li>
-        <li>ツール選択とセットアップ(Cursor / Claude Code / Codex)</li>
-        <li>はじめてのアプリ(メモ帳を自然言語だけで作る体験)</li>
-        <li>要件の言語化(ビジネスアイデア→要件→AI指示)</li>
-        <li>HTMLプロトタイプ生成(30分でモックアップ)</li>
-        <li>データベース連携(簡単なCRUDアプリ)</li>
-        <li>デプロイ(Vercel / Netlifyで公開)</li>
-        <li>ベンダーコントロール(プロトタイプで仕様を詰める)</li>
-      </ul>
-      <div class="course-diff">ベンダーコントロールまで踏み込む。作って終わりではない</div>
-      <a href="courses/c10/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C11 -->
     <div class="course-card">
-      <div class="course-id">COURSE 11</div>
-      <h3>プロンプトエンジニアリング実践</h3>
-      <div class="sub">評価と改善サイクルまで</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">10h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c11.png" alt="Course 11" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 11</div>
+        <h3>プロンプトエンジニアリング実践</h3>
+        <div class="sub">評価と改善サイクルまで</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">10h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>プロンプトの構造(役割、文脈、制約、出力形式)</li>
+          <li>基本テクニック(Zero-shot / Few-shot / CoT)</li>
+          <li>高度テクニック(Tree of Thought / ReAct / メタプロンプト)</li>
+          <li>マルチモーダルプロンプト(画像 / PDF / 音声)</li>
+          <li>パーソナルAI構築(Gem / GPTs / Claude Projects)</li>
+          <li>業務別テンプレート集(議事録、レビュー、分析、提案書)</li>
+          <li>評価と改善サイクル(A/Bテスト、スコアリング)</li>
+          <li>セキュリティ(インジェクション防御、ガードレール設計)</li>
+        </ul>
+        <div class="course-diff">評価と改善サイクルで差別化。作って終わりにしない</div>
+        <a href="courses/c11/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>プロンプトの構造(役割、文脈、制約、出力形式)</li>
-        <li>基本テクニック(Zero-shot / Few-shot / CoT)</li>
-        <li>高度テクニック(Tree of Thought / ReAct / メタプロンプト)</li>
-        <li>マルチモーダルプロンプト(画像 / PDF / 音声)</li>
-        <li>パーソナルAI構築(Gem / GPTs / Claude Projects)</li>
-        <li>業務別テンプレート集(議事録、レビュー、分析、提案書)</li>
-        <li>評価と改善サイクル(A/Bテスト、スコアリング)</li>
-        <li>セキュリティ(インジェクション防御、ガードレール設計)</li>
-      </ul>
-      <div class="course-diff">評価と改善サイクルで差別化。作って終わりにしない</div>
-      <a href="courses/c11/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C12 -->
     <div class="course-card">
-      <div class="course-id">COURSE 12</div>
-      <h3>RAG実践</h3>
-      <div class="sub">LangChain / LangGraph 完全ガイド</div>
-      <div class="course-meta">
-        <span class="meta-tag level">中級-上級</span>
-        <span class="meta-tag">12h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c12.png" alt="Course 12" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 12</div>
+        <h3>RAG実践</h3>
+        <div class="sub">LangChain / LangGraph 完全ガイド</div>
+        <div class="course-meta">
+          <span class="meta-tag level">中級-上級</span>
+          <span class="meta-tag">12h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>RAGアーキテクチャ(仕組みと設計パターン)</li>
+          <li>LangChain基礎(Chain / Prompt Template / Output Parser)</li>
+          <li>ベクトルDB(Chroma / FAISS / Pinecone)</li>
+          <li>チャンク戦略(分割粒度が精度を決める)</li>
+          <li>検索精度チューニング(Hybrid Search / Re-ranking)</li>
+          <li>LangGraph入門(ステートマシンによるマルチステップRAG)</li>
+          <li>LangSmith(デバッグ / 評価 / プロダクション監視)</li>
+          <li>高度なRAGパターン(Self-RAG / Adaptive RAG)</li>
+        </ul>
+        <div class="course-diff">LangGraphまでカバーする日本語コースが皆無</div>
+        <a href="courses/c12/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>RAGアーキテクチャ(仕組みと設計パターン)</li>
-        <li>LangChain基礎(Chain / Prompt Template / Output Parser)</li>
-        <li>ベクトルDB(Chroma / FAISS / Pinecone)</li>
-        <li>チャンク戦略(分割粒度が精度を決める)</li>
-        <li>検索精度チューニング(Hybrid Search / Re-ranking)</li>
-        <li>LangGraph入門(ステートマシンによるマルチステップRAG)</li>
-        <li>LangSmith(デバッグ / 評価 / プロダクション監視)</li>
-        <li>高度なRAGパターン(Self-RAG / Adaptive RAG)</li>
-      </ul>
-      <div class="course-diff">LangGraphまでカバーする日本語コースが皆無</div>
-      <a href="courses/c12/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C13 -->
     <div class="course-card">
-      <div class="course-id">COURSE 13</div>
-      <h3>MCP / A2A</h3>
-      <div class="sub">AIエージェント開発</div>
-      <div class="course-meta">
-        <span class="meta-tag level">中級-上級</span>
-        <span class="meta-tag">10h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c13.png" alt="Course 13" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 13</div>
+        <h3>MCP / A2A</h3>
+        <div class="sub">AIエージェント開発</div>
+        <div class="course-meta">
+          <span class="meta-tag level">中級-上級</span>
+          <span class="meta-tag">10h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>AIエージェントとは(自律タスク実行、ツール使用)</li>
+          <li>MCP(MCPサーバー構築、ツール定義、リソース公開)</li>
+          <li>MCPクライアント実装(Claude Desktop / VSCode)</li>
+          <li>A2A(エージェント間通信プロトコル)</li>
+          <li>マルチエージェントシステム(協調、委譲、オーケストレーション)</li>
+          <li>Claude Agent SDK(公式SDKでのエージェント開発)</li>
+          <li>n8n / Dify連携(ノーコードとコードの橋渡し)</li>
+          <li>本番運用(セキュリティ / 認証 / コスト制御)</li>
+        </ul>
+        <div class="course-diff">MCP/A2A特化の日本語コースは存在しない。先行者利益が最大</div>
+        <a href="courses/c13/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>AIエージェントとは(自律タスク実行、ツール使用)</li>
-        <li>MCP(MCPサーバー構築、ツール定義、リソース公開)</li>
-        <li>MCPクライアント実装(Claude Desktop / VSCode)</li>
-        <li>A2A(エージェント間通信プロトコル)</li>
-        <li>マルチエージェントシステム(協調、委譲、オーケストレーション)</li>
-        <li>Claude Agent SDK(公式SDKでのエージェント開発)</li>
-        <li>n8n / Dify連携(ノーコードとコードの橋渡し)</li>
-        <li>本番運用(セキュリティ / 認証 / コスト制御)</li>
-      </ul>
-      <div class="course-diff">MCP/A2A特化の日本語コースは存在しない。先行者利益が最大</div>
-      <a href="courses/c13/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C14 -->
     <div class="course-card">
-      <div class="course-id">COURSE 14</div>
-      <h3>セキュリティ/ガバナンス実践</h3>
-      <div class="sub">C01基礎の深掘り版</div>
-      <div class="course-meta">
-        <span class="meta-tag level">中級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c14.png" alt="Course 14" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 14</div>
+        <h3>セキュリティ/ガバナンス実践</h3>
+        <div class="sub">C01基礎の深掘り版</div>
+        <div class="course-meta">
+          <span class="meta-tag level">中級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>生成AI時代のリスク全体像(4大リスクの深掘り)</li>
+          <li>ハルシネーション(自動ファクトチェック、Grounding技術)</li>
+          <li>プロンプトインジェクション(攻撃分類と多層防御)</li>
+          <li>著作権/知財リスク(判例分析、企業防衛策)</li>
+          <li>情報漏えい/プライバシー(DLP設計、匿名化)</li>
+          <li>AI利用ガイドライン策定(フレームワーク、他社事例)</li>
+          <li>リスクアセスメント実践(監査手法)</li>
+          <li>インシデント対応(事故対応フロー、再発防止)</li>
+        </ul>
+        <div class="course-diff">攻撃と防御の両面+組織運用。基礎を知っているから意味がある応用編</div>
+        <a href="courses/c14/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>生成AI時代のリスク全体像(4大リスクの深掘り)</li>
-        <li>ハルシネーション(自動ファクトチェック、Grounding技術)</li>
-        <li>プロンプトインジェクション(攻撃分類と多層防御)</li>
-        <li>著作権/知財リスク(判例分析、企業防衛策)</li>
-        <li>情報漏えい/プライバシー(DLP設計、匿名化)</li>
-        <li>AI利用ガイドライン策定(フレームワーク、他社事例)</li>
-        <li>リスクアセスメント実践(監査手法)</li>
-        <li>インシデント対応(事故対応フロー、再発防止)</li>
-      </ul>
-      <div class="course-diff">攻撃と防御の両面+組織運用。基礎を知っているから意味がある応用編</div>
-      <a href="courses/c14/index.html" class="course-link">教材を開く</a>
     </div>
 
   </div>
@@ -804,48 +852,54 @@ graph LR
 
     <!-- C15 -->
     <div class="course-card">
-      <div class="course-id">COURSE 15</div>
-      <h3>Gemini &amp; Google Workspace</h3>
-      <div class="sub">AI活用マスター</div>
-      <div class="course-meta">
-        <span class="meta-tag level">初級-中級</span>
-        <span class="meta-tag">8h</span>
-        <span class="meta-tag">7 Sections</span>
+      <img src="assets/thumbnails/c15.png" alt="Course 15" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 15</div>
+        <h3>Gemini &amp; Google Workspace</h3>
+        <div class="sub">AI活用マスター</div>
+        <div class="course-meta">
+          <span class="meta-tag level">初級-中級</span>
+          <span class="meta-tag">8h</span>
+          <span class="meta-tag">7 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>Gemini for Workspace概要(Docs / Sheets / Slides / Gmail)</li>
+          <li>NotebookLM(社内資料AI分析、FAQ自動生成)</li>
+          <li>Docs x Gemini(文書作成、校正、要約の自動化)</li>
+          <li>Sheets x Gemini(データ分析、関数生成、可視化)</li>
+          <li>Slides x Gemini(プレゼン自動生成)</li>
+          <li>Gem / Canvas / Deep Research(高度な調査と分析)</li>
+          <li>Imagen 3による画像生成(資料用ビジュアル)</li>
+        </ul>
+        <a href="courses/c15/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>Gemini for Workspace概要(Docs / Sheets / Slides / Gmail)</li>
-        <li>NotebookLM(社内資料AI分析、FAQ自動生成)</li>
-        <li>Docs x Gemini(文書作成、校正、要約の自動化)</li>
-        <li>Sheets x Gemini(データ分析、関数生成、可視化)</li>
-        <li>Slides x Gemini(プレゼン自動生成)</li>
-        <li>Gem / Canvas / Deep Research(高度な調査と分析)</li>
-        <li>Imagen 3による画像生成(資料用ビジュアル)</li>
-      </ul>
-      <a href="courses/c15/index.html" class="course-link">教材を開く</a>
     </div>
 
     <!-- C16 -->
     <div class="course-card">
-      <div class="course-id">COURSE 16</div>
-      <h3>AI駆動開発マスター</h3>
-      <div class="sub">統合プロジェクト</div>
-      <div class="course-meta">
-        <span class="meta-tag level">上級</span>
-        <span class="meta-tag">15h</span>
-        <span class="meta-tag">8 Sections</span>
+      <img src="assets/thumbnails/c16.png" alt="Course 16" class="course-thumb">
+      <div class="course-body">
+        <div class="course-id">COURSE 16</div>
+        <h3>AI駆動開発マスター</h3>
+        <div class="sub">統合プロジェクト</div>
+        <div class="course-meta">
+          <span class="meta-tag level">上級</span>
+          <span class="meta-tag">15h</span>
+          <span class="meta-tag">8 Sections</span>
+        </div>
+        <ul class="course-sections">
+          <li>コンテキストエンジニアリング(AIに渡す文脈の設計論)</li>
+          <li>AI開発環境の最適構成(Copilot + Claude Code + Codex + MCP)</li>
+          <li>PJ1: SaaS型Webアプリ(要件定義→設計→実装→テスト→デプロイ)</li>
+          <li>PJ2: RAG搭載チャットボット(LangGraph + Dify + Slack)</li>
+          <li>PJ3: マルチエージェントシステム(MCP + A2A)</li>
+          <li>AI時代のチーム開発(CLAUDE.md / Agent MD / AGENTS.md横断設計)</li>
+          <li>パフォーマンス最適化とコスト管理</li>
+          <li>ポートフォリオ作成(受講証明に使えるプロジェクト一式)</li>
+        </ul>
+        <div class="course-diff">全ツール・全技術を組み合わせた卒業制作型。日本語圏にない</div>
+        <a href="courses/c16/index.html" class="course-link">教材を開く</a>
       </div>
-      <ul class="course-sections">
-        <li>コンテキストエンジニアリング(AIに渡す文脈の設計論)</li>
-        <li>AI開発環境の最適構成(Copilot + Claude Code + Codex + MCP)</li>
-        <li>PJ1: SaaS型Webアプリ(要件定義→設計→実装→テスト→デプロイ)</li>
-        <li>PJ2: RAG搭載チャットボット(LangGraph + Dify + Slack)</li>
-        <li>PJ3: マルチエージェントシステム(MCP + A2A)</li>
-        <li>AI時代のチーム開発(CLAUDE.md / Agent MD / AGENTS.md横断設計)</li>
-        <li>パフォーマンス最適化とコスト管理</li>
-        <li>ポートフォリオ作成(受講証明に使えるプロジェクト一式)</li>
-      </ul>
-      <div class="course-diff">全ツール・全技術を組み合わせた卒業制作型。日本語圏にない</div>
-      <a href="courses/c16/index.html" class="course-link">教材を開く</a>
     </div>
 
   </div>

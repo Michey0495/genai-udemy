@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;}
+.thumb{
+  width:750px;height:422px;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  margin:20px;
+}
+.thumb .bg{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#0a0a0a 0%,#0d1f24 50%,#0a0a0a 100%);
+}
+.thumb .accent{
+  position:absolute;top:0;left:0;width:100%;height:4px;
+  background:linear-gradient(90deg,transparent,#00A5BF,transparent);
+}
+.thumb .accent-b{
+  position:absolute;bottom:0;left:0;width:100%;height:4px;
+  background:linear-gradient(90deg,transparent,#00A5BF,transparent);
+}
+.thumb .glow{
+  position:absolute;
+  width:300px;height:300px;
+  border-radius:50%;
+  filter:blur(80px);opacity:.15;
+  background:#00A5BF;
+}
+.thumb .glow.tl{top:-100px;left:-80px;}
+.thumb .glow.br{bottom:-100px;right:-80px;}
+.thumb .grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,165,191,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,165,191,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.thumb .content{position:relative;z-index:1;text-align:center;padding:0 60px;}
+.thumb .course-num{
+  font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:#00A5BF;margin-bottom:10px;
+}
+.thumb .layer{
+  font-size:11px;letter-spacing:2px;
+  color:rgba(255,255,255,.4);margin-bottom:16px;
+}
+.thumb h2{
+  font-size:34px;font-weight:800;color:#fff;
+  line-height:1.3;margin-bottom:8px;letter-spacing:-0.5px;
+}
+.thumb h2 span{color:#00A5BF;}
+.thumb .sub{
+  font-size:15px;color:rgba(255,255,255,.55);
+  margin-bottom:20px;
+}
+.thumb .tags{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.thumb .tag{
+  font-size:11px;color:rgba(255,255,255,.5);
+  border:1px solid rgba(0,165,191,.3);
+  padding:3px 12px;border-radius:3px;
+}
+.thumb .logo{
+  position:absolute;bottom:16px;right:24px;
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.25);
+  letter-spacing:1px;
+}
+</style>
+</head>
+<body>
+
+<!-- C01 -->
+<div class="thumb" id="t01">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 01</div>
+    <div class="layer">Layer 0 -- 共通基盤</div>
+    <h2><span>生成AI完全入門</span> 2026</h2>
+    <div class="sub">仕組み・トレンド・ツール比較・プロンプト・セキュリティ</div>
+    <div class="tags"><span class="tag">全レベル</span><span class="tag">10時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C02 -->
+<div class="thumb" id="t02">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 02</div>
+    <div class="layer">Layer 1 -- ツール基礎</div>
+    <h2><span>Claude基礎</span></h2>
+    <div class="sub">claude.ai完全ガイド -- Projects・Artifacts・API入門</div>
+    <div class="tags"><span class="tag">初級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C03 -->
+<div class="thumb" id="t03">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 03</div>
+    <div class="layer">Layer 1 -- ツール基礎</div>
+    <h2><span>Cowork基礎</span></h2>
+    <div class="sub">AIとの協働術 -- タスク分解・品質管理・チーム活用</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C04 -->
+<div class="thumb" id="t04">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 04</div>
+    <div class="layer">Layer 1 -- ツール基礎</div>
+    <h2><span>Claude Code基礎</span></h2>
+    <div class="sub">ターミナルAI開発入門 -- CLAUDE.md・コマンド・MCP</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C05 -->
+<div class="thumb" id="t05">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 05</div>
+    <div class="layer">Layer 1 -- ツール基礎</div>
+    <h2><span>GitHub Copilot基礎</span></h2>
+    <div class="sub">AI駆動開発の入口 -- 補完・Chat・コメントドリブン</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C06 -->
+<div class="thumb" id="t06">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 06</div>
+    <div class="layer">Layer 1 -- ツール基礎</div>
+    <h2><span>OpenAI Codex基礎</span></h2>
+    <div class="sub">CLIエージェント入門 -- 自律実行・サンドボックス</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C07 -->
+<div class="thumb" id="t07">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 07</div>
+    <div class="layer">Layer 2 -- ツール応用</div>
+    <h2><span>Claude Code応用</span></h2>
+    <div class="sub">プロダクション開発 -- スキル・フック・エージェント・CI/CD</div>
+    <div class="tags"><span class="tag">中級-上級</span><span class="tag">12時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C08 -->
+<div class="thumb" id="t08">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 08</div>
+    <div class="layer">Layer 2 -- ツール応用</div>
+    <h2><span>OpenAI Codex応用</span></h2>
+    <div class="sub">自律開発エージェント -- full-auto・リファクタ・テスト自動化</div>
+    <div class="tags"><span class="tag">中級-上級</span><span class="tag">10時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C09 -->
+<div class="thumb" id="t09">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 09</div>
+    <div class="layer">Layer 2 -- 技術特化</div>
+    <h2><span>Dify実践</span></h2>
+    <div class="sub">AIワークフロー構築 -- チャットボット・RAG・外部連携</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">12時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C10 -->
+<div class="thumb" id="t10">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 10</div>
+    <div class="layer">Layer 2 -- 技術特化</div>
+    <h2><span>Vibe Coding入門</span></h2>
+    <div class="sub">非エンジニアのためのアプリ開発 -- プロトタイプ・デプロイ</div>
+    <div class="tags"><span class="tag">初級</span><span class="tag">10時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C11 -->
+<div class="thumb" id="t11">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 11</div>
+    <div class="layer">Layer 2 -- 技術特化</div>
+    <h2><span>プロンプトエンジニアリング</span>実践</h2>
+    <div class="sub">高度テクニック・マルチモーダル・評価サイクル</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">10時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C12 -->
+<div class="thumb" id="t12">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 12</div>
+    <div class="layer">Layer 2 -- 技術特化</div>
+    <h2><span>RAG実践</span></h2>
+    <div class="sub">LangChain / LangGraph 完全ガイド -- ベクトルDB・検索精度</div>
+    <div class="tags"><span class="tag">中級-上級</span><span class="tag">12時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C13 -->
+<div class="thumb" id="t13">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 13</div>
+    <div class="layer">Layer 2 -- 技術特化</div>
+    <h2><span>MCP / A2A</span></h2>
+    <div class="sub">AIエージェント開発 -- MCPサーバー構築・マルチエージェント</div>
+    <div class="tags"><span class="tag">中級-上級</span><span class="tag">10時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C14 -->
+<div class="thumb" id="t14">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 14</div>
+    <div class="layer">Layer 2 -- 技術特化</div>
+    <h2><span>セキュリティ / ガバナンス</span>実践</h2>
+    <div class="sub">多層防御・ガイドライン策定・リスクアセスメント</div>
+    <div class="tags"><span class="tag">中級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C15 -->
+<div class="thumb" id="t15">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 15</div>
+    <div class="layer">Layer 3 -- 統合マスター</div>
+    <h2><span>Gemini &amp; Google Workspace</span></h2>
+    <div class="sub">AI活用マスター -- NotebookLM・Sheets・Deep Research</div>
+    <div class="tags"><span class="tag">初級-中級</span><span class="tag">8時間</span><span class="tag">ハンズオン付き</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+<!-- C16 -->
+<div class="thumb" id="t16">
+  <div class="bg"></div><div class="accent"></div><div class="accent-b"></div>
+  <div class="glow tl"></div><div class="glow br"></div><div class="grid"></div>
+  <div class="content">
+    <div class="course-num">Course 16</div>
+    <div class="layer">Layer 3 -- 統合マスター</div>
+    <h2><span>AI駆動開発マスター</span></h2>
+    <div class="sub">統合プロジェクト -- SaaS・RAGチャットボット・マルチエージェント</div>
+    <div class="tags"><span class="tag">上級</span><span class="tag">15時間</span><span class="tag">3つのPJ構築</span></div>
+  </div>
+  <div class="logo">EzoAI</div>
+</div>
+
+</body>
+</html>
