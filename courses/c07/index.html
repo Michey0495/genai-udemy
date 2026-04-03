@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -566,7 +570,34 @@ triggers:
 </ul>
 </div>
 
-<div class="refs"><h4>参考リンク</h4><ul>
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">テーマ: 講師がコードレビュースキルを作ったのと同じ方法で、あなたの開発で頻繁に必要になるスキルを1つ自力で設計・実装してください。<br>条件: フロントマター(description, trigger等)とプロンプト本文を自分で書くこと。例: API仕様書生成、DB設計レビュー、パフォーマンス分析など。</div>
+<div class="ch-pause">ここで動画を一度��めて、7分間取��組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: まず「自分が週に何回も手動で繰り返しているタスク」を洗い出してください。それをスキル化する価値が最も高い。</p>
+<details><summary>講師の解答例を見る</summary><div class="inner">
+<div class="prompt" id="ch_c07_1">---
+description: API仕様書をOpenAPI 3.0形式で自動生成する
+trigger: ユーザーが「API仕様書」「OpenAPI」「swagger」と言及した場合
+---
+
+# API仕様書生成スキル
+
+対象ファイル内のルーティング定義(Express/Fastify/Hono等)を解析し、
+OpenAPI 3.0準拠のYAML仕様書を生成してください。
+
+含めるべき情報:
+- 各エンドポイントのHTTPメソッドとパス
+- リクエストボディのスキーマ(TypeScript型から推論)
+- レスポンスのスキーマと想定ステータスコード
+- パスパラメータとクエリパラメータ
+
+出力先: docs/openapi.yaml<button class="cb" onclick="copyP('ch_c07_1')">コピ��</button></div>
+<p>解説ポイント: スキルのtriggerは「ユーザーがどんな言葉を使うか」を想定して書きます。descriptionは短く、プロンプト本文で詳細を指定する構造が保守しやすいです。</p>
+</div></details>
+</div>
+
+<div class="refs"><h4>���考リンク</h4><ul>
 <li><a href="https://docs.anthropic.com/en/docs/claude-code/skills" target="_blank" rel="noopener">Claude Code Skills</a> -- 公式スキルドキュメント</li>
 </ul></div></div>
 
@@ -813,6 +844,29 @@ echo "Exit code: $?"<button class="cb" onclick="copyP('p_s3h2')">コピー</butt
 <li>settings.json にフック設定を統合した</li>
 <li>.envへの書き込みがブロックされることを確認した</li>
 </ul>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">テーマ: 講師がセキュリティフックを作ったのと同じ手法で、以下の要件のフックを自力で設計してください。<br>条件: Bashツールで rm コマンドが実行されようとしたとき、確認メッセージを表示してブロックする PreToolUse フックを作成すること。</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: PreToolUseフックではexit 2を返すとツール実行がブロックされます。stdinからJSON入力を受け取り、tool_nameとcommandを解析する構造です。</p>
+<details><summary>講師の解答例を見る</summary><div class="inner">
+<div class="prompt" id="ch_c07_2">#!/bin/bash
+# block-rm.sh - rmコマンドの実行をブロックするPreToolUseフック
+
+INPUT=$(cat)
+TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty')
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+
+if [ "$TOOL" = "Bash" ] &amp;&amp; echo "$COMMAND" | grep -qE '(^|;|\||\&amp;\&amp;)\s*rm\s'; then
+  echo "rm コマンドの実行をブロックしました。ファイル削除は手動で行ってください。"
+  exit 2
+fi
+
+exit 0<button class="cb" onclick="copyP('ch_c07_2')">コピー</button></div>
+<p>解説ポイント: grepのパターンで「rm」が他の文字列の一部(例: format)に誤マッチしないよう、コマンド区切り文字を考慮しています。settings.jsonへの登録時はmatcherでBashツールに限定することで、不要なフック実行を抑制できます。</p>
+</div></details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -1528,6 +1582,36 @@ TODOフィルタリング・検索機能を実装してください。
 <li>仕様書ベースで実装を完了した</li>
 <li>テストを生成・実行し全パスを確認した</li>
 </ul>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">テーマ: 講師とは異なる機能を1つ選び、仕様駆動開発の型(メモ → 仕様書 → 実装 → テスト)で実装してください。<br>条件: ユーザー認証、検索フィルタ、データエクスポートなどから1つ選択。仕様書は自分で書くこと。走り書きメモの段階から始め、構造化仕様書を自分で完成させてください。</div>
+<div class="ch-pause">ここで動画を一度止めて、10分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: 仕様書の「テストケース」セクションを先に書くと、実装のゴールが明確になります。テストケースなしの仕様書では、AIが生成するコードのカバレッジにばらつきが出ます。</p>
+<details><summary>講師の解答例を見る</summary><div class="inner">
+<div class="prompt" id="ch_c07_3"># 仕様書: CSVデータエクスポート機能
+
+## 概要
+画面に表示中のデータをCSV形式でダウンロードする機能。
+
+## 要件
+- 表示中のデータ(フィルタ適用後)をCSVに変換する
+- ヘッダー行を含む
+- UTF-8 BOM付きで出力(Excel対応)
+- ファイル名: export_YYYYMMDD_HHmmss.csv
+
+## テストケース
+1. 正常系: 10件のデータを含むCSVが生成される
+2. 空データ: ヘッダー行のみのCSVが生成される
+3. 特殊文字: カンマ・改行を含むデータが正しくエスケープされる
+4. 日本語: 日本語データがExcelで文字化けしない(BOM付き)
+
+## 制約
+- ブラウザ側のみで処理(サーバーAPIへのリクエスト不可)
+- 10万行以上のデータでもブラウザがフリーズしないこと<button class="cb" onclick="copyP('ch_c07_3')">コピー</button></div>
+<p>解説ポイント: 仕様書にテストケースと制約を含めることで、AIは「何を作るか」だけでなく「何を満たすべきか」を理解します。仕様書の粒度は完璧でなくて構いません。ゼロとイチの差が最も大きい。</p>
+</div></details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>

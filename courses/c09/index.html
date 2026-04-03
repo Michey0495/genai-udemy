@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -441,7 +445,35 @@ docker compose up -d
 </div></div>
 
 <!-- ============================================================ -->
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師が基本応答型チャットボットを作ったのと同じ手順で、あなたの業務に合わせたペルソナ設定型チャットボットを自力で作成してください。システムプロンプトの役割定義、トーン指定、回答範囲の制限を自分で設計してください。<br>条件: Difyのチャットボットアプリで、システムプロンプトを自分で書くこと。テンプレートのコピーは禁止です。</div>
+  <div class="ch-pause">ここで動画を一度止めて、7分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: まず「誰として振る舞うか」「何について答えるか」「何について答えないか」の3点を決めてからシステムプロンプトを書き始めると整理しやすくなります。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c09_1">あなたはECサイトのカスタマーサポート担当「アシスタントK」です。
+
+【役割】
+- 注文状況の確認、返品・交換の案内、商品の基本情報提供を担当します。
+
+【トーン】
+- 丁寧で親しみやすい口調。「ですます」調を使います。
+- お客様の不満には共感を示してから解決策を提示します。
+
+【回答範囲の制限】
+- 技術的な質問(APIの仕様など)には回答しません。「技術サポート窓口へお問い合わせください」と案内します。
+- 競合他社の製品比較には応じません。
+- 個人情報(住所、電話番号)の確認は行いません。セキュリティ上の理由で「マイページからご確認ください」と案内します。
+
+【エスカレーション条件】
+- お客様が2回以上同じ不満を繰り返した場合は「担当者におつなぎします」と伝えます。<button class="cb" onclick="copyP('ch_c09_1')">コピー</button></div>
+    <p>解説ポイント: 回答範囲を明確に定義しないと、想定外の質問に対して的外れな回答を生成してしまいます。「答えないこと」の設計が、業務チャットボットの品質を左右します。</p>
+  </div></details>
+</div>
+
 <!-- 復習ハンズオン A (25min) -->
+
+
 <!-- ============================================================ -->
 <div class="sec review-sec" id="rA"><div class="sec-label review">Review Hands-on A -- 25min</div><h2>復習ハンズオン A: カスタムチャットボット</h2>
 <p>Section 01-03の知識を組み合わせ、自分の業務に合ったチャットボットを完成させます。</p>
@@ -606,6 +638,35 @@ graph LR
 </ul>
 </div></div>
 
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師が3ノードのワークフローを作ったのと同じ方法で、以下のワークフローを自力で構築してください。「ユーザーの質問を受け取り → 質問を英語に翻訳 → 英語で回答生成 → 日本語に翻訳して出力」の4ノード構成。<br>条件: 開始ノード + LLMノード3つの構成。各ノード間の変数の受け渡しを正しく設定すること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、7分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: 各LLMノードの出力変数名を明確に(例: english_question, english_answer, japanese_answer)つけると、次のノードで参照しやすくなります。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c09_2">【ノード構成】
+1. 開始ノード: ユーザー入力(question)を受け取る
+2. LLMノード「翻訳_JP_to_EN」:
+   プロンプト: 「以下の日本語の質問を英語に翻訳してください。翻訳のみを出力し、説明は不要です。
+
+質問: {{question}}」
+   出力変数: english_question
+3. LLMノード「回答生成_EN」:
+   プロンプト: 「Answer the following question concisely and accurately:
+
+{{english_question}}」
+   出力変数: english_answer
+4. LLMノード「翻訳_EN_to_JP」:
+   プロンプト: 「以下の英語のテキストを自然な日本語に翻訳してください。翻訳のみを出力してください。
+
+{{english_answer}}」
+   出力変数: japanese_answer
+
+→ 終了ノードにjapanese_answerを接続<button class="cb" onclick="copyP('ch_c09_2')">コピー</button></div>
+    <p>解説ポイント: 変数の受け渡しがワークフロー構築の鍵です。あるノードの出力変数名と、次のノードのプロンプト内の変数参照名が一致していないと、空文字が渡されます。</p>
+  </div></details>
+</div>
+
 <!-- ============================================================ -->
 <!-- Section 05: RAG実装 (65min: 講義25 + ハンズオン40) -->
 <!-- ============================================================ -->
@@ -728,6 +789,31 @@ graph LR
 </ul></div></div>
 
 <!-- ============================================================ -->
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師が使ったのとは異なるPDFドキュメント(サンプルFAQデータをDL)でナレッジベースを構築し、チャンクサイズを3パターン(256/512/1024)で試して検索精度を比較してください。どのサイズが最も良い結果だったか、理由とともに記録してください。<br>条件: 同じ質問を3回(各チャンクサイズで1回ずつ)投げ、回答の正確さ・網羅性を自分で評価すること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、10分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: チャンクサイズが小さいと検索精度は上がりますが、文脈が切れやすくなります。大きいとノイズが増えます。テスト質問は「複数の段落にまたがる情報を必要とする質問」が比較しやすいです。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c09_3">【検証手順】
+1. Difyのナレッジベースで同じPDFを3回インポート(KB_256, KB_512, KB_1024)
+2. 各ナレッジベースのチャンクサイズ設定:
+   - KB_256: チャンクサイズ256, オーバーラップ50
+   - KB_512: チャンクサイズ512, オーバーラップ100
+   - KB_1024: チャンクサイズ1024, オーバーラップ200
+3. テスト質問(3問):
+   Q1: 「返品ポリシーの条件と手順を教えてください」(単一セクション)
+   Q2: 「配送料金と配送日数の関係を教えてください」(複数セクション)
+   Q3: 「会員ランクごとの特典の違いを一覧で教えてください」(テーブル情報)
+
+【典型的な結果パターン】
+- 256: Q1は正確だがQ2は文脈切れで不完全、Q3はテーブルが分断
+- 512: 3問ともバランスよく回答(多くのFAQドキュメントで最適)
+- 1024: Q3は完全だがQ1にノイズ混入(無関係な段落が含まれる)<button class="cb" onclick="copyP('ch_c09_3')">コピー</button></div>
+    <p>解説ポイント: 最適なチャンクサイズはドキュメントの構造に依存します。FAQ形式なら256-512、マニュアル形式なら512-1024が目安。実務では必ずテスト質問セットで検証してから本番に適用してください。</p>
+  </div></details>
+</div>
+
 <!-- 復習ハンズオン B (30min) -->
 <!-- ============================================================ -->
 <div class="sec review-sec" id="rB"><div class="sec-label review">Review Hands-on B -- 30min</div><h2>復習ハンズオン B: RAG付きワークフロー</h2>
@@ -1096,6 +1182,36 @@ graph LR
 </ul></div></div>
 
 <!-- ============================================================ -->
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師がビルトインツールでエージェントを作ったのと同じ方法で、Web検索ツールと計算ツールの2つを組み合わせたリサーチエージェントを自力で構築してください。<br>条件: テスト質問「日本の2025年のGDPは何兆円で、前年比何%成長か?」で動作確認。エージェントがWeb検索で数値を取得し、計算ツールで成長率を算出する流れになること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、7分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: エージェントのシステムプロンプトに「まずWeb検索で最新データを取得し、次に計算ツールで数値を算出してください」と手順を明記すると、ツールの使い分けが安定します。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c09_4">【エージェント設定】
+アプリタイプ: エージェント
+モデル: GPT-4o(または使用可能なモデル)
+
+【システムプロンプト】
+あなたは経済リサーチアシスタントです。
+ユーザーの質問に対し、以下の手順で回答してください:
+1. Web検索ツールで最新の統計データを取得する
+2. 必要な場合は計算ツールで数値を算出する
+3. 出典URLを明記した上で、簡潔に回答する
+
+【ツール設定】
+- Web検索: SerpAPI(ビルトイン)を有効化
+- 計算: Calculator(ビルトイン)を有効化
+
+【期待される動作】
+1. エージェントがWeb検索で「日本 2025年 GDP」を検索
+2. 前年のGDPデータも取得
+3. 計算ツールで成長率 = (今年 - 前年) / 前年 * 100 を算出
+4. 出典とともに回答を生成<button class="cb" onclick="copyP('ch_c09_4')">コピー</button></div>
+    <p>解説ポイント: エージェントは「どのツールをいつ使うか」をLLMが判断します。システムプロンプトに手順を書いておくと判断精度が上がりますが、書きすぎると柔軟性が失われます。ツール2-3個の場合は手順を明記する方が安定します。</p>
+  </div></details>
+</div>
+
 <!-- 復習ハンズオン C (30min) -->
 <!-- ============================================================ -->
 <div class="sec review-sec" id="rC"><div class="sec-label review">Review Hands-on C -- 30min</div><h2>復習ハンズオン C: 統合ワークフロー</h2>

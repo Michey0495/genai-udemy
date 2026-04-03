@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -419,6 +423,70 @@ for q in questions:
 <li><a href="https://python.langchain.com/docs/how_to/" target="_blank" rel="noopener">LangChain How-to Guides</a> -- 公式チュートリアル集</li>
 <li><a href="https://python.langchain.com/docs/concepts/lcel/" target="_blank" rel="noopener">LCEL Concepts</a> -- LCELの設計思想と詳細</li>
 </ul></div></div>
+
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師がSimpleChainを作ったのと同じ構造で、以下の要件のChainを自力で構築してください。「入力テキストを受け取り → 要約 → 要約の品質を5段階でスコアリング → スコアが3以下なら再要約」のSequentialChain。<br>条件: LCELのパイプ演算子(|)で記述すること。条件分岐にはRunnableBranchまたはif文を使用。</div>
+  <div class="ch-pause">ここで動画を一度止めて、7分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: スコアリングLLMの出力をパースして数値に変換する部分がポイントです。OutputParserでint型に変換するか、プロンプトで「スコアのみを数字1文字で出力してください」と制約をかけると安定します。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c12_1">from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# 要約Chain
+summarize_prompt = ChatPromptTemplate.from_template(
+    "以下のテキストを3文以内で要約してください:
+
+{text}"
+)
+summarize_chain = summarize_prompt | llm | StrOutputParser()
+
+# スコアリングChain
+score_prompt = ChatPromptTemplate.from_template(
+    "以下の要約の品質を1-5の数字のみで評価してください。"
+    "評価基準: 正確性、簡潔さ、情報の網羅性。
+
+要約: {summary}
+
+スコア:"
+)
+score_chain = score_prompt | llm | StrOutputParser()
+
+# 再要約Chain
+resummarize_prompt = ChatPromptTemplate.from_template(
+    "以下の要約は品質が低いと判定されました。"
+    "元のテキストからより正確で簡潔な要約を作成してください:
+
+"
+    "元テキスト: {text}
+前回の要約: {summary}"
+)
+resummarize_chain = resummarize_prompt | llm | StrOutputParser()
+
+# 統合実行
+def summarize_with_retry(text: str) -> dict:
+    summary = summarize_chain.invoke({"text": text})
+    score_str = score_chain.invoke({"summary": summary})
+    score = int(score_str.strip()[0])
+
+    if score <= 3:
+        summary = resummarize_chain.invoke({
+            "text": text, "summary": summary
+        })
+        score_str = score_chain.invoke({"summary": summary})
+        score = int(score_str.strip()[0])
+
+    return {"summary": summary, "score": score}
+
+result = summarize_with_retry("ここに長いテキストを入力...")
+print(f"要約: {result['summary']}")
+print(f"スコア: {result['score']}")<button class="cb" onclick="copyP('ch_c12_1')">コピー</button></div>
+    <p>解説ポイント: LLMの出力をプログラムで条件分岐に使う場合、出力フォーマットの安定性が命です。「数字のみで出力」と指定しても説明文が混じることがあるので、strip()[0]で先頭1文字を取るなどの防御的パースが必要になります。</p>
+  </div></details>
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 03: ベクトルDB (60min: 講義25 + ハンズオン35) -->
@@ -803,6 +871,64 @@ for chunk in chunks:
 <li><a href="https://python.langchain.com/docs/how_to/#document-loaders" target="_blank" rel="noopener">LangChain Document Loaders</a> -- 対応ローダー一覧</li>
 </ul></div></div>
 
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: サンプルドキュメント(DL済み)を使い、4種のチャンク戦略(固定サイズ/再帰的/セマンティック/構造ベース)のうち2つを自分で選んで実装し、同じ質問で検索精度を比較してください。<br>条件: 同一ドキュメント・同一質問で比較すること。検索結果のTop-3チャンクの「関連度」を自分で1-5で評価し、平均スコアを算出してください。</div>
+  <div class="ch-pause">ここで動画を一度止めて、10分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: 比較しやすい組み合わせは「固定サイズ vs 再帰的」(初学者向け)または「再帰的 vs セマンティック」(挑戦したい方向け)です。テスト質問は「複数セクションの情報を統合しないと答えられない質問」が差が出やすいです。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c12_2">from langchain_text_splitters import (
+    CharacterTextSplitter,
+    RecursiveCharacterTextSplitter,
+)
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+
+embeddings = OpenAIEmbeddings()
+
+# ドキュメント読み込み(共通)
+with open("sample_doc.txt", "r") as f:
+    text = f.read()
+
+# 戦略A: 固定サイズ
+splitter_fixed = CharacterTextSplitter(
+    chunk_size=500, chunk_overlap=50, separator=""
+)
+chunks_fixed = splitter_fixed.create_documents([text])
+db_fixed = Chroma.from_documents(chunks_fixed, embeddings,
+    collection_name="fixed")
+
+# 戦略B: 再帰的
+splitter_recursive = RecursiveCharacterTextSplitter(
+    chunk_size=500, chunk_overlap=50,
+    separators=["
+
+", "
+", "。", " ", ""]
+)
+chunks_recursive = splitter_recursive.create_documents([text])
+db_recursive = Chroma.from_documents(chunks_recursive, embeddings,
+    collection_name="recursive")
+
+# 比較テスト
+query = "返品ポリシーの条件と手続きの流れを教えてください"
+
+print("=== 固定サイズ ===")
+for doc in db_fixed.similarity_search(query, k=3):
+    print(f"  {doc.page_content[:80]}...")
+
+print("
+=== 再帰的 ===")
+for doc in db_recursive.similarity_search(query, k=3):
+    print(f"  {doc.page_content[:80]}...")
+
+# 典型的な結果:
+# 固定サイズ: 文の途中で切れたチャンクが混入(関連度平均3.0)
+# 再帰的: 段落単位で切れるため文脈が保持される(関連度平均4.3)<button class="cb" onclick="copyP('ch_c12_2')">コピー</button></div>
+    <p>解説ポイント: 再帰的チャンカーが多くのケースで固定サイズを上回るのは、日本語の文章構造(段落→文→句)に沿って分割するためです。ただしMarkdownやHTML等の構造化文書では、構造ベースのチャンカーがさらに優位になります。</p>
+  </div></details>
+</div>
+
 <!-- ============================================================ -->
 <!-- Section 05: 検索精度チューニング (65min: 講義25 + ハンズオン40) -->
 <!-- ============================================================ -->
@@ -1165,6 +1291,81 @@ print(app.get_graph().draw_mermaid())<button class="cb" onclick="copyP('p_s6h3')
 <li><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph Documentation</a> -- 公式ドキュメント</li>
 <li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_self_rag/" target="_blank" rel="noopener">Self-RAG Tutorial</a> -- Self-RAGの公式チュートリアル</li>
 </ul></div></div>
+
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師がSelf-RAGを構築したのと同じフレームワークで、以下の要件のグラフを自力で設計してください。「質問 → 関連度チェック → 関連度高ならRAG回答 → 関連度低ならWeb検索フォールバック → 回答生成」<br>条件: まずノードとエッジを紙(orテキスト)で設計してからコードを書くこと。最低4ノード+1条件分岐エッジを含めること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、10分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: まず「ノード一覧」「各ノードの入出力」「条件分岐の判定基準」の3つをテキストで書き出してください。コードはその後です。LangGraphはグラフ設計が8割、コーディングが2割です。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c12_3">from langgraph.graph import StateGraph, END
+from typing import TypedDict, Literal
+
+class GraphState(TypedDict):
+    question: str
+    context: str
+    relevance: str  # "high" or "low"
+    answer: str
+    source: str     # "rag" or "web"
+
+# ノード1: ベクトル検索
+def retrieve(state: GraphState) -> GraphState:
+    docs = vectorstore.similarity_search(state["question"], k=3)
+    context = "
+".join([d.page_content for d in docs])
+    return {**state, "context": context}
+
+# ノード2: 関連度チェック
+def check_relevance(state: GraphState) -> GraphState:
+    prompt = f"""以下の質問とコンテキストの関連度を判定してください。
+質問: {state['question']}
+コンテキスト: {state['context'][:500]}
+関連度が高ければ"high"、低ければ"low"のみを出力してください。"""
+    result = llm.invoke(prompt).content.strip().lower()
+    relevance = "high" if "high" in result else "low"
+    return {**state, "relevance": relevance}
+
+# ノード3: RAG回答生成
+def rag_answer(state: GraphState) -> GraphState:
+    prompt = f"コンテキストに基づいて回答:
+{state['context']}
+
+質問: {state['question']}"
+    answer = llm.invoke(prompt).content
+    return {**state, "answer": answer, "source": "rag"}
+
+# ノード4: Web検索フォールバック
+def web_search(state: GraphState) -> GraphState:
+    # TavilyやSerpAPIで検索(簡略化)
+    search_result = f"[Web検索結果] {state['question']}に関する情報..."
+    prompt = f"以下の検索結果に基づいて回答:
+{search_result}
+
+質問: {state['question']}"
+    answer = llm.invoke(prompt).content
+    return {**state, "answer": answer, "source": "web"}
+
+# 条件分岐
+def route_by_relevance(state: GraphState) -> Literal["rag_answer", "web_search"]:
+    return "rag_answer" if state["relevance"] == "high" else "web_search"
+
+# グラフ構築
+graph = StateGraph(GraphState)
+graph.add_node("retrieve", retrieve)
+graph.add_node("check_relevance", check_relevance)
+graph.add_node("rag_answer", rag_answer)
+graph.add_node("web_search", web_search)
+
+graph.set_entry_point("retrieve")
+graph.add_edge("retrieve", "check_relevance")
+graph.add_conditional_edges("check_relevance", route_by_relevance)
+graph.add_edge("rag_answer", END)
+graph.add_edge("web_search", END)
+
+app = graph.compile()<button class="cb" onclick="copyP('ch_c12_3')">コピー</button></div>
+    <p>解説ポイント: LangGraphの条件分岐(add_conditional_edges)は、ノードの出力をもとに次のノードを選択する仕組みです。判定関数の戻り値がノード名と一致している必要があるので、typoに注意してください。</p>
+  </div></details>
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 07: LangSmith (55min: 講義25 + ハンズオン30) -->
@@ -1534,6 +1735,139 @@ def route_by_relevance(state: dict) -> str:
 <li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_adaptive_rag/" target="_blank" rel="noopener">Adaptive RAG Tutorial</a> -- LangGraph公式</li>
 <li><a href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_crag/" target="_blank" rel="noopener">Corrective RAG Tutorial</a> -- LangGraph公式</li>
 </ul></div></div>
+
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師のAdaptive RAGを参考に、以下の改善を自力で実装してください。質問の複雑さを3段階(simple/medium/complex)に分類し、simpleはベクトル検索のみ、mediumはHybrid Search、complexはMulti-Query+Re-rankingで検索する条件分岐。<br>条件: 分類ノード + 3つの検索ノード + 回答生成ノードの最低5ノード構成。テスト質問を各レベル1つずつ用意して動作確認すること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、10分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: 質問の複雑さ分類は、LLMに「この質問を回答するのに必要な情報源の数」で判定させると安定します。1つなら simple、2-3なら medium、4つ以上なら complex。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c12_4">from langgraph.graph import StateGraph, END
+from typing import TypedDict, Literal
+
+class AdaptiveState(TypedDict):
+    question: str
+    complexity: str  # simple / medium / complex
+    context: str
+    answer: str
+
+# 複雑さ分類ノード
+def classify_complexity(state: AdaptiveState) -> AdaptiveState:
+    prompt = f"""以下の質問の複雑さを判定してください。
+- simple: 1つの事実で回答できる(例: "Xの定義は?")
+- medium: 2-3の情報を統合する必要がある(例: "XとYの違いは?")
+- complex: 4つ以上の情報源や多角的分析が必要(例: "Xの導入効果を評価してください")
+
+質問: {state['question']}
+complexityのみを出力(simple/medium/complex):"""
+    result = llm.invoke(prompt).content.strip().lower()
+    for level in ["simple", "medium", "complex"]:
+        if level in result:
+            return {**state, "complexity": level}
+    return {**state, "complexity": "medium"}
+
+# simple: ベクトル検索のみ
+def search_simple(state: AdaptiveState) -> AdaptiveState:
+    docs = vectorstore.similarity_search(state["question"], k=3)
+    context = "
+".join([d.page_content for d in docs])
+    return {**state, "context": context}
+
+# medium: Hybrid Search(ベクトル + BM25)
+def search_medium(state: AdaptiveState) -> AdaptiveState:
+    from langchain.retrievers import EnsembleRetriever
+    from langchain_community.retrievers import BM25Retriever
+    bm25 = BM25Retriever.from_documents(documents, k=3)
+    vector_ret = vectorstore.as_retriever(search_kwargs={"k": 3})
+    ensemble = EnsembleRetriever(
+        retrievers=[bm25, vector_ret], weights=[0.4, 0.6]
+    )
+    docs = ensemble.invoke(state["question"])
+    context = "
+".join([d.page_content for d in docs[:5]])
+    return {**state, "context": context}
+
+# complex: Multi-Query + Re-ranking
+def search_complex(state: AdaptiveState) -> AdaptiveState:
+    # Multi-Query: 元の質問から3つの派生クエリを生成
+    mq_prompt = f"以下の質問を3つの異なる視点から言い換えてください。1行1クエリで出力:
+{state['question']}"
+    queries = llm.invoke(mq_prompt).content.strip().split("
+")
+    queries = [q.strip() for q in queries if q.strip()][:3]
+    queries.append(state["question"])
+
+    # 全クエリで検索し結果を統合
+    all_docs = []
+    for q in queries:
+        all_docs.extend(vectorstore.similarity_search(q, k=3))
+
+    # 重複除去
+    seen = set()
+    unique_docs = []
+    for d in all_docs:
+        key = d.page_content[:100]
+        if key not in seen:
+            seen.add(key)
+            unique_docs.append(d)
+
+    # Re-ranking(LLMベース簡易版)
+    rerank_prompt = f"""質問: {state['question']}
+以下の文書を関連度順に並べ替え、上位3件の番号を出力してください:
+""" + "
+".join([f"[{i}] {d.page_content[:150]}" for i, d in enumerate(unique_docs)])
+
+    ranking = llm.invoke(rerank_prompt).content
+    context = "
+".join([d.page_content for d in unique_docs[:5]])
+    return {**state, "context": context}
+
+# 回答生成ノード
+def generate_answer(state: AdaptiveState) -> AdaptiveState:
+    prompt = f"コンテキスト:
+{state['context']}
+
+質問: {state['question']}
+
+回答:"
+    answer = llm.invoke(prompt).content
+    return {**state, "answer": answer}
+
+# ルーティング
+def route_by_complexity(state) -> Literal["search_simple", "search_medium", "search_complex"]:
+    return f"search_{state['complexity']}"
+
+# グラフ構築
+graph = StateGraph(AdaptiveState)
+graph.add_node("classify", classify_complexity)
+graph.add_node("search_simple", search_simple)
+graph.add_node("search_medium", search_medium)
+graph.add_node("search_complex", search_complex)
+graph.add_node("generate", generate_answer)
+
+graph.set_entry_point("classify")
+graph.add_conditional_edges("classify", route_by_complexity)
+graph.add_edge("search_simple", "generate")
+graph.add_edge("search_medium", "generate")
+graph.add_edge("search_complex", "generate")
+graph.add_edge("generate", END)
+
+app = graph.compile()
+
+# テスト
+for q in [
+    "RAGとは何ですか?",                     # simple
+    "RAGとFine-tuningの使い分けは?",         # medium
+    "社内文書検索にRAGを導入する際の設計判断ポイントを網羅的に教えてください"  # complex
+]:
+    result = app.invoke({"question": q, "complexity": "", "context": "", "answer": ""})
+    print(f"Q: {q}")
+    print(f"   complexity: {result['complexity']}")
+    print(f"   A: {result['answer'][:100]}...")
+    print("-" * 50)<button class="cb" onclick="copyP('ch_c12_4')">コピー</button></div>
+    <p>解説ポイント: Adaptive RAGの本質は「全ての質問を同じパイプラインで処理しない」ことです。simple質問にMulti-Query+Re-rankingを使うとレイテンシとコストが無駄になり、complex質問に単純検索だけだと回答品質が落ちます。質問の性質に応じてパイプラインを切り替えることで、コストと品質のバランスを最適化できます。</p>
+  </div></details>
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 09: 総合ハンズオン (140min: 講義10 + ハンズオン130) -->

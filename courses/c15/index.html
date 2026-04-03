@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -302,7 +306,25 @@ graph TB
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> -- GoogleのAIノートブック</li>
 <li><a href="https://blog.google/technology/ai/notebooklm-audio-overviews/" target="_blank" rel="noopener">NotebookLM Audio Overviews</a> -- 音声要約機能の公式解説</li>
-</ul></div></div>
+</ul></div>
+
+<div class="challenge" id="ch_c15_1">
+<div class="ch-title">自走チャレンジ: NotebookLMで複数ソースを横断分析する</div>
+<span class="ch-pause">ここで7分間、手を動かしてください</span>
+<div class="ch-theme">講師がPDFを分析したのと同じNotebookLMで、あなたの業務に関連するWebページ3つをソースとして追加し、以下を自力で実行してください。(1)3つのソースの共通点を要約 (2)矛盾している情報があれば指摘 (3)FAQ5問を自動生成。</div>
+<details><summary>解答例と解説を見る</summary>
+<p>NotebookLMでの操作手順:</p>
+<ol>
+<li>新しいノートブックを作成し、Webページ3つのURLをソースとして追加</li>
+<li>チャット欄に「3つのソースに共通する主張やテーマを箇条書きで要約してください」と入力</li>
+<li>続けて「3つのソースの間で矛盾している情報や、異なる立場を取っている点があれば指摘してください」と入力</li>
+<li>最後に「これらのソースの内容に基づいて、FAQ5問を作成してください。質問と回答のペアで出力してください」と入力</li>
+</ol>
+<p>NotebookLMの強みは「ソースに基づいた回答」に限定される点です。ハルシネーションのリスクが通常のLLMより低い。ただし、ソース自体の情報が古い場合や偏っている場合はその限りではないため、ソース選定が分析の質を左右します。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 03: Docs x Gemini (50min: 講義15 + ハンズオン35) -->
@@ -579,7 +601,30 @@ graph TB
 
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://support.google.com/docs/answer/13447163" target="_blank" rel="noopener">Google Sheets で Gemini を使用する</a> -- 公式ヘルプ</li>
-</ul></div></div>
+</ul></div>
+
+<div class="challenge" id="ch_c15_2">
+<div class="ch-title">自走チャレンジ: Sheetsで自然言語データ分析を実践する</div>
+<span class="ch-pause">ここで7分間、手を動かしてください</span>
+<div class="ch-theme">サンプル売上データ(DL済み)をGoogle Sheetsにインポートし、以下を自然言語でGeminiに指示してください。(1)月別の売上推移グラフを作成 (2)最も成長率が高い製品カテゴリを特定 (3)来月の売上を予測する数式を生成。指示文は自分で考えてください。</div>
+<details><summary>解答例と解説を見る</summary>
+<p>Gemini in Sheetsへの指示例:</p>
+<div class="prompt" id="p_ch15_2">## 指示例1: グラフ作成
+「A列の月とB列の売上合計を使って、折れ線グラフを作成してください。
+タイトルは『月別売上推移』にしてください」
+
+## 指示例2: 成長率分析
+「各製品カテゴリの月次売上データから、前月比の成長率を計算し、
+直近3ヶ月で最も成長率が高いカテゴリを特定してください」
+
+## 指示例3: 予測数式
+「過去6ヶ月の売上データを基に、FORECAST関数を使って
+来月の売上予測値を算出する数式をG13セルに入れてください」<button class="cb" onclick="copyP('p_ch15_2')">コピー</button></div>
+<p>Geminiへの指示で「どのセル範囲のデータを使うか」を明示するのがコツです。「売上データから」のような曖昧な指示だと、意図しない列を参照する場合があります。セル番地を添えると精度が上がります。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 05: Slides x Gemini (45min: 講義15 + ハンズオン30) -->
@@ -800,7 +845,40 @@ graph LR
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://blog.google/products/gemini/google-gemini-deep-research/" target="_blank" rel="noopener">Gemini Deep Research</a> -- 公式ブログ</li>
 <li><a href="https://support.google.com/gemini/answer/15523856" target="_blank" rel="noopener">Gems を作成・使用する</a> -- 公式ヘルプ</li>
-</ul></div></div>
+</ul></div>
+
+<div class="challenge" id="ch_c15_3">
+<div class="ch-title">自走チャレンジ: Deep Researchで業務テーマを調査する</div>
+<span class="ch-pause">ここで10分間、手を動かしてください</span>
+<div class="ch-theme">あなたの業務に関連するテーマでDeep Researchを実行してください。テーマの具体化(対象期間、対象地域、情報源の種類)を自分で設計し、出力されたレポートの品質を(1)情報の正確性 (2)網羅性 (3)出典の信頼性 の3軸で自己評価してください。</div>
+<details><summary>解答例と解説を見る</summary>
+<p>テーマ具体化の例:</p>
+<div class="prompt" id="p_ch15_3">## テーマ設計例
+テーマ: 「製造業における生成AI活用の現状と課題」
+対象期間: 2024年1月〜2026年3月
+対象地域: 日本国内
+情報源: 経産省レポート、業界団体調査、大手メーカー事例
+
+## 品質評価の観点
+### (1) 情報の正確性
+- 引用されている数値・統計は原典と一致しているか
+- 事実と意見が明確に区別されているか
+- 古い情報が最新のものとして記載されていないか
+
+### (2) 網羅性
+- テーマの主要な側面(技術・コスト・人材・法規制)をカバーしているか
+- 賛否両方の立場が含まれているか
+- 重要な先行事例が漏れていないか
+
+### (3) 出典の信頼性
+- 一次情報源(公的機関、学術論文)がどの程度含まれているか
+- 個人ブログやSNS投稿に過度に依存していないか
+- リンク切れやアクセスできないソースがないか<button class="cb" onclick="copyP('p_ch15_3')">コピー</button></div>
+<p>Deep Researchは「テーマの具体化」で出力品質が大きく変わります。「AIの活用」では広すぎて浅い結果しか返りません。期間・地域・業種・情報源を絞ることで、実務で使える深さのレポートが得られます。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 07: Imagen 3 (45min: 講義20 + ハンズオン25) -->

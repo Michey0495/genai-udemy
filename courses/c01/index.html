@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -250,6 +254,29 @@ graph LR
 </div></details>
 
 <div class="box tip"><div class="bt">Tips</div>ハルシネーションが多かったツールが「悪い」わけではありません。検索機能の有効/無効、カットオフ時期、回答スタイルの違いを観察することが目的です。</div>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 自分の業務で使う専門用語5つのトークン数を予測してから、実際にTokenizerで確認してください<br>
+条件: 予測と実際の差が大きかった用語について、なぜ差が出たか考えてみてください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: 英語ベースの技術用語(API、JSONなど)と、日本語の漢字熟語ではトークン数に大きな差が出ます。OpenAI Tokenizerで確認してみましょう。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c01_1">以下の5つの専門用語について、それぞれのトークン数を教えてください。また、なぜその数になるのか理由も説明してください。
+
+1. API
+2. JSON
+3. 機械学習
+4. 自然言語処理
+5. ハルシネーション<button class="cb" onclick="copyP('ch_c01_1')">コピー</button></div>
+<p>日本語の専門用語は予想より多くのトークンに分割される傾向があります。英語ベースの技術用語(API、JSONなど)は1-2トークンで済みますが、日本語の漢字熟語は文字数の2-3倍になることが多いです。「自然言語処理」は4文字ですが、8-10トークンに分割されます。カタカナ語の「ハルシネーション」も同様に多くのトークンを消費します。この差を体感しておくと、トークン上限を意識したプロンプト設計に役立ちます。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -695,6 +722,41 @@ Email: suzuki.taro@example.co.jp
 <div class="box tip"><div class="bt">Tips</div>演習3の売上データは手元のExcelに置き換えて試しても構いません。実務データで試すほど学びが深くなります(ただし機密データはNG)。</div>
 </div>
 
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: あなたの実務で最もよく書くメールの種類を1つ選び、型1(役割+タスク+制約)のプロンプトを自分で設計してください<br>
+条件: その後、同じメールを型3(CoT)で書かせて、品質の違いを比較してください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: メールの種類は「クライアントへの進捗報告」「社内の依頼メール」「謝罪メール」など何でもOKです。2つの型で生成した結果を並べて読み比べてみてください。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c01_2">【型1: 役割+タスク+制約】
+あなたはIT企業のプロジェクトマネージャーです。
+クライアントに対して、プロジェクトの週次進捗報告メールを作成してください。
+制約:
+- 敬語で丁寧に
+- 300文字以内
+- 進捗率、今週の成果、来週の予定の3点を必ず含める
+- 懸念事項があれば正直に伝える
+
+---
+
+【型3: CoT(同じメール)】
+クライアントへの週次進捗報告メールを作成したいです。
+以下のステップで考えてください。
+
+Step 1: この種のメールで受け手が知りたい情報を洗い出す
+Step 2: 情報の優先順位を決める
+Step 3: 受け手の心理(安心感を与えたいか、注意喚起か)を考慮する
+Step 4: 上記を踏まえてメールを作成する(300文字以内)<button class="cb" onclick="copyP('ch_c01_2')">コピー</button></div>
+<p>型1は指示が明確なので安定した出力が得られます。型3(CoT)は思考プロセスを経由するため、受け手の心理まで考慮した、より配慮のあるメールになりやすい傾向があります。ただし毎回CoTが優れるわけではなく、定型メールなら型1のほうが効率的です。使い分けの感覚を掴むのがこのチャレンジの目的です。</p>
+</div>
+</details>
+</div>
+
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noopener">Chain-of-Thought Prompting (2022)</a></li>
 <li><a href="https://www.promptingguide.ai/jp" target="_blank" rel="noopener">Prompt Engineering Guide(日本語)</a></li>
@@ -868,6 +930,34 @@ function updateSheet() {
 </div></details>
 
 <div class="box tip"><div class="bt">Tips</div>機密情報を含む業務データを使う場合は、有料プラン(データ学習オプトアウト付き)を使用してください。無料版では固有名詞をダミーに置き換えることを推奨します。</div>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 6パターンの中から、講師が選ばなかったパターンを1つ選び、自分の業務データで試してください<br>
+条件: 結果を5Cチェック(Sec06で学ぶ正確性・完全性・一貫性・文脈適合・遵守)の観点で評価してください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: 自分が選んだパターンのプロンプトを、業務内容に合わせて書き換えてから実行してください。5Cチェックは完璧でなくて構いません。「何が気になるか」をメモするだけで十分です。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c01_3">【パターン4: 翻訳・要約 を選んだ場合の例】
+
+以下の英語の技術ブログ記事を、非エンジニアの経営層が理解できる日本語に翻訳してください。
+
+原文:
+(ここに英語の記事を貼り付け)
+
+条件:
+- 技術用語は初出時に簡単な説明を括弧で補足
+- 経営判断に関わる数値やインパクトを太字で強調
+- 500文字以内で要点を絞る
+- 「だから自社にとって何が重要か」の一文を末尾に追加<button class="cb" onclick="copyP('ch_c01_3')">コピー</button></div>
+<p>5Cチェックで最も問題が見つかりやすいのはContext(文脈適合)です。AIは自社の事業内容を知らないため、「自社にとっての重要性」の部分が的外れになりがちです。この部分を人間が加筆修正する -- それが協働の本質であることを体感してください。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -1187,6 +1277,29 @@ graph LR
 5. 導入ステップ(3段階)
 
 800〜1200文字、経営層向けの文体。<button class="cb" onclick="copyP('p6')">コピー</button></div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: AIが生成した提案書のドラフトを読み、改善すべき点を3つ自分で特定してください<br>
+条件: その後、AIに改善を依頼するプロンプトを自分で書いてください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: 「数値に根拠がない」「自社の文脈が反映されていない」「リスクの見積もりが甘い」など、具体的な改善点を挙げてみてください。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c01_4">先ほど生成した提案書について、以下の3点を改善してください。
+
+1. 「期待効果」の数値に根拠がありません。算出根拠(現状の作業時間 × 削減率の計算式)を追記してください
+2. 「AI活用の提案」が一般論になっています。私の業務(週次レポート作成)に特化した具体的な手順に書き直してください
+3. 導入ステップが3行しかありません。各フェーズで「誰が」「何を」「いつまでに」やるかを明記してください
+
+改善版を全文出力してください。<button class="cb" onclick="copyP('ch_c01_4')">コピー</button></div>
+<p>Part Aでは「AIに生成させる」だけでしたが、ここでは「AIの出力を批判的に読む → 改善指示を出す」という協働のサイクルを体験します。AIの出力をそのまま使うのではなく、人間がレビューして品質を上げるプロセスこそが実務での使い方です。</p>
+</div>
+</details>
+</div>
 
 <h4>Step 3: リスク評価シートの完成(15min)</h4>
 <div class="prompt" id="p7">先ほどの提案書にリスク評価シートを追加してください。

@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -352,6 +356,28 @@ claude<button class="cb" onclick="copyP('p_s1h3')">コピー</button></div>
 </div></details>
 </div>
 
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師がTODOアプリのファイルを操作したのと同じツール(Read/Edit/Write)を使って、別のファイルに対して3つの指示を自分で出してください<br>
+条件: (1)コードを読んで説明させる (2)バグを見つけて修正させる (3)テストを追加させる
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<a href="#" class="dl" onclick="downloadBuggyCode();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>バグ入りサンプルコード(.js)をダウンロード</a>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: 上のサンプルコードをプロジェクトフォルダに置いてから、Claude Codeに指示してください。自分で指示文を考えることが大事です。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c04_1">指示1: src/utils/calculator.js を読んで、各関数が何をしているか説明して
+
+指示2: src/utils/calculator.js にバグがないか確認して。もしあれば修正して、修正内容を説明して
+
+指示3: src/utils/calculator.js のテストを作成して。正常系、異常系、エッジケースを含めて。テストファイルは __tests__/calculator.test.js に配置して<button class="cb" onclick="copyP('ch_c04_1')">コピー</button></div>
+<p>Part Aでは講師が指示するプロンプトをそのまま実行しました。このチャレンジでは自分でプロンプトを書きます。「バグを見つけて」だけでは不十分で、「修正内容を説明して」まで指示するのがコツです。Claude Codeの7つのツール(Read/Edit/Write/Bash/Grep/Glob/WebFetch)がどう連鎖するか、ターミナルの出力を観察してください。</p>
+</div>
+</details>
+</div>
+
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://docs.anthropic.com/en/docs/claude-code/cli-usage" target="_blank" rel="noopener">Claude Code CLI Usage</a> -- CLIの操作リファレンス</li>
 </ul></div></div>
@@ -517,6 +543,52 @@ TypeScriptで書いてください。
 <li>自プロジェクト用のCLAUDE.mdを作成した</li>
 <li>Claude Codeにレビューさせて改善した</li>
 </ul>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師とは異なるプロジェクト(React WebアプリまたはPython CLIツール)のCLAUDE.mdを、テンプレートを参考にしつつ自分で設計してください<br>
+条件: 書き終わったらClaude Codeに「このCLAUDE.mdをレビューして改善点を指摘して」と依頼してください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: テンプレートをコピーしてから、技術スタック、コーディング規約、セキュリティルールを自分のプロジェクトに合わせて書き換えてください。重要なのは「AIに何を守らせたいか」を言語化することです。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c04_2"># Python CLIツール向けCLAUDE.mdの例
+
+# プロジェクト概要
+天気予報CLIツール。OpenWeatherMap APIから天気情報を取得して表示する。
+
+# 技術スタック
+- Python 3.12
+- httpx (HTTP client)
+- click (CLI framework)
+- pytest (testing)
+
+# コーディング規約
+- 型ヒントは必須（Any禁止）
+- 関数は30行以内
+- docstringはGoogle Style
+- f-string を使う（.format()禁止）
+- 環境変数はos.environから直接読まずpydantic-settingsを使用
+
+# ディレクトリ構造
+- src/weather_cli/ -- メインコード
+- tests/ -- テスト
+- pyproject.toml -- 依存関係管理
+
+# テスト実行
+pytest -v
+
+# セキュリティルール
+- .envファイルは読み取らない
+- APIキーをソースコードに直書きしない
+- rm -rf は実行しない<button class="cb" onclick="copyP('ch_c04_2')">コピー</button></div>
+<p>Part Aではテンプレートをベースにしたnode.jsプロジェクトのCLAUDE.mdを作成しました。ここでは言語もフレームワークも変えて、ゼロから設計します。Claude Codeにレビューさせると「pyproject.tomlの依存関係管理の記述がない」「linter(ruff)のルールが未指定」といった具体的な改善点が返ってくるはずです。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -722,6 +794,35 @@ $ARGUMENTS のコードについて解説してください。
 <li>/generate-tests コマンドを作成した</li>
 <li>/summarize-changes コマンドを作成した</li>
 </ul>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師が作った3つのカスタムコマンドとは別の、あなたの開発で頻繁に使いそうなカスタムコマンドを1つ設計・実装してください<br>
+条件: /refactor, /explain, /migrate, /document, /optimize など自由に選んでください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: .claude/commands/ フォルダにmarkdownファイルを作成すれば、そのファイル名がコマンド名になります。$ARGUMENTS で引数を受け取れます。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c04_3">以下の内容で .claude/commands/explain.md を作成して。
+
+---
+$ARGUMENTS のコードを以下の3段階で説明してください。
+
+1. 概要（3行以内で何をするコードか）
+2. 処理フロー（番号付きリストで主要なステップを列挙）
+3. 注意点（バグの温床になりそうな箇所、パフォーマンスの懸念、セキュリティリスクがあれば指摘）
+
+説明は日本語で、専門用語には初出時に簡単な補足を付けてください。
+---
+
+作成後に /explain src/index.js で動作確認して。<button class="cb" onclick="copyP('ch_c04_3')">コピー</button></div>
+<p>Part Aでは/review-code, /generate-tests, /summarize-changesの3つを作りました。ここでは自分の開発スタイルに合ったコマンドを設計します。「こういう指示を毎回手で書いてた」というものがあれば、それをコマンド化する良いタイミングです。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -1031,6 +1132,39 @@ filesystem MCPサーバーを設定して、このプロジェクトのディレ
 </ul>
 </div>
 
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師がfilesystem MCPを接続したのと同じ手順で、別のMCPサーバーを自分で接続してみてください<br>
+条件: github, fetch, memory, brave-search のうち1つを選択し、接続後に動作確認してください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: MCPサーバーの一覧は github.com/modelcontextprotocol/servers にあります。npxで直接起動できるものが多いので、.mcp.jsonに追記して再起動すれば接続できます。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c04_4">【fetch MCPサーバーを接続する場合】
+
+.mcp.jsonに以下を追加して:
+{
+  "mcpServers": {
+    "filesystem": {
+      ... (既存の設定はそのまま)
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"]
+    }
+  }
+}
+
+追加したら再起動して、MCPツール一覧にfetch関連のツールが増えていることを確認して。
+確認後、fetchツールを使って https://example.com の内容を取得して教えて。<button class="cb" onclick="copyP('ch_c04_4')">コピー</button></div>
+<p>Part Aではfilesystem MCPだけを使いました。ここでは別のMCPサーバーを自分で選んで接続する経験を積みます。MCPの真価は「Claude Codeの能力を外部ツールで拡張できる」点にあります。fetchを接続すればWebページの取得が可能になり、githubを接続すればリポジトリ操作がAI経由でできるようになります。</p>
+</div>
+</details>
+</div>
+
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a> -- MCP公式サイト</li>
 <li><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">MCP Servers</a> -- MCPサーバー一覧</li>
@@ -1313,6 +1447,8 @@ function downloadSettingsJson(){const t=`{\n  "permissions": {\n    "allowedTool
 function downloadMcpJson(){const t=`{\n  "mcpServers": {\n    "filesystem": {\n      "command": "npx",\n      "args": [\n        "-y",\n        "@modelcontextprotocol/server-filesystem",\n        "/path/to/your/project"\n      ]\n    }\n  }\n}\n`;const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='.mcp.json';a.click();URL.revokeObjectURL(u);}
 
 function downloadDesignSheet(){const t=`# Claude Code 環境設計シート\n\n## 基本情報\n- プロジェクト名:\n- 作成者:\n- 作成日:\n- リポジトリURL:\n\n## 1. CLAUDE.md 設計\n\n### プロジェクト概要\n（1〜2行で記述）\n\n### 技術スタック\n| カテゴリ | 技術 | バージョン |\n|---------|------|----------|\n| 言語 | | |\n| FW | | |\n| DB | | |\n| テスト | | |\n\n### コーディング規約（最低5つ）\n1.\n2.\n3.\n4.\n5.\n\n### セキュリティルール\n- 読取禁止ファイル:\n- コードに含めてはいけない情報:\n- 実行禁止コマンド:\n\n## 2. カスタムコマンド設計\n\n| コマンド名 | 目的 | 引数 |\n|-----------|------|------|\n| /review-code | | $ARGUMENTS |\n| / | | |\n| / | | |\n\n## 3. MCP接続設計\n\n| MCPサーバー | 用途 | 許可範囲 |\n|------------|------|----------|\n| filesystem | | |\n| | | |\n\n## 4. 権限設計\n\n### 自動許可ツール (allowedTools)\n-\n-\n\n### ブロックツール (disallowedTools)\n-\n-\n\n## 5. チーム共有ルール\n- Git管理するファイル:\n- .gitignoreに追加するファイル:\n- オンボーディング手順:\n\n---\n`;const b=new Blob([t],{type:'text/markdown'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='Claude Code環境設計シート.md';a.click();URL.revokeObjectURL(u);}
+
+function downloadBuggyCode(){const t=`// calculator.js -- バグ入りサンプルコード（自走チャレンジ用）\n// このファイルには意図的に3つのバグが含まれています\n\n/**\n * 税込み価格を計算する\n * @param {number} price - 税抜き価格\n * @param {number} taxRate - 税率（例: 0.1 = 10%）\n * @returns {number} 税込み価格\n */\nfunction calculateTax(price, taxRate) {\n  // バグ1: 税率の検証がない（負の税率やundefinedが来る可能性）\n  return price + price * taxRate;\n}\n\n/**\n * 配列の平均値を計算する\n * @param {number[]} numbers - 数値の配列\n * @returns {number} 平均値\n */\nfunction average(numbers) {\n  // バグ2: 空配列でゼロ除算が発生する\n  let sum = 0;\n  for (let i = 0; i <= numbers.length; i++) {\n    // バグ3: <= ではなく < が正しい（配列の範囲外アクセス）\n    sum += numbers[i];\n  }\n  return sum / numbers.length;\n}\n\n/**\n * 割引後の価格を計算する\n * @param {number} price - 元の価格\n * @param {number} discountPercent - 割引率（0-100）\n * @returns {number} 割引後の価格\n */\nfunction applyDiscount(price, discountPercent) {\n  if (discountPercent < 0 || discountPercent > 100) {\n    throw new Error("割引率は0-100の間で指定してください");\n  }\n  return price * (1 - discountPercent / 100);\n}\n\nmodule.exports = { calculateTax, average, applyDiscount };\n`;const b=new Blob([t],{type:'text/javascript'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='calculator.js';a.click();URL.revokeObjectURL(u);}
 
 function downloadSamplePackageJson(){const t=`{\n  "name": "handson-project",\n  "version": "1.0.0",\n  "description": "Claude Code ハンズオン用サンプルプロジェクト",\n  "main": "src/index.js",\n  "type": "module",\n  "scripts": {\n    "start": "node src/index.js",\n    "dev": "node --watch src/index.js",\n    "test": "node --test tests/**/*.test.js"\n  },\n  "keywords": [],\n  "author": "",\n  "license": "MIT"\n}\n`;const b=new Blob([t],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='package.json';a.click();URL.revokeObjectURL(u);}
 </script>

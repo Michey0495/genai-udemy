@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -456,7 +460,48 @@ server.tool(
 <li><a href="https://modelcontextprotocol.io/quickstart/server" target="_blank" rel="noopener">MCP Quickstart: Server</a> -- 公式のサーバー構築ガイド</li>
 <li><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">MCP公式サーバーリポジトリ</a> -- 公式・コミュニティ製サーバーの一覧</li>
 <li><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank" rel="noopener">TypeScript SDK</a> -- @modelcontextprotocol/sdk のソースコード</li>
-</ul></div></div>
+</ul></div>
+
+<div class="challenge" id="ch_c13_1">
+<div class="ch-title">自走チャレンジ: MCPサーバーを自力で構築する</div>
+<span class="ch-pause">ここで7分間、手を動かしてください</span>
+<div class="ch-theme">講師が天気情報ツールを作ったのと同じSDKで、以下のMCPサーバーを自力で構築してください。「指定されたテキストの文字数・単語数・行数をカウントして返すツール」。inputSchemaの設計から始めてください。</div>
+<details><summary>解答例と解説を見る</summary>
+<div class="prompt" id="p_ch13_1">import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({
+  name: "text-counter",
+  version: "1.0.0",
+});
+
+server.tool(
+  "count_text",
+  "テキストの文字数・単語数・行数をカウントする",
+  {
+    text: z.string().describe("カウント対象のテキスト"),
+  },
+  async ({ text }) =&gt; {
+    const charCount = text.length;
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+    const lineCount = text.split("\n").length;
+    return {
+      content: [{
+        type: "text",
+        text: `文字数: ${charCount}\n単語数: ${wordCount}\n行数: ${lineCount}`,
+      }],
+    };
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);<button class="cb" onclick="copyP('p_ch13_1')">コピー</button></div>
+<p>inputSchemaの型定義が肝です。z.string()で受け取り、describeで説明を添える。LLMがツールを選ぶ判断材料になるため、describeは省略しないでください。返り値のcontent配列も仕様どおりの形式を守る必要があります。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 03: MCPクライアント実装 (55min: 講義20 + ハンズオン35) -->
@@ -845,7 +890,46 @@ curl https://research-agent.example.com/.well-known/agent.json
 <li><a href="https://google.github.io/A2A/" target="_blank" rel="noopener">A2A Protocol 公式ドキュメント</a> -- Googleによる仕様書</li>
 <li><a href="https://google.github.io/A2A/specification/" target="_blank" rel="noopener">A2A Specification</a> -- プロトコルの詳細仕様</li>
 <li><a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/" target="_blank" rel="noopener">A2A発表ブログ</a> -- Googleによる公式発表</li>
-</ul></div></div>
+</ul></div>
+
+<div class="challenge" id="ch_c13_2">
+<div class="ch-title">自走チャレンジ: Agent Cardを自力で設計する</div>
+<span class="ch-pause">ここで5分間、手を動かしてください</span>
+<div class="ch-theme">講師が見せたAgent Cardのテンプレートを参考に、あなたが構築したいAIエージェントのAgent Cardを自力で設計してください。name, description, skills(少なくとも3つ), endpointを含めてください。</div>
+<details><summary>解答例と解説を見る</summary>
+<div class="prompt" id="p_ch13_2">{
+  "name": "document-assistant",
+  "description": "社内ドキュメントの検索・要約・翻訳を行うエージェント",
+  "url": "http://localhost:8001/.well-known/agent.json",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "doc-search",
+      "name": "ドキュメント検索",
+      "description": "社内ナレッジベースからキーワード/セマンティック検索を行う"
+    },
+    {
+      "id": "doc-summarize",
+      "name": "ドキュメント要約",
+      "description": "指定ドキュメントの要約を指定言語で生成する"
+    },
+    {
+      "id": "doc-translate",
+      "name": "翻訳",
+      "description": "ドキュメントを指定言語に翻訳する"
+    }
+  ],
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"]
+}<button class="cb" onclick="copyP('p_ch13_2')">コピー</button></div>
+<p>skillsの粒度がポイント。粗すぎると何ができるか伝わらず、細かすぎると呼び出し側の判断コストが上がります。1つのskillが「1つの動詞+1つの目的語」で説明できるサイズが目安になります。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 05: マルチエージェントシステム (60min: 講義25 + ハンズオン35) -->
@@ -1060,7 +1144,55 @@ echo $ANTHROPIC_API_KEY<button class="cb" onclick="copyP('p_s5setup')">コピー
 <li>3つのテスト問い合わせで動作確認した</li>
 <li>分類結果が適切だったか評価した</li>
 </ul>
-</div></div>
+</div>
+
+<div class="challenge" id="ch_c13_3">
+<div class="ch-title">自走チャレンジ: マルチエージェント構成を自力で設計する</div>
+<span class="ch-pause">ここで10分間、手を動かしてください</span>
+<div class="ch-theme">講師がオーケストレーター型を構築したのと同じ方法で、以下の3エージェント構成を自力で設計してください。(1)データ収集エージェント(Web検索) (2)分析エージェント(テキスト分析) (3)レポートエージェント(Markdown生成)。各エージェントの責務、入出力、連携フローを紙orテキストで設計してからコードを書いてください。</div>
+<details><summary>解答例と解説を見る</summary>
+<div class="prompt" id="p_ch13_3">## 設計例
+
+### エージェント定義
+1. データ収集エージェント
+   - 責務: 指定キーワードでWeb検索し、上位5件の要点を抽出
+   - 入力: { query: string, maxResults: number }
+   - 出力: { sources: [{ title, url, summary }] }
+
+2. 分析エージェント
+   - 責務: 収集データからトレンド・共通点・相違点を分析
+   - 入力: { sources: [{ title, url, summary }] }
+   - 出力: { analysis: { trends: [], commonPoints: [], differences: [] } }
+
+3. レポートエージェント
+   - 責務: 分析結果をMarkdown形式のレポートに整形
+   - 入力: { analysis: object, format: "markdown" }
+   - 出力: { report: string }
+
+### 連携フロー
+オーケストレーター → 収集 → 分析 → レポート → オーケストレーター
+
+### コード骨格
+async function orchestrate(query) {
+  const collected = await callAgent("collector", {
+    system: "あなたはWeb検索専門のリサーチャーです...",
+    input: query
+  });
+  const analyzed = await callAgent("analyzer", {
+    system: "あなたはデータ分析の専門家です...",
+    input: collected
+  });
+  const report = await callAgent("reporter", {
+    system: "あなたはMarkdownレポートライターです...",
+    input: analyzed
+  });
+  return report;
+}<button class="cb" onclick="copyP('p_ch13_3')">コピー</button></div>
+<p>「設計してからコードを書く」が要点です。いきなりコードを書き始めると、エージェント間のデータ形式が噛み合わなくなります。入出力のスキーマを先に決めると、各エージェントを独立して開発・テストできるようになります。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 06: Claude Agent SDK (60min: 講義25 + ハンズオン35) -->
@@ -1304,7 +1436,44 @@ team@example.com に送って。件名は'MCP調査レポート'"<button class="
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK 公式ドキュメント</a></li>
 <li><a href="https://github.com/anthropics/claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK GitHub</a></li>
-</ul></div></div>
+</ul></div>
+
+<div class="challenge" id="ch_c13_4">
+<div class="ch-title">自走チャレンジ: Agent SDKにツールを自力で追加する</div>
+<span class="ch-pause">ここで5分間、手を動かしてください</span>
+<div class="ch-theme">講師のAgent SDKコードを参考に、ツール定義(@tool)を自力で1つ追加してください。例: 現在日時を返すツール、テキストの感情分析を返すツール、ランダムな引用句を返すツール等。</div>
+<details><summary>解答例と解説を見る</summary>
+<div class="prompt" id="p_ch13_4">from datetime import datetime
+from agents import Agent, Runner, tool
+
+@tool
+def get_current_datetime() -&gt; str:
+    """現在の日時をISO 8601形式で返す"""
+    return datetime.now().isoformat()
+
+@tool
+def analyze_sentiment(text: str) -&gt; str:
+    """テキストの感情傾向を簡易分析する(ポジティブ/ネガティブ/ニュートラル)"""
+    positive_words = ["良い", "素晴らしい", "嬉しい", "楽しい", "最高"]
+    negative_words = ["悪い", "問題", "困った", "残念", "最悪"]
+    pos = sum(1 for w in positive_words if w in text)
+    neg = sum(1 for w in negative_words if w in text)
+    if pos &gt; neg:
+        return f"ポジティブ (スコア: +{pos})"
+    elif neg &gt; pos:
+        return f"ネガティブ (スコア: -{neg})"
+    return "ニュートラル"
+
+agent = Agent(
+    name="enhanced-assistant",
+    instructions="日時取得と感情分析ツールを活用して回答してください。",
+    tools=[get_current_datetime, analyze_sentiment],
+)<button class="cb" onclick="copyP('p_ch13_4')">コピー</button></div>
+<p>@toolデコレータの関数には必ずdocstringを書いてください。LLMはdocstringを読んでツールの用途を判断します。引数の型ヒントも必須。型情報がないとSDKがinputSchemaを自動生成できません。</p>
+</details>
+</div>
+
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 07: n8n/Dify連携 (50min: 講義20 + ハンズオン30) -->

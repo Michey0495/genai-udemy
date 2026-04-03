@@ -88,6 +88,10 @@ pre.code .kw{color:var(--asagi);}
 pre.code .str{color:#e6a828;}
 pre.code .cmt{color:var(--text-dim);}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -404,6 +408,28 @@ def process_users():
 </div></details>
 </div>
 
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師とは異なるPDFファイルをClaudeに添付し、自分でプロンプトを書いて3つのタスクを実行してください<br>
+条件: (1)3行要約 (2)主要な数値の抽出 (3)内容に関する質問3つの生成と回答
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: 手元にPDFがなければ下のサンプルレポートをダウンロードして使ってください。3つのタスクを1つのプロンプトにまとめても、分けて投げても構いません。</p>
+<a href="#" class="dl" onclick="downloadSampleReport();return false;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>サンプル事業報告書(.txt)</a>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c02_1">添付したドキュメントについて、以下の3つを実行してください。
+
+1. 内容を3行で要約してください(各行は40文字以内)
+2. 本文中に登場するすべての数値データを表形式で抽出してください(項目名、数値、単位、文脈)
+3. この文書の読者が最も関心を持つであろう質問を3つ考え、それぞれに文書の内容に基づいて回答してください<button class="cb" onclick="copyP('ch_c02_1')">コピー</button></div>
+<p>Part Aでは講師の指示通りに実行しましたが、ここでは自分でプロンプトを組み立てます。要約の粒度、数値抽出の形式、質問の切り口 -- すべて自分で決める経験が、実務での活用力に直結します。</p>
+</div>
+</details>
+</div>
+
 <div class="refs"><h4>参考リンク</h4><ul>
 <li><a href="https://claude.ai/" target="_blank" rel="noopener">claude.ai</a></li>
 <li><a href="https://support.anthropic.com/" target="_blank" rel="noopener">Anthropic サポート</a> -- UI操作のFAQ</li>
@@ -569,6 +595,42 @@ def process_users():
 <details><summary>よくある改善パターン</summary><div class="inner">
 <p>「ナレッジにない質問に推測で答えてしまう」場合 → 指示書に「ナレッジファイルに記載がない場合は『この情報は登録されていません』と明示的に回答してください」を追加。「回答が長すぎる」場合 → 文字数制限を「200文字以内」から「3行以内」のようにより具体的に変更。</p>
 </div></details>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 自分の部門のFAQ対応Projectを設計してください<br>
+条件: カスタム指示書を自分で書き、テスト質問5つとその期待回答を用意してください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: カスタム指示書には「役割」「回答ルール(文字数、トーン)」「参照ルール(ナレッジにない場合の対応)」「禁止事項」を含めると実用的になります。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c02_2">【カスタム指示書の例(営業部向け)】
+
+あなたは営業部の社内アシスタントです。
+
+役割: 営業メンバーからの社内手続き・ツール操作に関する質問に回答する
+
+回答ルール:
+- 敬語で簡潔に(200文字以内)
+- 手順がある場合は番号付きリストで
+- ナレッジファイルに記載がない場合は「この情報は登録されていません。総務部(内線: 3200)にお問い合わせください」と回答する
+- 推測で回答しない
+
+【テスト質問5つ】
+1. 交通費の精算方法を教えてください
+2. 来月の営業会議の日程は?
+3. CRMへの商談登録の手順は?
+4. 有給休暇の残日数を確認する方法は?
+5. 競合のA社の最新の売上はいくらですか?
+
+質問5は「ナレッジにない情報」のテストです。推測せずにエスカレーションできるかを確認します。<button class="cb" onclick="copyP('ch_c02_2')">コピー</button></div>
+<p>Part Aでは講師が用意したFAQデータとテンプレートを使いました。このチャレンジでは「何を指示書に書くべきか」「どんな質問でテストすべきか」を自分で考えます。特にテスト質問5のような「答えられないはずの質問」を含めることで、Projectの信頼性を検証できます。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -740,6 +802,34 @@ def process_users():
 <details><summary>Artifactsの活用で特に効果が高い場面</summary><div class="inner">
 <p>プレゼン資料の「素案」作成、社内ツールのプロトタイプ、データの可視化が三大活用領域です。完成品を作るというよりも、「80%の出来をすぐに見せて、残り20%を対話で詰める」というワークフローに最適化された機能だと捉えてください。</p>
 </div></details>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師がダッシュボードを作ったのと同じ手法で、あなたの業務に関連するデータ可視化Artifactを1つ作成してください<br>
+条件: テーマは自由(売上推移、タスク進捗、チーム稼働状況、アンケート結果など)
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: データが手元になければ架空のデータで構いません。「月次売上の推移グラフ」「部門別の人員配置」「プロジェクトのガントチャート」など、日常的に見る情報を可視化してみてください。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c02_3">以下のデータを使って、インタラクティブなダッシュボードをArtifactで作成してください。
+
+データ:
+- 1月: 営業チーム 目標120件/実績98件、サポートチーム 目標500件/実績523件
+- 2月: 営業チーム 目標120件/実績115件、サポートチーム 目標500件/実績489件
+- 3月: 営業チーム 目標130件/実績142件、サポートチーム 目標550件/実績561件
+
+要件:
+- 棒グラフで目標と実績を並べて表示
+- 達成率を%で表示し、100%未満は赤、100%以上は緑
+- チーム切り替えのタブ付き
+- vanilla JS/CSSのみ(外部ライブラリ不使用)<button class="cb" onclick="copyP('ch_c02_3')">コピー</button></div>
+<p>Part Aでは講師の指示通りにArtifactを生成しました。このチャレンジでは「何を可視化するか」「どう見せるか」を自分で設計します。実務で「この情報をパッと見たい」と思うものをArtifactにできれば、それは研修後にすぐ使える成果物になります。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>
@@ -1220,6 +1310,48 @@ console.log(message.content[0].text);
   }
 }</pre>
 </div></details>
+</div>
+
+<div class="challenge">
+<div class="ch-title">自走チャレンジ</div>
+<div class="ch-theme">
+テーマ: 講師が見せたAPIコードを改造して、system promptを自分の業務向けに書き換え、3つの異なる質問を投げてレスポンスの違いを確認してください<br>
+条件: system promptの役割設定を変更し、同じ質問に対してsystem promptあり/なしで結果を比較してください
+</div>
+<div class="ch-pause">ここで動画を一度止めて、5分間取り組んでください</div>
+<p style="font-size:13px;color:var(--text-muted);">ヒント: system promptは「あなたは〇〇部門の専門家です」のように、回答の専門性やトーンを変えるのに効きます。同じ質問でもsystem promptが変わると回答がどう変化するか観察してください。</p>
+<details>
+<summary>講師の解答例を見る</summary>
+<div class="inner">
+<div class="prompt" id="ch_c02_4">import anthropic
+
+client = anthropic.Anthropic()
+
+# system promptを自分の業務向けに変更
+system_prompt = """あなたは製造業の品質管理エンジニアです。
+回答は以下のルールに従ってください:
+- 品質管理の専門用語を使用しつつ、非専門家にもわかる説明を添える
+- 数値やデータに基づいた回答を優先する
+- リスクがある場合は必ず明示する"""
+
+questions = [
+    "不良率が先月から0.5%増加しました。考えられる原因は?",
+    "新しい検査装置の導入を検討しています。判断基準は?",
+    "顧客クレームの分析レポートを書くコツを教えてください"
+]
+
+for q in questions:
+    msg = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=500,
+        system=system_prompt,
+        messages=[{"role": "user", "content": q}]
+    )
+    print(f"Q: {q}")
+    print(f"A: {msg.content[0].text}\n")<button class="cb" onclick="copyP('ch_c02_4')">コピー</button></div>
+<p>system promptを変えると、同じ質問に対するトーン、専門性、回答の構成がまるで変わります。Part Aではコードの動作確認が目的でしたが、ここではsystem promptの設計力を鍛えます。この感覚は、Claude ProjectsやGPTsでのカスタム指示書の設計にもそのまま活きます。</p>
+</div>
+</details>
 </div>
 
 <div class="refs"><h4>参考リンク</h4><ul>

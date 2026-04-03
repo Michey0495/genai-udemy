@@ -84,6 +84,10 @@ details .inner{padding:0 20px 16px;font-size:14px;color:var(--text-muted);}detai
 .review-sec{border-left:3px solid var(--warn-border);}
 .checklist{list-style:none;padding-left:0;}.checklist li{padding:6px 0;font-size:14px;color:var(--text-muted);}.checklist li::before{content:"[ ] ";font-family:"SF Mono","Fira Code",monospace;color:var(--asagi);margin-right:4px;}
 @media(max-width:768px){.hero h1{font-size:24px;}.sec,.toc{padding-left:20px;padding-right:20px;}}
+.challenge{background:rgba(230,160,40,.06);border:1px dashed #b8860b;border-radius:var(--radius);padding:24px;margin:20px 0;}
+.challenge .ch-title{font-size:15px;font-weight:700;color:#b8860b;margin-bottom:8px;}
+.challenge .ch-pause{display:inline-block;background:#b8860b;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:700;margin:12px 0;}
+.challenge .ch-theme{font-size:14px;color:var(--text);margin-bottom:12px;padding:12px;background:rgba(0,0,0,.2);border-radius:4px;}
 </style>
 </head>
 <body>
@@ -314,6 +318,29 @@ graph LR
 <li><a href="https://developer.mozilla.org/ja/docs/Web/API/Window/localStorage" target="_blank" rel="noopener">MDN: localStorage</a> -- ブラウザにデータを保存する仕組みの公式ドキュメント</li>
 </ul></div></div>
 
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師がメモ帳アプリを作ったのと同じツールで、あなたのアイデアのアプリを自然言語だけで作ってみてください。テーマ例: 買い物リスト、習慣トラッカー、タイマーアプリ等。<br>条件: 最初の指示文を自分で考えてから実行すること。テンプレートやサンプルのコピーは使わないでください。</div>
+  <div class="ch-pause">ここで動画を一度止めて、7分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: 最初の指示は「何を作るか」「画面に何を表示するか」「ユーザーが何をできるか」の3点を含めると、AIが迷わず生成できます。100点の指示でなくて構いません。まず動くものを出して、そこから改善します。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c10_1">買い物リストアプリを作ってください。
+
+機能:
+- テキスト入力欄と「追加」ボタンで商品を追加できる
+- 商品名をクリックすると取り消し線がつく(購入済み)
+- 各商品の右に「削除」ボタン
+- 画面上部に「未購入: X件」のカウンター表示
+- データはlocalStorageに保存して、ブラウザを閉じても残る
+
+デザイン:
+- 白背景、最大幅480px、中央配置
+- フォントサイズ16px、行間1.6
+- 追加ボタンは青(#2563eb)、削除ボタンは赤(#dc2626)<button class="cb" onclick="copyP('ch_c10_1')">コピー</button></div>
+    <p>解説ポイント: 最初から完璧な指示を書く必要はありません。まず「買い物リストアプリを作ってください」だけで生成し、足りない部分を追加指示で補う方法でも同じ結果にたどり着けます。</p>
+  </div></details>
+</div>
+
 <!-- ============================================================ -->
 <!-- Section 03: 要件の言語化 (55min: 講義25 + ハンズオン30) -->
 <!-- ============================================================ -->
@@ -526,6 +553,30 @@ graph LR
 <li><a href="https://developer.mozilla.org/ja/docs/Learn/CSS" target="_blank" rel="noopener">MDN: CSS入門</a> -- スタイリングの基礎</li>
 </ul></div></div>
 
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師がダッシュボードを作ったのと同じ方法で、あなたの業務で使いたい管理画面のプロトタイプを1つ作ってください。<br>条件: 画面構成(ヘッダー、サイドバー、メインコンテンツ、データ表示部分)を自分で指示文にまとめてから実行すること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、10分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: 管理画面は「誰が」「何のデータを」「どう操作するか」を決めると構成が固まります。最初にワイヤーフレーム的な箇条書きを作り、それをそのままAIへの指示にするとスムーズです。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c10_2">社内の在庫管理ダッシュボードを作ってください。
+
+画面構成:
+- ヘッダー: ロゴ(テキストで「在庫管理」)、ログインユーザー名表示
+- サイドバー: ナビゲーション(ダッシュボード、商品一覧、入出庫履歴、設定)
+- メインコンテンツ:
+  - 上段: KPIカード4枚(総在庫数、今月入庫数、今月出庫数、在庫切れ商品数)
+  - 中段: 在庫推移の折れ線グラフ(ダミーデータで過去6ヶ月分)
+  - 下段: 在庫切れ間近の商品テーブル(商品名、現在庫、最低在庫、ステータス)
+
+デザイン:
+- サイドバーは幅240px、ダークネイビー(#1e293b)背景
+- メインは白背景、カードは薄いグレー(#f8fafc)背景
+- KPIカードの数値は24px太字<button class="cb" onclick="copyP('ch_c10_2')">コピー</button></div>
+    <p>解説ポイント: 管理画面のプロトタイプは「データの種類」と「操作」を具体的に書くほど精度が上がります。「いい感じのダッシュボード」では何も生まれませんが、KPIカードの項目名まで指定すれば、実用レベルのものが一発で出てきます。</p>
+  </div></details>
+</div>
+
 <!-- ============================================================ -->
 <!-- Section 05: フロントエンド強化 (55min: 講義20 + ハンズオン35) -->
 <!-- ============================================================ -->
@@ -717,6 +768,28 @@ Supabase情報:
 <li><a href="https://supabase.com/docs/guides/getting-started/quickstarts/nextjs" target="_blank" rel="noopener">Supabase + Next.js クイックスタート</a></li>
 <li><a href="https://firebase.google.com/docs?hl=ja" target="_blank" rel="noopener">Firebase公式ドキュメント(日本語)</a></li>
 </ul></div></div>
+
+<div class="challenge">
+  <div class="ch-title">自走チャレンジ</div>
+  <div class="ch-theme">テーマ: 講師がlocalStorageで永続化したのと同じ方法で、あなたのアプリにデータの編集機能と削除確認ダイアログを追加してください。<br>条件: AIへの指示文を自分で書いてから実行すること。「編集ボタン」「削除時の確認ダイアログ」の2つを1回の指示で追加すること。</div>
+  <div class="ch-pause">ここで動画を一度止めて、7分間取り組んでください</div>
+  <p style="font-size:13px;color:var(--text-muted);">ヒント: 指示文には「現在の状態」と「追加したいこと」を分けて書くと、AIが既存コードを壊さずに機能追加できます。「既存の一覧表示はそのまま維持した上で...」のように前提を明記してください。</p>
+  <details><summary>講師の解答例を見る</summary><div class="inner">
+    <div class="prompt" id="ch_c10_3">現在のアプリに以下の2つの機能を追加してください。既存の機能はすべて維持してください。
+
+1. 編集機能:
+- 各アイテムの右側に「編集」ボタンを追加
+- クリックすると、そのアイテムのテキストが入力欄に変わる(インライン編集)
+- EnterキーまたはCheckボタンで確定、Escキーでキャンセル
+- 編集後もlocalStorageに自動保存
+
+2. 削除確認ダイアログ:
+- 削除ボタンをクリックしたら、すぐに削除せずに確認ダイアログを表示
+- 「本当に削除しますか?」のメッセージと「削除する」「キャンセル」ボタン
+- モーダル形式で、背景を半透明の黒でオーバーレイ<button class="cb" onclick="copyP('ch_c10_3')">コピー</button></div>
+    <p>解説ポイント: 既存コードへの機能追加は、新規作成より難易度が高いです。「既存の機能はすべて維持」「既存のデータ構造はそのまま」といった制約を明示しないと、AIが全体を書き直してしまい、動いていた機能が壊れることがあります。</p>
+  </div></details>
+</div>
 
 <!-- ============================================================ -->
 <!-- Section 07: デプロイ (50min: 講義20 + ハンズオン30) -->
